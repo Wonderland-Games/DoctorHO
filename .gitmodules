@@ -1,0 +1,4 @@
+[submodule "Bin2"]
+	path = Bin2
+	url = https://github.com/Wonderland-Games/Mengine-Dev-Binary.git
+	branch = master
