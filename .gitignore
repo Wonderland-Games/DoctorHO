@@ -1,0 +1,7 @@
+.idea
+*.hit
+*.bin
+*.aek
+venv
+*auto-save*
+*.log
