@@ -1,0 +1,173 @@
+{
+    "Project": {
+        "Name": "DoctorHO",
+        "Codename": "DoctorHO",
+        "Company": "Wonderland"
+    },
+    
+    "Locale": {
+        "Default": "en"
+    },
+    
+    "Game": {
+        "Localized": true,
+        "ContentResolution": [2736, 2736],
+        "FixedContentResolution": 1,
+        "FixedDisplayResolution": 0,
+        "FixedViewportResolution": 1,
+        "PersonalityModule": "Personality",
+        "AlreadyRunning": true,
+        "WindowModeCheck": true
+    },
+
+    "Frameworks": {
+        "Name": [
+            "PythonFramework"
+        ]
+    },
+
+    "Game-PC": {
+        "AspectRatioViewport": [
+            [16.0, 9.0, 0, 0, 2736, 2736],
+            [9.0, 20.0, 783, 0, 1953, 2600],
+            [9.0, 19.5, 783, 0, 1953, 2532],
+            [9.0, 18, 735, 0, 2001, 2532],
+            [9.0, 16.0, 656, 0, 2080, 2532],
+            [3.0, 4.0, 393, 0, 2343, 2600]
+        ]
+    },
+	
+	"__Comments__": {
+		"AspectRatioViewport": [
+			[16.0, 9.0, 2736, 2736],
+			[9.0, 20.0, 1170, 2600],
+			[9.0, 19.5, 1170, 2532],
+			[9.0, 18.0, 1266, 2532],
+			[9.0, 16.0, 1424, 2532],
+			[3.0, 4.0, 1950, 2600]
+		]
+	},
+
+
+    "Game-IOS": {
+        "AspectRatioViewport": [
+            [9.0, 20.0, 783, 0, 1953, 2600],
+            [9.0, 19.5, 783, 0, 1953, 2532],
+            [9.0, 16.0, 656, 0, 2080, 2532],
+            [3.0, 4.0, 393, 0, 2343, 2600]
+        ]
+    },  
+
+    "Game-ANDROID": {
+        "AspectRatioViewport": [
+            [9.0, 20.0, 783, 0, 1953, 2600],
+            [9.0, 19.5, 783, 0, 1953, 2532],
+            [9.0, 16.0, 656, 0, 2080, 2532],
+            [9.0, 18, 735, 0, 2001, 2532],
+            [3.0, 4.0, 393, 0, 2343, 2600]
+        ]
+    },
+
+    "DefaultArrow": {
+        "Name": "Default",
+        "Prototype": "Default"
+    },
+
+    "Window": {
+		"ApplicationTitleTextId": "APPLICATION_TITLE",
+        "Bits": 32,
+        "Fullscreen": false,
+        "VSync": true
+    },
+
+    "Window-PC": {
+        "Size": [393, 852],
+		"__Comments__": [
+			[393, 852, "9:19.5 iPhone15"],
+			[414, 736, "9:16 iPhone8"],
+			[820, 1180, "3:4 iPad10"],
+			[834, 1194, "7:10 iPad Pro 5 11'"]
+		]
+    },
+
+    "Window-IOS": {
+        "Size": [540, 960]
+    },
+
+    "Window-ANDROID": {
+        "Size": [540, 960]
+    },
+
+    "Python": {
+        "DatabaseCache": true
+    },
+
+    "Limit": {
+        "AnimationMemoryLimit": 83886080,
+        "MovieImageScale": 0.0
+    },    
+
+    "Params": {
+		"AutoLanguage": false,
+        "ShowBuildVersion": 1,
+		"ShowPlayFabId": 1,
+		"PrivacyPolicyLink": "https://www.wonderland-games.com/privacy/",
+		"DeveloperWebsiteLink": "https://www.wonderland-games.com/",
+		"TechnicalSupportEnable": 1,
+		"TechnicalSupportEmail": "support@wonderland-games.com"
+    },
+	
+    "DevPlugins-PC": {
+        "Name": [
+            "Win32AntifreezeMonitorPlugin.dll",
+            "Win32ConsoleLoggerPlugin.dll",
+            "XmlToBinPlugin.dll",
+            "Win32FindPython3Plugin.dll",
+            "Win32XlsExportPlugin.dll",
+            "DevelopmentConverterPlugin.dll",
+            "Win32SocketPlugin.dll",
+            "NodeDebuggerPlugin.dll"
+        ]
+    },
+
+    "DevPlugins-IOS-WIN32": {
+        "Name": [
+            "Win32ConsoleLogger.dll"
+        ]
+    },
+
+    "Engine": {
+        "VideoPluginAvailable": true,
+        "RenderMaxVertexCount": 64000,
+        "RenderMaxIndexCount": 96000,
+        "RenderMaxObject": 16000,
+        "RenderMaxQuadBatch": 4000,
+        "FxcPath": "fxc.exe",
+        "AntifreezeMonitorSeconds": 10
+    },
+	
+    "Win32AntifreezeMonitorPlugin": {
+        "Seconds": 90
+    },
+	
+    "Engine-IOS": {
+        "VideoPluginAvailable": 0,
+        "ThreadServiceAvailable": 1
+    },
+
+    "Engine-ANDROID": {
+        "VideoPluginAvailable": 0,
+        "ThreadServiceAvailable": 1
+    },
+
+    "HTTP": {
+        "Log": 0
+    },
+
+    "DevModules-PC": {
+        "Name": [
+            "ModuleNodeDebugger",
+            "ModuleCameraDebugGizmo"
+        ]
+    }
+}
