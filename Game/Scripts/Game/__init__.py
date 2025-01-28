@@ -3,6 +3,7 @@ def onInitialize():
 
     from Foundation.Notificator import Notificator
     identities = [
+        "onChangeScene",
     ]
 
     Notificator.addIdentities(identities)
@@ -18,6 +19,7 @@ def onInitialize():
     from Foundation.ObjectManager import ObjectManager
 
     types = [
+        "Lobby",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:
