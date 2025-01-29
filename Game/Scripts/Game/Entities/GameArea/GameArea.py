@@ -34,6 +34,8 @@ class GameArea(BaseEntity):
 
         level_group_scene.enable()
 
+        self.test_item = level_group.getObject("Item_Heart")
+
     def _onActivate(self):
         self._runTaskChains()
 
@@ -51,4 +53,8 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
+        with self._createTaskChain("PickHeart") as tc:
+            tc.addTask("TaskItemClick", Item=self.test_item)
+            tc.addPrint("Pick item Heart")
+            tc.addTask("TaskItemPick", Item=self.test_item)
         pass
