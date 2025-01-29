@@ -20,6 +20,7 @@ def onInitialize():
 
     types = [
         "Lobby",
+        "GameArea",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:
