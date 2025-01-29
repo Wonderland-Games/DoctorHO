@@ -5,9 +5,9 @@ from Foundation.TaskManager import TaskManager
 MOVIE_CONTENT = "Movie2_Content"
 
 
-class Lobby(BaseEntity):
+class GameArea(BaseEntity):
     def __init__(self):
-        super(Lobby, self).__init__()
+        super(GameArea, self).__init__()
         self.content = None
         self.tcs = []
 
@@ -33,7 +33,4 @@ class Lobby(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        with self._createTaskChain("OpenGameArea") as tc:
-            tc.addTask("TaskMouseButtonClick", isDown=False)
-            tc.addNotify(Notificator.onChangeScene, "GameArea")
         pass
