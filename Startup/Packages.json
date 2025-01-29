@@ -2,6 +2,7 @@
 	"GAME_PACKAGES": {
 		"FrameworkPack": [
 			"Foundation",
+			"HOPA",
 			"Game"
 		],
 
@@ -22,6 +23,11 @@
 	"Foundation": {
 		"Name": "Foundation",
 		"Path": "../Foundation/",
+		"Description": "Package.bin"
+	},
+	"HOPA": {
+		"Name": "HOPA",
+		"Path": "../HOPA/",
 		"Description": "Package.bin"
 	},
 	"Game": {
