@@ -6,3 +6,7 @@
 	path = Foundation
 	url = https://github.com/irov/Mengine-Python-Foundation.git
 	branch = master
+[submodule "HOPA"]
+	path = HOPA
+	url = https://github.com/irov/Mengine-Python-HOPA.git
+	branch = master
