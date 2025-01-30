@@ -1,10 +1,12 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.GroupManager import GroupManager
+from Game.Entities.GameArea.SearchPanel import SearchPanel
 
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_LEVEL = "level"
+SLOT_SEARCH_PANEL = "search_panel"
 
 
 class GameArea(BaseEntity):
@@ -12,6 +14,7 @@ class GameArea(BaseEntity):
         super(GameArea, self).__init__()
         self.content = None
         self.tcs = []
+        self.search_panel = None
 
     def _onPreparation(self):
         self.content = self.object.getObject(MOVIE_CONTENT)
@@ -19,6 +22,7 @@ class GameArea(BaseEntity):
             return
 
         self.__attachLevelSceneToSlot("01_Forest")
+        self._initSearchPanel()
 
     def __attachLevelSceneToSlot(self, level_name):
         # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
@@ -47,6 +51,29 @@ class GameArea(BaseEntity):
         level_group_objects = level_group.getObjects()
         items = [item for item in level_group_objects if item.getEntityType() is "Item"]
         print([item.getName() for item in items])
+
+    def _initSearchPanel(self):
+        self.search_panel = SearchPanel()
+        self.search_panel.onInitialize(self)
+
+        self._attachSearchPanel()
+
+    def _attachSearchPanel(self):
+        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
+        viewport = Mengine.getGameViewport()
+        game_width = viewport.end.x - viewport.begin.x
+        game_height = viewport.end.y - viewport.begin.y
+        x_center = viewport.begin.x + game_width / 2
+
+        search_panel_height = self.search_panel.getHeight()
+
+        search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
+        search_panel_slot.setWorldPosition(Mengine.vec2f(
+            x_center,
+            game_height - search_panel_height/2
+        ))
+
+        self.search_panel.attachTo(search_panel_slot)
 
     def _onActivate(self):
         self._runTaskChains()
