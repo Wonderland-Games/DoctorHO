@@ -1,7 +1,7 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.GroupManager import GroupManager
-from Game.Entities.GameArea.SearchPanel import SearchPanel
+from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -15,6 +15,8 @@ class GameArea(BaseEntity):
         self.content = None
         self.tcs = []
         self.search_panel = None
+        self.items = []
+        self.level_group = None
 
     def _onPreparation(self):
         self.content = self.object.getObject(MOVIE_CONTENT)
@@ -35,8 +37,8 @@ class GameArea(BaseEntity):
         level_slot = self.content.getMovieSlot(SLOT_LEVEL)
         level_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
 
-        level_group = GroupManager.getGroup(level_name)
-        level_group_scene = level_group.getScene()
+        self.level_group = GroupManager.getGroup(level_name)
+        level_group_scene = self.level_group.getScene()
         level_group_scene_layer = level_group_scene.getParent()
         level_group_scene_layer_size = level_group_scene_layer.getSize()
         level_group_scene_layer_new_pos = Mengine.vec2f(-level_group_scene_layer_size.x / 2, -level_group_scene_layer_size.y / 2)
@@ -46,11 +48,12 @@ class GameArea(BaseEntity):
 
         level_group_scene.enable()
 
-        self.test_item = level_group.getObject("Item_Heart")
+        self.test_item = self.level_group.getObject("Item_Heart")
 
-        level_group_objects = level_group.getObjects()
-        items = [item for item in level_group_objects if item.getEntityType() is "Item"]
-        print([item.getName() for item in items])
+        level_group_objects = self.level_group.getObjects()
+
+        self.items = [item for item in level_group_objects if item.getEntityType() is "Item"]
+        print([item.getName() for item in self.items])
 
     def _initSearchPanel(self):
         self.search_panel = SearchPanel()
@@ -84,6 +87,10 @@ class GameArea(BaseEntity):
         for tc in self.tcs:
             tc.cancel()
         self.tcs = []
+
+        self.search_panel = None
+        self.items = []
+        self.level_group = None
 
     def _createTaskChain(self, name, **params):
         tc_base = self.__class__.__name__
