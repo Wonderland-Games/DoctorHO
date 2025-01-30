@@ -20,23 +20,11 @@ class GameArea(BaseEntity):
 
         self.__attachLevelSceneToSlot("01_Forest")
 
-    @staticmethod
-    def getGameWidth():
-        viewport = Mengine.getGameViewport()
-        width = viewport.end.x - viewport.begin.x
-        return width
-
-    @staticmethod
-    def getGameHeight():
-        viewport = Mengine.getGameViewport()
-        height = viewport.end.y - viewport.begin.y
-        return height
-
     def __attachLevelSceneToSlot(self, level_name):
         # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
-        game_width = self.getGameWidth()
-        game_height = self.getGameHeight()
         viewport = Mengine.getGameViewport()
+        game_width = viewport.end.x - viewport.begin.x
+        game_height = viewport.end.y - viewport.begin.y
         x_center = viewport.begin.x + game_width / 2
         y_center = viewport.begin.y + game_height / 2
 
