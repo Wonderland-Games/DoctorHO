@@ -20,10 +20,30 @@ class GameArea(BaseEntity):
 
         self.__attachLevelSceneToSlot("01_Forest")
 
-    def __attachLevelSceneToSlot(self, level_name):
-        level_slot = self.content.getMovieSlot(SLOT_LEVEL)
-        level_group = GroupManager.getGroup(level_name)
+    @staticmethod
+    def getGameWidth():
+        viewport = Mengine.getGameViewport()
+        width = viewport.end.x - viewport.begin.x
+        return width
 
+    @staticmethod
+    def getGameHeight():
+        viewport = Mengine.getGameViewport()
+        height = viewport.end.y - viewport.begin.y
+        return height
+
+    def __attachLevelSceneToSlot(self, level_name):
+        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
+        game_width = self.getGameWidth()
+        game_height = self.getGameHeight()
+        viewport = Mengine.getGameViewport()
+        x_center = viewport.begin.x + game_width / 2
+        y_center = viewport.begin.y + game_height / 2
+
+        level_slot = self.content.getMovieSlot(SLOT_LEVEL)
+        level_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
+
+        level_group = GroupManager.getGroup(level_name)
         level_group_scene = level_group.getScene()
         level_group_scene_layer = level_group_scene.getParent()
         level_group_scene_layer_size = level_group_scene_layer.getSize()
@@ -35,6 +55,10 @@ class GameArea(BaseEntity):
         level_group_scene.enable()
 
         self.test_item = level_group.getObject("Item_Heart")
+
+        level_group_objects = level_group.getObjects()
+        items = [item for item in level_group_objects if item.getEntityType() is "Item"]
+        print([item.getName() for item in items])
 
     def _onActivate(self):
         self._runTaskChains()
