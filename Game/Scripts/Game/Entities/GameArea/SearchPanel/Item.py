@@ -51,12 +51,16 @@ class Item(Initializer):
         self.root.removeFromParent()
         node.addChild(self.root)
 
+    def setLocalPositionX(self, position):
+        curr_position = self.root.getLocalPosition()
+        self.root.setLocalPosition(Mengine.vec2f(position, curr_position.y))
+
     def _createBox(self):
         self.box = self.game.object.generateObjectUnique(MOVIE_BOX, MOVIE_BOX)
         self.box.setEnable(True)
         self.root.addChild(self.box.getEntityNode())
 
-    def getBoxSize(self):
+    def getSize(self):
         box_bounds = self.box.getCompositionBounds()
         box_size = Utils.getBoundingBoxSize(box_bounds)
         return box_size
@@ -69,7 +73,7 @@ class Item(Initializer):
         if self.box is None:
             return
 
-        box_size = self.getBoxSize()
+        box_size = self.getSize()
         box_size_max = max(box_size.x, box_size.y)
 
         sprite_size = self.sprite.getSurfaceSize()

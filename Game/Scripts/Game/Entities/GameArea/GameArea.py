@@ -68,12 +68,12 @@ class GameArea(BaseEntity):
         game_height = viewport.end.y - viewport.begin.y
         x_center = viewport.begin.x + game_width / 2
 
-        search_panel_height = self.search_panel.getHeight()
+        search_panel_size = self.search_panel.getSize()
 
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
         search_panel_slot.setWorldPosition(Mengine.vec2f(
             x_center,
-            game_height - search_panel_height/2
+            game_height - search_panel_size.y/2
         ))
 
         self.search_panel.attachTo(search_panel_slot)
