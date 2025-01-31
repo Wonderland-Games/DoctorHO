@@ -6,6 +6,7 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 
 MOVIE_PANEL = "Movie2_SearchPanel"
 PANEL_VA = "virtual_area"
+ITEMS_OFFSET_BETWEEN = 100.0
 
 
 class SearchPanel(Initializer):
@@ -17,6 +18,7 @@ class SearchPanel(Initializer):
         self.movie_panel = None
         self.tcs = []
         self.items = []
+        self.items_node = None
 
     def _onInitialize(self, game):
         self.game = game
@@ -28,6 +30,7 @@ class SearchPanel(Initializer):
         self._initItems()
 
         self._setupVirtualArea()
+        print(self.virtual_area.get_content_size())
         return True
 
     def _onActivate(self):
@@ -44,6 +47,10 @@ class SearchPanel(Initializer):
         for item in self.items:
             item.onFinalize()
         self.items = []
+
+        if self.items_node is not None:
+            Mengine.destroyNode(self.items_node)
+            self.items_node = None
 
         if self.root is not None:
             Mengine.destroyNode(self.root)
@@ -63,11 +70,10 @@ class SearchPanel(Initializer):
 
     def _setupVirtualArea(self):
         self.virtual_area.setup_with_movie(self.movie_panel, PANEL_VA, PANEL_VA)
-        panel_bounds = self.movie_panel.getCompositionBounds()
-        panel_size = Utils.getBoundingBoxSize(panel_bounds)
+        panel_size = self.getSize()
 
         self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
-        self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+        # self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
 
         self.virtual_area._socket.setDefaultHandle(False)
 
@@ -75,6 +81,11 @@ class SearchPanel(Initializer):
         panel_entity.setSocketHandle(PANEL_VA, "button", False)
         panel_entity.setSocketHandle(PANEL_VA, "enter", False)
         panel_entity.setSocketHandle(PANEL_VA, "move", False)
+
+        virtual_area_socket = self.movie_panel.getSocket(PANEL_VA)
+        self.virtual_area.init_handlers(virtual_area_socket)
+
+        self.movie_panel.setInteractive(True)
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
@@ -84,11 +95,10 @@ class SearchPanel(Initializer):
         self.root.removeFromParent()
         node.addChild(self.root)
 
-    def getHeight(self):
-        movie_panel = self.game.object.getObject(MOVIE_PANEL)
-        movie_panel_bounds = movie_panel.getCompositionBounds()
-        movie_panel_height = Utils.getBoundingBoxHeight(movie_panel_bounds)
-        return movie_panel_height
+    def getSize(self):
+        panel_bounds = self.movie_panel.getCompositionBounds()
+        panel_size = Utils.getBoundingBoxSize(panel_bounds)
+        return panel_size
 
     def _attachPanel(self):
         self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
@@ -96,12 +106,30 @@ class SearchPanel(Initializer):
         self.root.addChild(movie_panel_node)
 
     def _initItems(self):
-        for item_obj in self.game.items:
+        self.items_node = Mengine.createNode("Interender")
+        self.items_node.setName("Items")
+
+        self.virtual_area.add_node(self.items_node)
+
+        panel_size = self.getSize()
+        self.items_node.setLocalPosition(Mengine.vec2f(0, panel_size.y / 2))
+
+        content_size_x = 0
+
+        for i, item_obj in enumerate(self.game.items):
             item = Item()
             item.onInitialize(self.game, item_obj)
-            # item.attachTo(self.root)
-            item.attachTo(self.virtual_area.get_node())
+            item.attachTo(self.items_node)
+            item_size = item.getSize()
+            item.setLocalPositionX(item_size.x / 2 + item_size.x * i + ITEMS_OFFSET_BETWEEN * i)
+            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
             self.items.append(item)
+
+        content_size_x -= ITEMS_OFFSET_BETWEEN
+        if content_size_x <= panel_size.x:
+            self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+        else:
+            self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)
