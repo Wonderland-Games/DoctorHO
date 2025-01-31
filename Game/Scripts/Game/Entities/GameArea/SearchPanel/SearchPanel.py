@@ -30,7 +30,6 @@ class SearchPanel(Initializer):
         self._initItems()
 
         self._setupVirtualArea()
-        print(self.virtual_area.get_content_size())
         return True
 
     def _onActivate(self):
