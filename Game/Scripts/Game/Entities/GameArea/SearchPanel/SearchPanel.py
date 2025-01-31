@@ -13,6 +13,7 @@ class SearchPanel(Initializer):
         self.root = None
         self.movie_panel = None
         self.tcs = []
+        self.items = []
 
     def _onInitialize(self, game):
         self.game = game
@@ -31,6 +32,10 @@ class SearchPanel(Initializer):
         for tc in self.tcs:
             tc.cancel()
         self.tcs = []
+
+        for item in self.items:
+            item.onFinalize()
+        self.items = []
 
         if self.root is not None:
             Mengine.destroyNode(self.root)
@@ -58,8 +63,9 @@ class SearchPanel(Initializer):
     def _initItems(self):
         for item_obj in self.game.items:
             item = Item()
-            item.onInitialize(item_obj)
+            item.onInitialize(self.game, item_obj)
             item.attachTo(self.root)
+            self.items.append(item)
 
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)

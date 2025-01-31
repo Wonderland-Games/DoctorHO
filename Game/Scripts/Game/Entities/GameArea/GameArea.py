@@ -88,7 +88,10 @@ class GameArea(BaseEntity):
             tc.cancel()
         self.tcs = []
 
-        self.search_panel = None
+        if self.search_panel is not None:
+            self.search_panel.onFinalize()
+            self.search_panel = None
+
         self.items = []
         self.level_group = None
 
