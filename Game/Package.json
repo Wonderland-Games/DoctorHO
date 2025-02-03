@@ -1,7 +1,12 @@
 {
-    "Scripts" : {
+	"Scripts" : {
 		"Script" : [ 
-            {"Path": "Scripts/", "Module": "Game", "Initializer": "onInitialize", "Finalizer": "onFinalize"}
-        ]
-    }
+			{"Path": "Scripts/", "Module": "Game", "Initializer": "onInitialize", "Finalizer": "onFinalize"}
+		]
+	},
+	"Settings": {
+		"Setting": [
+			{"Path": "Settings/Test.json", "Name": "Test"}
+		]
+	}
 }
