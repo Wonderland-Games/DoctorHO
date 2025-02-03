@@ -19,13 +19,6 @@
 			"Texts_English"
 		]
 	},
-	
-	"Settings": {
-        "Setting": [
-            {"Name": "Test", "Path": "Settings/Test.json"}
-        ]
-    }
-	
 	"Foundation": {
 		"Name": "Foundation",
 		"Path": "../Foundation/",
