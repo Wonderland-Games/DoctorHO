@@ -111,3 +111,16 @@ class GameArea(BaseEntity):
         #     tc.addPrint("disable interactive for {}".format(self.items[0].getName()))
         #     tc.addPrint("{}".format(self.items[0].getInteractive()))
         #     tc.addFunction(self.items[0].setInteractive, False)
+
+        def _changeItemColor(_item):
+            def _cb(_, __, ___):
+                pass
+
+            color = SETTINGS.Test.color
+            sprite = _item.getEntity().getSprite()
+            sprite.colorTo(1, color, "easyLinear", _cb)
+
+        with self._createTaskChain("TestColorSettings", Repeat=True) as tc:
+            tc.addListener(Notificator.onSettingChange)
+            for item, parallel in tc.addParallelTaskList(self.search_level.items):
+                parallel.addFunction(_changeItemColor, item)
