@@ -29,7 +29,7 @@
 	"Foundation": {
 		"Name": "Foundation",
 		"Path": "../Foundation/",
-		"Description": "Package.bin"
+		"Description": "Package.json"
 	},
 	"HOPA": {
 		"Name": "HOPA",
@@ -39,7 +39,7 @@
 	"Game": {
 		"Name": "Game",
 		"Path": "../Game/",
-		"Description": "Package.bin"
+		"Description": "Package.json"
 	},
 	
 	"Resources": {
