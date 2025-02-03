@@ -97,9 +97,19 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
+        def _checkItem(item_obj):
+            available_items = self.search_panel.getAvailableItems()
+
+            result = False
+            for available_item in available_items:
+                if available_item.item_obj == item_obj:
+                    result = True
+
+            return result
+
         with self._createTaskChain("PickItems", Repeat=True) as tc:
             for item, race in tc.addRaceTaskList(self.search_level.items):
-                race.addTask("TaskItemClick", Item=item)
+                race.addTask("TaskItemClick", Item=item, Filter=_checkItem)
                 race.addPrint(item.getName())
                 with race.addParallelTask(2) as (scene, panel):
                     scene.addTask("TaskItemPick", Item=item)
