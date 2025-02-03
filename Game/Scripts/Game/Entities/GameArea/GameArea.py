@@ -102,8 +102,22 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        with self._createTaskChain("PickHeart") as tc:
-            tc.addTask("TaskItemClick", Item=self.test_item)
-            tc.addPrint("Pick item Heart")
-            tc.addTask("TaskItemPick", Item=self.test_item)
-        pass
+        # with self._createTaskChain("PickHeart") as tc:
+        #     tc.addTask("TaskItemClick", Item=self.test_item)
+        #     tc.addPrint("Pick item Heart")
+        #     tc.addTask("TaskItemPick", Item=self.test_item)
+
+        with self._createTaskChain("PickItems", Repeat=True) as tc:
+            for item, race in tc.addRaceTaskList(self.items):
+                race.addTask("TaskItemClick", Item=item)
+                race.addPrint(item.getName())
+                with race.addParallelTask(2) as (scene, panel):
+                    scene.addTask("TaskItemPick", Item=item)
+                    scene.addFunction(self.items.remove, item)
+                    panel.addFunction(self.search_panel.removeItem, item)
+
+        # with self._createTaskChain("Test") as tc:
+        #     tc.addDelay(2000)
+        #     tc.addPrint("disable interactive for {}".format(self.items[0].getName()))
+        #     tc.addPrint("{}".format(self.items[0].getInteractive()))
+        #     tc.addFunction(self.items[0].setInteractive, False)

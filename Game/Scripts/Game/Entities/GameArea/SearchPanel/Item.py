@@ -29,10 +29,6 @@ class Item(Initializer):
         self.game = None
         self.item_obj = None
 
-        if self.root is not None:
-            Mengine.destroyNode(self.root)
-            self.root = None
-
         if self.sprite is not None:
             self.sprite.removeFromParent()
             Mengine.destroyNode(self.sprite)
@@ -42,6 +38,11 @@ class Item(Initializer):
             self.box.getEntityNode().removeFromParent()
             self.box.onDestroy()
             self.box = None
+
+        if self.root is not None:
+            self.root.removeFromParent()
+            Mengine.destroyNode(self.root)
+            self.root = None
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
