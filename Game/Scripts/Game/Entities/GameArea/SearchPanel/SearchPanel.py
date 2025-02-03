@@ -19,6 +19,7 @@ class SearchPanel(Initializer):
         self.tcs = []
         self.items = []
         self.items_node = None
+        self.items_range = None
 
     def _onInitialize(self, game):
         self.game = game
@@ -37,7 +38,8 @@ class SearchPanel(Initializer):
         self._runTaskChains()
 
     def _onFinalize(self):
-        self.panel = None
+        self.movie_panel = None
+        self.items_range = None
 
         for tc in self.tcs:
             tc.cancel()
@@ -81,10 +83,44 @@ class SearchPanel(Initializer):
         panel_entity.setSocketHandle(PANEL_VA, "enter", False)
         panel_entity.setSocketHandle(PANEL_VA, "move", False)
 
-        virtual_area_socket = self.movie_panel.getSocket(PANEL_VA)
-        self.virtual_area.init_handlers(virtual_area_socket)
-
         self.movie_panel.setInteractive(True)
+
+        # callbacks
+        self.virtual_area.on_drag_start += self._cbVirtualAreaDragStart
+        self.virtual_area.on_drag += self._cbVirtualAreaDrag
+        self.virtual_area.on_drag_end += self._cbVirtualAreaDragEnd
+
+        # calculate VA viewport borders global position
+        virtual_area_viewport = self.virtual_area.get_viewport().getViewport()
+        virtual_area_viewport_begin = virtual_area_viewport.begin
+        virtual_area_viewport_end = virtual_area_viewport.end
+        self.items_range = Mengine.vec2f(virtual_area_viewport_begin.x, virtual_area_viewport_end.x)
+        # print("ITEMS RANGE:", self.items_range)
+
+    def _cbVirtualAreaDragStart(self):
+        print("Drag start")
+        # temporary test
+        panel_size = self.getSize()
+        panel_pos = self.movie_panel.getEntityNode().getWorldPosition()
+        panel_pos_left = panel_pos.x - panel_size.x / 2
+        panel_pos_right = panel_pos.x + panel_size.x / 2
+        self.items_range = Mengine.vec2f(panel_pos_left, panel_pos_right)
+        pass
+
+    def _cbVirtualAreaDrag(self, x, y):
+        for item in self.items:
+            item_pos = item.getRoot().getWorldPosition()
+            # print(item_pos.x)
+            if self.items_range.x <= item_pos.x <= self.items_range.y:
+                # item.item_obj.setInteractive(True)
+                item.item_obj.setEnable(True)
+            else:
+                # item.item_obj.setInteractive(False)
+                item.item_obj.setEnable(False)
+
+    def _cbVirtualAreaDragEnd(self):
+        print("Drag end")
+        pass
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
@@ -131,13 +167,39 @@ class SearchPanel(Initializer):
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
     def removeItem(self, item_obj):
+        removing_item = None
+
+        # finalize removing item
         for item in self.items:
             if item.item_obj is not item_obj:
                 continue
 
+            removing_item = item
             item.onFinalize()
-            self.items.remove(item)
+            # self.items.remove(item)
             break
+
+        items_after = list(self.items[self.items.index(removing_item) + 1:])
+        self.items.remove(removing_item)
+
+        # remove items from right to left
+        for item in items_after:
+            item_size = item.getSize()
+            item_pos = item.getRoot().getLocalPosition()
+            item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
+
+        # re-calculate VA content size
+        content_size_x = 0
+        for item in self.items:
+            item_size = item.getSize()
+            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
+
+        content_size_x -= ITEMS_OFFSET_BETWEEN
+        panel_size = self.getSize()
+        if content_size_x <= panel_size.x:
+            self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+        else:
+            self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)

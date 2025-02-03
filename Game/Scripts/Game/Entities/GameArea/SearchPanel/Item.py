@@ -17,7 +17,8 @@ class Item(Initializer):
         self.game = game
         self.item_obj = item_obj
 
-        self._createRoot()
+        root_name = item_obj.getName()
+        self._createRoot(root_name)
 
         self._createBox()
 
@@ -44,9 +45,12 @@ class Item(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-    def _createRoot(self):
+    def _createRoot(self, name):
         self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__)
+        self.root.setName(name)
+
+    def getRoot(self):
+        return self.root
 
     def attachTo(self, node):
         self.root.removeFromParent()
