@@ -18,8 +18,10 @@ class SearchPanel(Initializer):
         self.movie_panel = None
         self.tcs = []
         self.items = []
+        self.available_items = []
         self.items_node = None
         self.items_range = None
+        self.print_available_items = True
 
     def _onInitialize(self, game):
         self.game = game
@@ -31,6 +33,9 @@ class SearchPanel(Initializer):
         self._initItems()
 
         self._setupVirtualArea()
+
+        self._setBordersRange()
+        self._updateAvailableItems()
         return True
 
     def _onActivate(self):
@@ -40,6 +45,8 @@ class SearchPanel(Initializer):
     def _onFinalize(self):
         self.movie_panel = None
         self.items_range = None
+        self.available_items = []
+        self.print_available_items = True
 
         for tc in self.tcs:
             tc.cancel()
@@ -90,37 +97,33 @@ class SearchPanel(Initializer):
         self.virtual_area.on_drag += self._cbVirtualAreaDrag
         self.virtual_area.on_drag_end += self._cbVirtualAreaDragEnd
 
-        # calculate VA viewport borders global position
-        virtual_area_viewport = self.virtual_area.get_viewport().getViewport()
-        virtual_area_viewport_begin = virtual_area_viewport.begin
-        virtual_area_viewport_end = virtual_area_viewport.end
-        self.items_range = Mengine.vec2f(virtual_area_viewport_begin.x, virtual_area_viewport_end.x)
-        # print("ITEMS RANGE:", self.items_range)
-
     def _cbVirtualAreaDragStart(self):
-        print("Drag start")
-        # temporary test
-        panel_size = self.getSize()
-        panel_pos = self.movie_panel.getEntityNode().getWorldPosition()
-        panel_pos_left = panel_pos.x - panel_size.x / 2
-        panel_pos_right = panel_pos.x + panel_size.x / 2
-        self.items_range = Mengine.vec2f(panel_pos_left, panel_pos_right)
+        self.print_available_items = False
         pass
 
     def _cbVirtualAreaDrag(self, x, y):
-        for item in self.items:
-            item_pos = item.getRoot().getWorldPosition()
-            # print(item_pos.x)
-            if self.items_range.x <= item_pos.x <= self.items_range.y:
-                # item.item_obj.setInteractive(True)
-                item.item_obj.setEnable(True)
-            else:
-                # item.item_obj.setInteractive(False)
-                item.item_obj.setEnable(False)
+        self._updateAvailableItems()
 
     def _cbVirtualAreaDragEnd(self):
-        print("Drag end")
+        self.print_available_items = True
         pass
+
+    def _updateAvailableItems(self):
+        for item in self.items:
+            item_pos = Mengine.getNodeScreenPosition(item.getRoot())
+
+            if self.items_range.x <= item_pos.x <= self.items_range.y:
+                if item not in self.available_items:
+                    self.available_items.append(item)
+            else:
+                if item in self.available_items:
+                    self.available_items.remove(item)
+
+        if self.print_available_items is False:
+            return
+
+        print("Available items", [available_item.item_obj.getName() for available_item in self.available_items if
+                                  available_item.item_obj is not None])
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
@@ -166,6 +169,25 @@ class SearchPanel(Initializer):
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
+    def _setBordersRange(self):
+        panel_size = self.getSize()
+
+        border_node = Mengine.createNode("Interender")
+        self.virtual_area.add_node(border_node)
+
+        border_node.setLocalPosition(Mengine.vec2f(0, panel_size.y / 2))
+        range_left = Mengine.getNodeScreenPosition(border_node)
+
+        border_node.setLocalPosition(Mengine.vec2f(panel_size.x, panel_size.y / 2))
+        range_right = Mengine.getNodeScreenPosition(border_node)
+
+        self.items_range = Mengine.vec2f(range_left.x, range_right.x)
+
+        Mengine.destroyNode(border_node)
+
+    def getAvailableItems(self):
+        return self.available_items
+
     def removeItem(self, item_obj):
         removing_item = None
 
@@ -200,6 +222,8 @@ class SearchPanel(Initializer):
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+
+        self._updateAvailableItems()
 
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)
