@@ -130,6 +130,15 @@ class SearchPanel(Initializer):
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
+    def removeItem(self, item_obj):
+        for item in self.items:
+            if item.item_obj is not item_obj:
+                continue
+
+            item.onFinalize()
+            self.items.remove(item)
+            break
+
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)
         self.tcs.append(tc)
