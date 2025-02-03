@@ -151,7 +151,7 @@ class SearchPanel(Initializer):
 
         content_size_x = 0
 
-        for i, item_obj in enumerate(self.game.items):
+        for i, item_obj in enumerate(self.game.search_level.items):
             item = Item()
             item.onInitialize(self.game, item_obj)
             item.attachTo(self.items_node)
