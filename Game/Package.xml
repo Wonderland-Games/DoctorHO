@@ -1,5 +1,0 @@
-<Pak>
-	<Scripts>
-		<Script Path="Scripts/" Module="Game" Initializer="onInitialize" Finalizer="onFinalize" />
-	</Scripts>
-</Pak>
