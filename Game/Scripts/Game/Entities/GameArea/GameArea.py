@@ -27,30 +27,39 @@ class GameArea(BaseEntity):
         self._initSearchLevel("01_Forest")
         self._initSearchPanel()
 
-    def _initSearchLevel(self, level_name):
-        self.search_level = SearchLevel()
-        self.search_level.onInitialize(self, level_name)
-
+        self._attachSearchPanel()
         self._attachSearchLevel()
+
+    def _initSearchLevel(self, level_name):
+        frame = Mengine.getGameViewport()
+        frame_points = Mengine.vec4f(frame.begin.x, frame.begin.y, frame.end.x, frame.end.y)
+
+        self.search_level = SearchLevel()
+        self.search_level.onInitialize(self, level_name, frame_points)
 
     def _attachSearchLevel(self):
         # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
-        viewport = Mengine.getGameViewport()
-        game_width = viewport.end.x - viewport.begin.x
-        game_height = viewport.end.y - viewport.begin.y
-        x_center = viewport.begin.x + game_width / 2
-        y_center = viewport.begin.y + game_height / 2
+        game_viewport = Mengine.getGameViewport()
+        game_width = game_viewport.end.x - game_viewport.begin.x
+        game_height = game_viewport.end.y - game_viewport.begin.y
+        game_center_x = game_viewport.begin.x + game_width / 2
+
+        search_panel_size = self.search_panel.getSize()
+        # Rework pos_y with SETTINGS json
+        pos_y = game_viewport.begin.y + game_height / 2
+        # pos_y = game_viewport.begin.y + game_height / 2 - search_panel_size.y / 2
 
         search_level_slot = self.content.getMovieSlot(SLOT_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
+        search_level_slot.setWorldPosition(Mengine.vec2f(game_center_x, pos_y))
 
         self.search_level.attachTo(search_level_slot)
+
+        search_level_root = self.search_level.getRoot()
+        search_level_root.setLocalPosition(Mengine.vec2f(-game_center_x, -pos_y))
 
     def _initSearchPanel(self):
         self.search_panel = SearchPanel()
         self.search_panel.onInitialize(self)
-
-        self._attachSearchPanel()
 
     def _attachSearchPanel(self):
         # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
@@ -60,12 +69,11 @@ class GameArea(BaseEntity):
         x_center = viewport.begin.x + game_width / 2
 
         search_panel_size = self.search_panel.getSize()
+        # Rework pos_y with SETTINGS json
+        pos_y = game_height - search_panel_size.y / 2
 
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
-        search_panel_slot.setWorldPosition(Mengine.vec2f(
-            x_center,
-            game_height - search_panel_size.y/2
-        ))
+        search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
 
         self.search_panel.attachTo(search_panel_slot)
 
@@ -115,12 +123,6 @@ class GameArea(BaseEntity):
                     scene.addTask("TaskItemPick", Item=item)
                     scene.addFunction(self.search_level.items.remove, item)
                     panel.addFunction(self.search_panel.removeItem, item)
-
-        # with self._createTaskChain("Test") as tc:
-        #     tc.addDelay(2000)
-        #     tc.addPrint("disable interactive for {}".format(self.items[0].getName()))
-        #     tc.addPrint("{}".format(self.items[0].getInteractive()))
-        #     tc.addFunction(self.items[0].setInteractive, False)
 
         def _changeItemColor(_item):
             def _cb(_, __, ___):
