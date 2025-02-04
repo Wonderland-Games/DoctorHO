@@ -122,7 +122,7 @@ class GameArea(BaseEntity):
                 with race.addParallelTask(2) as (scene, panel):
                     scene.addTask("TaskItemPick", Item=item)
                     scene.addFunction(self.search_level.items.remove, item)
-                    panel.addFunction(self.search_panel.removeItem, item)
+                    panel.addScope(self.search_panel.removeItem, item)
 
         def _changeItemColor(_item):
             def _cb(_, __, ___):

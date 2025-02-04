@@ -188,7 +188,7 @@ class SearchPanel(Initializer):
     def getAvailableItems(self):
         return self.available_items
 
-    def removeItem(self, item_obj):
+    def removeItem(self, source, item_obj):
         removing_item = None
 
         # finalize removing item
@@ -201,29 +201,45 @@ class SearchPanel(Initializer):
             # self.items.remove(item)
             break
 
+        items_before = list(self.items[:self.items.index(removing_item)])
         items_after = list(self.items[self.items.index(removing_item) + 1:])
+
+        # print("Items to the right:", [item.item_obj.getName() for item in items_after])
+        # print("Items to the left:", [item.item_obj.getName() for item in items_before])
+        print(len(items_before), "Item", len(items_after))
+
         self.items.remove(removing_item)
 
-        # remove items from right to left
-        for item in items_after:
-            item_size = item.getSize()
-            item_pos = item.getRoot().getLocalPosition()
-            item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
+        # # remove items from right to left
+        # for item in items_after:
+        #     item_size = item.getSize()
+        #     item_pos = item.getRoot().getLocalPosition()
+        #     item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
 
         # re-calculate VA content size
-        content_size_x = 0
-        for item in self.items:
-            item_size = item.getSize()
-            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
+        def _calcVAContentSize():
+            content_size_x = 0
+            for item in self.items:
+                item_size = item.getSize()
+                content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
 
-        content_size_x -= ITEMS_OFFSET_BETWEEN
-        panel_size = self.getSize()
-        if content_size_x <= panel_size.x:
-            self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
-        else:
-            self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+            content_size_x -= ITEMS_OFFSET_BETWEEN
+            panel_size = self.getSize()
+            if content_size_x <= panel_size.x:
+                self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+            else:
+                self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
+        _calcVAContentSize()
         self._updateAvailableItems()
+
+        for (i, item), tc in source.addParallelTaskList(enumerate(items_after)):
+            tc.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=250.0, To=Mengine.vec3f(
+                (item.getRoot().getLocalPosition().x - (item.getSize().x + ITEMS_OFFSET_BETWEEN)),
+                item.getRoot().getLocalPosition().y, item.getRoot().getLocalPosition().z))
+
+        source.addFunction(_calcVAContentSize)
+        source.addFunction(self._updateAvailableItems)
 
     def _createTaskChain(self, name, **params):
         tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)
