@@ -116,13 +116,17 @@ class GameArea(BaseEntity):
             return result
 
         with self._createTaskChain("PickItems", Repeat=True) as tc:
-            for item, race in tc.addRaceTaskList(self.search_level.items):
-                race.addTask("TaskItemClick", Item=item, Filter=_checkItem)
-                race.addPrint(item.getName())
-                with race.addParallelTask(2) as (scene, panel):
-                    scene.addTask("TaskItemPick", Item=item)
-                    scene.addFunction(self.search_level.items.remove, item)
-                    panel.addScope(self.search_panel.removeItem, item)
+            for item, parallel in tc.addParallelTaskList(self.search_level.items):
+                parallel.addTask("TaskItemClick", Item=item, Filter=_checkItem)
+                parallel.addPrint(item.getName())
+                # with race.addParallelTask(2) as (scene, panel):
+                #     scene.addTask("TaskItemPick", Item=item)
+                #     scene.addFunction(self.search_level.items.remove, item)
+                #     panel.addScope(self.search_panel.removeItem, item)
+
+                parallel.addFunction(self.search_level.items.remove, item)
+                parallel.addScope(self._moveSceneItemToPanelItem, item)
+                parallel.addScope(self.search_panel.removeItem, item)
 
         def _changeItemColor(_item):
             def _cb(_, __, ___):
@@ -136,3 +140,52 @@ class GameArea(BaseEntity):
             tc.addListener(Notificator.onSettingChange)
             for item, parallel in tc.addParallelTaskList(self.search_level.items):
                 parallel.addFunction(_changeItemColor, item)
+
+    def _moveSceneItemToPanelItem(self, source, scene_item):
+        # get scene item node with position data
+        scene_item_node = scene_item.getEntityNode()
+        scene_item_node_pos = scene_item_node.getWorldPosition()
+        scene_item_node_center = scene_item.getEntity().getSpriteCenter()
+        scene_item_node_pos_true = Mengine.vec2f(scene_item_node_pos.x + scene_item_node_center[0],
+                                                 scene_item_node_pos.y + scene_item_node_center[1])
+
+        # create attach node
+        attach_node = Mengine.createNode("Interender")
+        attach_node.setName("Temp")
+
+        # attach scene item to attach node with position fix
+        self.addChild(attach_node)
+        attach_node.addChild(scene_item_node)
+        attach_node.setWorldPosition(scene_item_node_pos_true)
+        scene_item_node.setLocalPosition(Mengine.vec2f(-scene_item_node_center[0], -scene_item_node_center[1]))
+
+        # find panel item by object
+        panel_item = None
+        for item in self.search_panel.items:
+            if item.item_obj is not scene_item:
+                continue
+
+            panel_item = item
+            break
+
+        panel_item_node = panel_item.getRoot()
+        panel_item_scale = panel_item.getSpriteScale()
+        panel_item_node_pos = panel_item.getRootWorldPosition()
+
+        def _destroyAttachNode(node):
+            if node is not None:
+                node.destroyChildren()
+                node.removeFromParent()
+                Mengine.destroyNode(node)
+
+        scene_item_name = scene_item.getName()
+        scene_item_group = scene_item.getGroup()
+        scene_item_group_name = scene_item_group.getName()
+
+        source.addPrint("START MOVING")
+        with source.addParallelTask(2) as (scale, move):
+            scale.addTask("TaskNodeScaleTo", Node=attach_node, Easing="easyBackOut", To=panel_item_scale, Time=1000.0)
+            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing="easyCubicIn", From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
+        # source.addTask("TaskNodeBezier2Follow", Node=attach_node, From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
+        source.addPrint("END MOVING")
+        source.addFunction(_destroyAttachNode, attach_node)

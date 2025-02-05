@@ -52,6 +52,28 @@ class Item(Initializer):
     def getRoot(self):
         return self.root
 
+    def getRootWorldPosition(self):
+        node_screen_position = Mengine.getNodeScreenPosition(self.root)
+        print("PANEL ITEM SCREEN POSITION: {}".format(node_screen_position))
+
+        viewport = Mengine.getGameViewport()
+        game_width = viewport.end.x - viewport.begin.x
+        game_height = viewport.end.y - viewport.begin.y
+
+        print(viewport)
+        print(game_width, game_height)
+
+        panel_pos = self.game.search_panel.getRoot().getWorldPosition()
+        panel_size = self.game.search_panel.getSize()
+
+        world_position_x = viewport.begin.x + game_width * node_screen_position.x
+        world_position_y = (panel_pos.y - panel_size.y) + panel_size.y * node_screen_position.y
+        world_position = Mengine.vec2f(world_position_x, world_position_y)
+
+        print("WORLD POSITION: {}".format(world_position))
+
+        return world_position
+
     def attachTo(self, node):
         self.root.removeFromParent()
         node.addChild(self.root)
@@ -86,6 +108,9 @@ class Item(Initializer):
 
         scale_perc = box_size_max/sprite_size_max
         self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
+
+    def getSpriteScale(self):
+        return self.sprite.getScale()
 
     def _positionSprite(self):
         sprite_scale = self.sprite.getScale()
