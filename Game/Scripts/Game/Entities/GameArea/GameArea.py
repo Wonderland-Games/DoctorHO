@@ -142,12 +142,18 @@ class GameArea(BaseEntity):
                 parallel.addFunction(_changeItemColor, item)
 
     def _moveSceneItemToPanelItem(self, source, scene_item):
+        # generate scene item pure sprite
+        item_entity = scene_item.getEntity()
+        item_pure = item_entity.generatePure()
+        item_pure.enable()
+
         # get scene item node with position data
         scene_item_node = scene_item.getEntityNode()
         scene_item_node_pos = scene_item_node.getWorldPosition()
         scene_item_node_center = scene_item.getEntity().getSpriteCenter()
         scene_item_node_pos_true = Mengine.vec2f(scene_item_node_pos.x + scene_item_node_center[0],
                                                  scene_item_node_pos.y + scene_item_node_center[1])
+        pos_from = scene_item_node_pos_true
 
         # create attach node
         attach_node = Mengine.createNode("Interender")
@@ -155,9 +161,9 @@ class GameArea(BaseEntity):
 
         # attach scene item to attach node with position fix
         self.addChild(attach_node)
-        attach_node.addChild(scene_item_node)
+        attach_node.addChild(item_pure)
         attach_node.setWorldPosition(scene_item_node_pos_true)
-        scene_item_node.setLocalPosition(Mengine.vec2f(-scene_item_node_center[0], -scene_item_node_center[1]))
+        item_pure.setLocalPosition(Mengine.vec2f(-scene_item_node_center[0], -scene_item_node_center[1]))
 
         # find panel item by object
         panel_item = None
@@ -171,21 +177,22 @@ class GameArea(BaseEntity):
         panel_item_node = panel_item.getRoot()
         panel_item_scale = panel_item.getSpriteScale()
         panel_item_node_pos = panel_item.getRootWorldPosition()
+        pos_to = panel_item_node_pos
 
-        def _destroyAttachNode(node):
-            if node is not None:
-                node.destroyChildren()
-                node.removeFromParent()
-                Mengine.destroyNode(node)
-
-        scene_item_name = scene_item.getName()
-        scene_item_group = scene_item.getGroup()
-        scene_item_group_name = scene_item_group.getName()
+        # destroy scene item object
+        # scene_item.onDestroy()
+        scene_item.setEnable(False)
 
         source.addPrint("START MOVING")
+
         with source.addParallelTask(2) as (scale, move):
             scale.addTask("TaskNodeScaleTo", Node=attach_node, Easing="easyBackOut", To=panel_item_scale, Time=1000.0)
-            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing="easyCubicIn", From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
+            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing="easyCubicIn", From=pos_from, To=pos_to, Time=1000.0)
         # source.addTask("TaskNodeBezier2Follow", Node=attach_node, From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
+
         source.addPrint("END MOVING")
-        source.addFunction(_destroyAttachNode, attach_node)
+
+        source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
+        source.addTask("TaskNodeDestroy", Node=item_pure)
+        source.addTask("TaskNodeRemoveFromParent", Node=attach_node)
+        source.addTask("TaskNodeDestroy", Node=attach_node)
