@@ -141,6 +141,9 @@ class SearchPanel(Initializer):
         self.root.removeFromParent()
         node.addChild(self.root)
 
+    def getRoot(self):
+        return self.root
+
     def getSize(self):
         panel_bounds = self.movie_panel.getCompositionBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
