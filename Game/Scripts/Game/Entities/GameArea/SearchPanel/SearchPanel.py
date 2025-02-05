@@ -1,12 +1,13 @@
 from Foundation.Initializer import Initializer
-from Foundation.TaskManager import TaskManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
 PANEL_VA = "virtual_area"
-ITEMS_OFFSET_BETWEEN = 100.0
+ITEMS_OFFSET_BETWEEN = 50.0
+ITEMS_MOVE_TIME = 250.0
+ITEMS_MOVE_EASING = "easyBackOut"   # easyBackOut, easyBounceOut
 
 
 class SearchPanel(Initializer):
@@ -16,7 +17,6 @@ class SearchPanel(Initializer):
         self.virtual_area = None
         self.root = None
         self.movie_panel = None
-        self.tcs = []
         self.items = []
         self.available_items = []
         self.items_node = None
@@ -33,24 +33,20 @@ class SearchPanel(Initializer):
         self._initItems()
 
         self._setupVirtualArea()
+        self._calcVirtualAreaContentSize()
 
-        self._setBordersRange()
+        self._setItemsRange()
         self._updateAvailableItems()
-        return True
 
-    def _onActivate(self):
-        self.root.enable()
-        self._runTaskChains()
+        # always set VA to the middle of items
+        self.virtual_area.set_percentage(0.5, 0.0)
+        return True
 
     def _onFinalize(self):
         self.movie_panel = None
         self.items_range = None
         self.available_items = []
         self.print_available_items = True
-
-        for tc in self.tcs:
-            tc.cancel()
-        self.tcs = []
 
         for item in self.items:
             item.onFinalize()
@@ -81,7 +77,6 @@ class SearchPanel(Initializer):
         panel_size = self.getSize()
 
         self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
-        # self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
 
         self.virtual_area._socket.setDefaultHandle(False)
 
@@ -97,16 +92,28 @@ class SearchPanel(Initializer):
         self.virtual_area.on_drag += self._cbVirtualAreaDrag
         self.virtual_area.on_drag_end += self._cbVirtualAreaDragEnd
 
+    def _calcVirtualAreaContentSize(self):
+        content_size_x = 0
+
+        for item in self.items:
+            item_size = item.getSize()
+            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
+        content_size_x -= ITEMS_OFFSET_BETWEEN
+
+        panel_size = self.getSize()
+        if content_size_x <= panel_size.x:
+            self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+        else:
+            self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+
     def _cbVirtualAreaDragStart(self):
         self.print_available_items = False
-        pass
 
     def _cbVirtualAreaDrag(self, x, y):
         self._updateAvailableItems()
 
     def _cbVirtualAreaDragEnd(self):
         self.print_available_items = True
-        pass
 
     def _updateAvailableItems(self):
         for item in self.items:
@@ -144,32 +151,31 @@ class SearchPanel(Initializer):
         self.root.addChild(movie_panel_node)
 
     def _initItems(self):
+        # create items node
         self.items_node = Mengine.createNode("Interender")
         self.items_node.setName("Items")
-
         self.virtual_area.add_node(self.items_node)
 
-        panel_size = self.getSize()
-        self.items_node.setLocalPosition(Mengine.vec2f(0, panel_size.y / 2))
-
-        content_size_x = 0
-
+        # init items
         for i, item_obj in enumerate(self.game.search_level.items):
             item = Item()
             item.onInitialize(self.game, item_obj)
             item.attachTo(self.items_node)
-            item_size = item.getSize()
-            item.setLocalPositionX(item_size.x / 2 + item_size.x * i + ITEMS_OFFSET_BETWEEN * i)
-            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
             self.items.append(item)
 
-        content_size_x -= ITEMS_OFFSET_BETWEEN
-        if content_size_x <= panel_size.x:
-            self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
-        else:
-            self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+        # calculate items_node local position (middle)
+        item_size = self.items[0].getSize()
+        panel_size = self.getSize()
+        items_count = len(self.game.search_level.items)
 
-    def _setBordersRange(self):
+        items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
+        self.items_node.setLocalPosition(Mengine.vec2f(items_node_pos_x, panel_size.y / 2))
+
+        # set items local position
+        for i, item in enumerate(self.items):
+            item.setLocalPositionX(-items_node_pos_x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i)
+
+    def _setItemsRange(self):
         panel_size = self.getSize()
 
         border_node = Mengine.createNode("Interender")
@@ -183,6 +189,7 @@ class SearchPanel(Initializer):
 
         self.items_range = Mengine.vec2f(range_left.x, range_right.x)
 
+        border_node.removeFromParent()
         Mengine.destroyNode(border_node)
 
     def getAvailableItems(self):
@@ -204,8 +211,9 @@ class SearchPanel(Initializer):
         items_before = list(self.items[:self.items.index(removing_item)])
         items_after = list(self.items[self.items.index(removing_item) + 1:])
 
-        # print("Items to the right:", [item.item_obj.getName() for item in items_after])
-        # print("Items to the left:", [item.item_obj.getName() for item in items_before])
+        items_before_len = len(items_before)
+        items_after_len = len(items_after)
+
         print(len(items_before), "Item", len(items_after))
 
         self.items.remove(removing_item)
@@ -216,35 +224,24 @@ class SearchPanel(Initializer):
         #     item_pos = item.getRoot().getLocalPosition()
         #     item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
 
-        # re-calculate VA content size
-        def _calcVAContentSize():
-            content_size_x = 0
-            for item in self.items:
-                item_size = item.getSize()
-                content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
+        # _calcVAContentSize()
+        # self._updateAvailableItems()
 
-            content_size_x -= ITEMS_OFFSET_BETWEEN
-            panel_size = self.getSize()
-            if content_size_x <= panel_size.x:
-                self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
-            else:
-                self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+        # move
+        def setItemsToMove(items_before, items_after):
+            if items_after_len > items_before_len:
+                items_to_move = items_after
+            elif items_before_len > items_after_len:
+                items_to_move = items_before
+            elif items_before_len == items_after_len:
+                items_to_move = items_after
 
-        _calcVAContentSize()
-        self._updateAvailableItems()
+        items_to_move = []
 
         for (i, item), tc in source.addParallelTaskList(enumerate(items_after)):
-            tc.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=250.0, To=Mengine.vec3f(
+            tc.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=Mengine.vec3f(
                 (item.getRoot().getLocalPosition().x - (item.getSize().x + ITEMS_OFFSET_BETWEEN)),
                 item.getRoot().getLocalPosition().y, item.getRoot().getLocalPosition().z))
 
-        source.addFunction(_calcVAContentSize)
+        source.addFunction(self._calcVirtualAreaContentSize)
         source.addFunction(self._updateAvailableItems)
-
-    def _createTaskChain(self, name, **params):
-        tc = TaskManager.createTaskChain(Name=self.__class__.__name__+"_"+name, **params)
-        self.tcs.append(tc)
-        return tc
-
-    def _runTaskChains(self):
-        pass
