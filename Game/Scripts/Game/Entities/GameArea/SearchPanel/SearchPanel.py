@@ -5,8 +5,9 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 
 MOVIE_PANEL = "Movie2_SearchPanel"
 PANEL_VA = "virtual_area"
-ITEMS_OFFSET_BETWEEN = 50.0
+ITEMS_OFFSET_BETWEEN = 100.0
 ITEMS_MOVE_TIME = 250.0
+ITEMS_NODE_MOVE_TIME = 350.0
 ITEMS_MOVE_EASING = "easyBackOut"   # easyBackOut, easyBounceOut
 
 
@@ -35,7 +36,7 @@ class SearchPanel(Initializer):
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
 
-        self._setItemsRange()
+        self._calcItemsRange()
         self._updateAvailableItems()
 
         # always set VA to the middle of items
@@ -166,7 +167,7 @@ class SearchPanel(Initializer):
         # calculate items_node local position (middle)
         item_size = self.items[0].getSize()
         panel_size = self.getSize()
-        items_count = len(self.game.search_level.items)
+        items_count = len(self.items)
 
         items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
         self.items_node.setLocalPosition(Mengine.vec2f(items_node_pos_x, panel_size.y / 2))
@@ -175,7 +176,7 @@ class SearchPanel(Initializer):
         for i, item in enumerate(self.items):
             item.setLocalPositionX(-items_node_pos_x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i)
 
-    def _setItemsRange(self):
+    def _calcItemsRange(self):
         panel_size = self.getSize()
 
         border_node = Mengine.createNode("Interender")
@@ -196,52 +197,67 @@ class SearchPanel(Initializer):
         return self.available_items
 
     def removeItem(self, source, item_obj):
-        removing_item = None
-
-        # finalize removing item
+        # find item by object
+        item_to_remove = None
         for item in self.items:
             if item.item_obj is not item_obj:
                 continue
 
-            removing_item = item
-            item.onFinalize()
-            # self.items.remove(item)
+            item_to_remove = item
             break
 
-        items_before = list(self.items[:self.items.index(removing_item)])
-        items_after = list(self.items[self.items.index(removing_item) + 1:])
+        # get info about items to the sides
+        items_before = list(self.items[:self.items.index(item_to_remove)])
+        items_after = list(self.items[self.items.index(item_to_remove) + 1:])
+        items_before_len, items_after_len = len(items_before), len(items_after)
 
-        items_before_len = len(items_before)
-        items_after_len = len(items_after)
+        # remove item
+        item_to_remove.onFinalize()
+        self.items.remove(item_to_remove)
 
-        print(len(items_before), "Item", len(items_after))
+        # move items in parallel with condition of sides
+        items_node_pos = self.items_node.getLocalPosition()
 
-        self.items.remove(removing_item)
+        for item, tc in source.addParallelTaskList(self.items):
+            item_size = item.getSize()
+            item_pos = item.getRoot().getLocalPosition()
 
-        # # remove items from right to left
-        # for item in items_after:
-        #     item_size = item.getSize()
-        #     item_pos = item.getRoot().getLocalPosition()
-        #     item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
+            if items_before_len > items_after_len:
+                if item not in items_before:
+                    continue
 
-        # _calcVAContentSize()
-        # self._updateAvailableItems()
+                # item.setLocalPositionX(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN))
+                item_move_pos = Mengine.vec2f(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN), item_pos.y)
+                items_node_pos_new = Mengine.vec2f(items_node_pos.x - item_size.x - ITEMS_OFFSET_BETWEEN,
+                                                   items_node_pos.y)
 
-        # move
-        def setItemsToMove(items_before, items_after):
-            if items_after_len > items_before_len:
-                items_to_move = items_after
-            elif items_before_len > items_after_len:
-                items_to_move = items_before
+            elif items_before_len < items_after_len:
+                if item not in items_after:
+                    continue
+
+                # item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
+                item_move_pos = Mengine.vec2f(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN), item_pos.y)
+                items_node_pos_new = items_node_pos
+
             elif items_before_len == items_after_len:
-                items_to_move = items_after
+                if item in items_before:
+                    # item.setLocalPositionX(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN) / 2)
+                    item_move_pos = Mengine.vec2f(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN) / 2, item_pos.y)
 
-        items_to_move = []
+                    items_node_pos_new = Mengine.vec2f(items_node_pos.x + item_size.x / 2 - ITEMS_OFFSET_BETWEEN / 2,
+                                                       items_node_pos.y)
 
-        for (i, item), tc in source.addParallelTaskList(enumerate(items_after)):
-            tc.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=Mengine.vec3f(
-                (item.getRoot().getLocalPosition().x - (item.getSize().x + ITEMS_OFFSET_BETWEEN)),
-                item.getRoot().getLocalPosition().y, item.getRoot().getLocalPosition().z))
+                elif item in items_after:
+                    # item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN) / 2)
+                    item_move_pos = Mengine.vec2f(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN) / 2, item_pos.y)
 
-        source.addFunction(self._calcVirtualAreaContentSize)
-        source.addFunction(self._updateAvailableItems)
+                    items_node_pos_new = Mengine.vec2f(items_node_pos.x - item_size.x / 2 - ITEMS_OFFSET_BETWEEN / 2,
+                                                       items_node_pos.y)
+
+            tc.addFunction(self._calcVirtualAreaContentSize)
+
+            with tc.addParallelTask(2) as(tc_item, tc_items_node):
+                tc_item.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_move_pos)
+                tc_items_node.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos_new)
+
+            tc.addFunction(self._updateAvailableItems)
