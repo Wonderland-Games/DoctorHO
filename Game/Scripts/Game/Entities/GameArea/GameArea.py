@@ -8,6 +8,11 @@ MOVIE_CONTENT = "Movie2_Content"
 SLOT_LEVEL = "level"
 SLOT_SEARCH_PANEL = "search_panel"
 
+SCENE_ITEM_MOVE_EASING = "easyCubicIn"
+SCENE_ITEM_MOVE_TIME = 1000.0
+SCENE_ITEM_SCALE_EASING = "easyBackOut"
+SCENE_ITEM_SCALE_TIME = 1000.0
+
 
 class GameArea(BaseEntity):
     def __init__(self):
@@ -174,7 +179,6 @@ class GameArea(BaseEntity):
             panel_item = item
             break
 
-        panel_item_node = panel_item.getRoot()
         panel_item_scale = panel_item.getSpriteScale()
         panel_item_node_pos = panel_item.getRootWorldPosition()
         pos_to = panel_item_node_pos
@@ -186,8 +190,8 @@ class GameArea(BaseEntity):
         source.addPrint("START MOVING")
 
         with source.addParallelTask(2) as (scale, move):
-            scale.addTask("TaskNodeScaleTo", Node=attach_node, Easing="easyBackOut", To=panel_item_scale, Time=1000.0)
-            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing="easyCubicIn", From=pos_from, To=pos_to, Time=1000.0)
+            scale.addTask("TaskNodeScaleTo", Node=attach_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale, Time=SCENE_ITEM_SCALE_TIME)
+            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing=SCENE_ITEM_MOVE_EASING, From=pos_from, To=pos_to, Time=SCENE_ITEM_MOVE_TIME)
         # source.addTask("TaskNodeBezier2Follow", Node=attach_node, From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
 
         source.addPrint("END MOVING")
