@@ -5,10 +5,11 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 
 MOVIE_PANEL = "Movie2_SearchPanel"
 PANEL_VA = "virtual_area"
-ITEMS_OFFSET_BETWEEN = 100.0
-ITEMS_MOVE_TIME = 250.0
+ITEMS_OFFSET_BETWEEN = 25.0
+
 ITEMS_NODE_MOVE_TIME = 350.0
-ITEMS_MOVE_EASING = "easyBackOut"   # easyBackOut, easyBounceOut
+ITEMS_MOVE_TIME = 250.0
+ITEMS_MOVE_EASING = "easyLinear"   # easyBackOut, easyBounceOut,
 
 
 class SearchPanel(Initializer):
@@ -199,7 +200,7 @@ class SearchPanel(Initializer):
     def getAvailableItems(self):
         return self.available_items
 
-    def removeItem(self, source, item_obj):
+    def playRemovePanelItemAnim(self, source, item_obj):
         # find item by object
         item_to_remove = None
         for item in self.items:
@@ -215,12 +216,14 @@ class SearchPanel(Initializer):
         items_before_len, items_after_len = len(items_before), len(items_after)
 
         # remove item
-        item_to_remove.onFinalize()
         self.items.remove(item_to_remove)
-
-        # move items in parallel with condition of sides
         items_node_pos = self.items_node.getLocalPosition()
 
+        # play destroy panel item anim
+        source.addScope(item_to_remove.playItemDestroyAnim)
+        source.addFunction(item_to_remove.onFinalize)
+
+        # move items in parallel with condition of sides
         for item, tc in source.addParallelTaskList(self.items):
             item_size = item.getSize()
             item_pos = item.getRoot().getLocalPosition()
