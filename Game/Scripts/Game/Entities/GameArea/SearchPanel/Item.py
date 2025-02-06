@@ -2,6 +2,14 @@ from Foundation.Initializer import Initializer
 
 
 MOVIE_BOX = "Movie2_ItemBox"
+ITEM_SCALE_MULTIPLIER = 0.8
+
+ITEM_REMOVE_SCALE_UP_TO = Mengine.vec3f(1.15, 1.15, 1.15)
+ITEM_REMOVE_SCALE_UP_TIME = 100.0
+ITEM_REMOVE_SCALE_DOWN_TO = Mengine.vec3f(0.0, 0.0, 0.0)
+ITEM_REMOVE_SCALE_DOWN_TIME = 200.0
+ITEM_REMOVE_ALPHA_TO = 0.0
+ITEM_REMOVE_ALPHA_TIME = 150.0
 
 
 class Item(Initializer):
@@ -10,6 +18,7 @@ class Item(Initializer):
         self.root = None
         self.game = None
         self.item_obj = None
+        self.sprite_node = None
         self.sprite = None
         self.box = None
 
@@ -22,6 +31,7 @@ class Item(Initializer):
 
         self._createBox()
 
+        self._createSpriteNode()
         self._createSprite()
         self._scaleSprite()
         self._positionSprite()
@@ -34,6 +44,11 @@ class Item(Initializer):
             self.sprite.removeFromParent()
             Mengine.destroyNode(self.sprite)
             self.sprite = None
+
+        if self.sprite_node is not None:
+            self.sprite_node.removeFromParent()
+            Mengine.destroyNode(self.sprite_node)
+            self.sprite_node = None
 
         if self.box is not None:
             self.box.getEntityNode().removeFromParent()
@@ -82,9 +97,14 @@ class Item(Initializer):
         box_size = Utils.getBoundingBoxSize(box_bounds)
         return box_size
 
+    def _createSpriteNode(self):
+        self.sprite_node = Mengine.createNode("Interender")
+        self.sprite_node.setName("SpriteNode")
+        self.root.addChild(self.sprite_node)
+
     def _createSprite(self):
         self.sprite = self.item_obj.getEntity().generatePure()
-        self.root.addChild(self.sprite)
+        self.sprite_node.addChild(self.sprite)
 
     def _scaleSprite(self):
         if self.box is None:
@@ -96,7 +116,7 @@ class Item(Initializer):
         sprite_size = self.sprite.getSurfaceSize()
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
-        scale_perc = box_size_max/sprite_size_max
+        scale_perc = (box_size_max/sprite_size_max) * ITEM_SCALE_MULTIPLIER
         self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
 
     def getSpriteScale(self):
@@ -108,3 +128,14 @@ class Item(Initializer):
         sprite_size_scaled = Mengine.vec2f(sprite_size_base.x * sprite_scale.x, sprite_size_base.y * sprite_scale.y)
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
         self.sprite.setLocalPosition(sprite_position)
+
+    def playItemDestroyAnim(self, source):
+        source.addPrint("START REMOVE ITEM ANIM")
+
+        source.addTask("TaskNodeScaleTo", Node=self.sprite_node, To=ITEM_REMOVE_SCALE_UP_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
+
+        with source.addParallelTask(2) as (scale, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=self.root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
+            alpha.addTask("TaskNodeAlphaTo", Node=self.root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
+
+        source.addPrint("END REMOVE ITEM ANIM")

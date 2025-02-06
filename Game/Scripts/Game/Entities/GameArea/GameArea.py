@@ -110,43 +110,44 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        def _checkItem(item_obj):
-            available_items = self.search_panel.getAvailableItems()
-
-            result = False
-            for available_item in available_items:
-                if available_item.item_obj == item_obj:
-                    result = True
-
-            return result
-
+        # search items in scene logic
         with self._createTaskChain("PickItems", Repeat=True) as tc:
             for item, parallel in tc.addParallelTaskList(self.search_level.items):
-                parallel.addTask("TaskItemClick", Item=item, Filter=_checkItem)
+                parallel.addTask("TaskItemClick", Item=item, Filter=self._filterItemClick)
                 parallel.addPrint(item.getName())
-                # with race.addParallelTask(2) as (scene, panel):
-                #     scene.addTask("TaskItemPick", Item=item)
-                #     scene.addFunction(self.search_level.items.remove, item)
-                #     panel.addScope(self.search_panel.removeItem, item)
-
                 parallel.addFunction(self.search_level.items.remove, item)
-                parallel.addScope(self._moveSceneItemToPanelItem, item)
-                parallel.addScope(self.search_panel.removeItem, item)
+                parallel.addScope(self._playMoveSceneItemToPanelItem, item)
+                parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
 
-        def _changeItemColor(_item):
-            def _cb(_, __, ___):
-                pass
-
-            color = SETTINGS.Test.color
-            sprite = _item.getEntity().getSprite()
-            sprite.colorTo(1, color, "easyLinear", _cb)
-
+        # TEST SETTINGS FEATURE
         with self._createTaskChain("TestColorSettings", Repeat=True) as tc:
             tc.addListener(Notificator.onSettingChange)
             for item, parallel in tc.addParallelTaskList(self.search_level.items):
-                parallel.addFunction(_changeItemColor, item)
+                parallel.addFunction(self._changeItemColor, item)
 
-    def _moveSceneItemToPanelItem(self, source, scene_item):
+    def _filterItemClick(self, scene_item):
+        result = False
+
+        available_items = self.search_panel.getAvailableItems()
+        if len(available_items) is 0:
+            return result
+
+        for panel_item in available_items:
+            if panel_item.item_obj is scene_item:
+                result = True
+                break
+
+        return result
+
+    def _changeItemColor(self, item):
+        def cb(_, __, ___):
+            pass
+
+        color = SETTINGS.Test.color
+        sprite = item.getEntity().getSprite()
+        sprite.colorTo(500.0, color, "easyLinear", cb)
+
+    def _playMoveSceneItemToPanelItem(self, source, scene_item):
         # generate scene item pure sprite
         item_entity = scene_item.getEntity()
         item_pure = item_entity.generatePure()
@@ -158,16 +159,15 @@ class GameArea(BaseEntity):
         scene_item_node_center = scene_item.getEntity().getSpriteCenter()
         scene_item_node_pos_true = Mengine.vec2f(scene_item_node_pos.x + scene_item_node_center[0],
                                                  scene_item_node_pos.y + scene_item_node_center[1])
-        pos_from = scene_item_node_pos_true
 
         # create attach node
-        attach_node = Mengine.createNode("Interender")
-        attach_node.setName("Temp")
+        moving_node = Mengine.createNode("Interender")
+        moving_node.setName("Temp")
 
         # attach scene item to attach node with position fix
-        self.addChild(attach_node)
-        attach_node.addChild(item_pure)
-        attach_node.setWorldPosition(scene_item_node_pos_true)
+        self.addChild(moving_node)
+        moving_node.addChild(item_pure)
+        moving_node.setWorldPosition(scene_item_node_pos_true)
         item_pure.setLocalPosition(Mengine.vec2f(-scene_item_node_center[0], -scene_item_node_center[1]))
 
         # find panel item by object
@@ -179,24 +179,26 @@ class GameArea(BaseEntity):
             panel_item = item
             break
 
+        # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
-        panel_item_node_pos = panel_item.getRootWorldPosition()
-        pos_to = panel_item_node_pos
+        pos_from = scene_item_node_pos_true
+        pos_to = panel_item.getRootWorldPosition()
 
-        # destroy scene item object
-        # scene_item.onDestroy()
-        scene_item.setEnable(False)
+        # destroy/disable scene item and run move animation
+        source.addFunction(scene_item.setEnable, False)
+        # source.addFunction(scene_item.onDestroy)
 
-        source.addPrint("START MOVING")
+        source.addPrint("START SCENE ITEM ANIM")
 
         with source.addParallelTask(2) as (scale, move):
-            scale.addTask("TaskNodeScaleTo", Node=attach_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale, Time=SCENE_ITEM_SCALE_TIME)
-            move.addTask("TaskNodeBezier2To", Node=attach_node, Easing=SCENE_ITEM_MOVE_EASING, From=pos_from, To=pos_to, Time=SCENE_ITEM_MOVE_TIME)
-        # source.addTask("TaskNodeBezier2Follow", Node=attach_node, From=scene_item_node_pos_true, To=panel_item_node_pos, Time=1000.0)
+            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
+                          Time=SCENE_ITEM_SCALE_TIME)
+            move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, From=pos_from, To=pos_to,
+                         Time=SCENE_ITEM_MOVE_TIME)
 
-        source.addPrint("END MOVING")
+        source.addPrint("END SCENE ITEM ANIM")
 
         source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
         source.addTask("TaskNodeDestroy", Node=item_pure)
-        source.addTask("TaskNodeRemoveFromParent", Node=attach_node)
-        source.addTask("TaskNodeDestroy", Node=attach_node)
+        source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
+        source.addTask("TaskNodeDestroy", Node=moving_node)
