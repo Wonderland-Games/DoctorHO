@@ -24,6 +24,7 @@ class SearchPanel(Initializer):
         self.items_node = None
         self.items_range = None
         self.print_available_items = True
+        self.semaphore_allow_panel_items_move = None
 
     def _onInitialize(self, game):
         self.game = game
@@ -40,15 +41,17 @@ class SearchPanel(Initializer):
         self._calcItemsRange()
         self._updateAvailableItems()
 
-        # always set VA to the middle of items
-        self.virtual_area.set_percentage(0.5, 0.0)
+        self.print_available_items = True
+        self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
+        self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
         return True
 
     def _onFinalize(self):
         self.movie_panel = None
         self.items_range = None
         self.available_items = []
-        self.print_available_items = True
+        self.print_available_items = None
+        self.semaphore_allow_panel_items_move = None
 
         for item in self.items:
             item.onFinalize()
@@ -223,6 +226,9 @@ class SearchPanel(Initializer):
         source.addScope(item_to_remove.playItemDestroyAnim)
         source.addFunction(item_to_remove.onFinalize)
 
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
+        source.addPrint("- START ITEMS MOVING LOGIC")
+
         # move items in parallel with condition of sides
         for item, tc in source.addParallelTaskList(self.items):
             item_size = item.getSize()
@@ -267,3 +273,6 @@ class SearchPanel(Initializer):
                 tc_items_node.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos_new)
 
             tc.addFunction(self._updateAvailableItems)
+
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
+        source.addPrint("- END ITEMS MOVING LOGIC")
