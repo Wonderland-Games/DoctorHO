@@ -1,6 +1,7 @@
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
+from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
@@ -19,6 +20,7 @@ class SearchPanel(Initializer):
         self.virtual_area = None
         self.root = None
         self.movie_panel = None
+        self.items_counter = None
         self.items = []
         self.available_items = []
         self.items_node = None
@@ -34,6 +36,8 @@ class SearchPanel(Initializer):
         self._createRoot()
         self._attachPanel()
         self._initItems()
+
+        self._setupItemsCounter()
 
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
@@ -52,6 +56,10 @@ class SearchPanel(Initializer):
         self.available_items = []
         self.print_available_items = None
         self.semaphore_allow_panel_items_move = None
+
+        if self.items_counter is not None:
+            self.items_counter.onFinalize()
+            self.items_counter = None
 
         for item in self.items:
             item.onFinalize()
@@ -196,6 +204,15 @@ class SearchPanel(Initializer):
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
 
+    def _setupItemsCounter(self):
+        items_count = len(self.items)
+        self.items_counter = ItemsCounter()
+        self.items_counter.onInitialize(0, items_count)
+
+        panel_size = self.getSize()
+        self.items_counter.attachTo(self.root)
+        self.items_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.75))
+
     def _calcItemsRange(self):
         panel_size = self.getSize()
 
@@ -228,7 +245,9 @@ class SearchPanel(Initializer):
 
         # remove item
         self.items.remove(item_to_remove)
-        items_node_pos = self.items_node.getLocalPosition()
+        self.items_counter.incItemsCount()
+
+        # items_node_pos = self.items_node.getLocalPosition()
 
         # play destroy panel item anim
         source.addScope(item_to_remove.playItemDestroyAnim)

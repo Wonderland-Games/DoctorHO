@@ -26,11 +26,8 @@ class Item(Initializer):
         self.game = game
         self.item_obj = item_obj
 
-        root_name = item_obj.getName()
-        self._createRoot(root_name)
-
+        self._createRoot()
         self._createBox()
-
         self._createSpriteNode()
         self._createSprite()
         self._scaleSprite()
@@ -60,9 +57,10 @@ class Item(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-    def _createRoot(self, name):
+    def _createRoot(self):
         self.root = Mengine.createNode("Interender")
-        self.root.setName(name)
+        root_name = self.item_obj.getName()
+        self.root.setName(root_name)
 
     def getRoot(self):
         return self.root
