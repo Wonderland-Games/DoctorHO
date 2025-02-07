@@ -108,6 +108,7 @@ class SearchLevel(Initializer):
         scene = scene_group.getScene()
         scene_node = scene.getParent()
         self.virtual_area.add_node(scene_node)
+        self.virtual_area.update_target()
 
         scene.enable()
 
