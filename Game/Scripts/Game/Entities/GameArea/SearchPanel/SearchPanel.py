@@ -7,9 +7,9 @@ MOVIE_PANEL = "Movie2_SearchPanel"
 PANEL_VA = "virtual_area"
 ITEMS_OFFSET_BETWEEN = 25.0
 
-ITEMS_NODE_MOVE_TIME = 350.0
-ITEMS_MOVE_TIME = 250.0
-ITEMS_MOVE_EASING = "easyLinear"   # easyBackOut, easyBounceOut,
+ITEMS_NODE_MOVE_TIME = 300.0
+ITEMS_MOVE_TIME = 300.0
+ITEMS_MOVE_EASING = "easyCubicInOut"   # easyLinear, easyBackInOut, easyBackOut, easyBounceOut, easyCubicOut, easyQuartOut
 
 
 class SearchPanel(Initializer):
@@ -171,17 +171,30 @@ class SearchPanel(Initializer):
             item.attachTo(self.items_node)
             self.items.append(item)
 
-        # calculate items_node local position (middle)
-        item_size = self.items[0].getSize()
+        items_node_pos = self._calcItemsNodeLocalPosition(self.items[0])
+        self.items_node.setLocalPosition(items_node_pos)
+
+        # set items local position
+        for i, item in enumerate(self.items):
+            item_pos = self._calcItemLocalPosition(i, item)
+            item.setLocalPositionX(item_pos.x)
+
+    def _calcItemsNodeLocalPosition(self, item):
+        item_size = item.getSize()
         panel_size = self.getSize()
         items_count = len(self.items)
 
         items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
-        self.items_node.setLocalPosition(Mengine.vec2f(items_node_pos_x, panel_size.y / 2))
 
-        # set items local position
-        for i, item in enumerate(self.items):
-            item.setLocalPositionX(-items_node_pos_x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i)
+        items_node_pos = Mengine.vec2f(items_node_pos_x, panel_size.y / 2)
+        return items_node_pos
+
+    def _calcItemLocalPosition(self, i, item):
+        items_node_pos = self._calcItemsNodeLocalPosition(item)
+        item_size = item.getSize()
+
+        item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
+        return item_pos
 
     def _calcItemsRange(self):
         panel_size = self.getSize()
@@ -213,11 +226,6 @@ class SearchPanel(Initializer):
             item_to_remove = item
             break
 
-        # get info about items to the sides
-        items_before = list(self.items[:self.items.index(item_to_remove)])
-        items_after = list(self.items[self.items.index(item_to_remove) + 1:])
-        items_before_len, items_after_len = len(items_before), len(items_after)
-
         # remove item
         self.items.remove(item_to_remove)
         items_node_pos = self.items_node.getLocalPosition()
@@ -226,53 +234,28 @@ class SearchPanel(Initializer):
         source.addScope(item_to_remove.playItemDestroyAnim)
         source.addFunction(item_to_remove.onFinalize)
 
+        # re-calc VA content size
+        source.addFunction(self._calcVirtualAreaContentSize)
+
+        # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
-        source.addPrint("- START ITEMS MOVING LOGIC")
+        source.addPrint("START ITEMS MOVE ANIM")
 
         # move items in parallel with condition of sides
-        for item, tc in source.addParallelTaskList(self.items):
-            item_size = item.getSize()
-            item_pos = item.getRoot().getLocalPosition()
-
-            if items_before_len > items_after_len:
-                if item not in items_before:
-                    continue
-
-                # item.setLocalPositionX(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN))
-                item_move_pos = Mengine.vec2f(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN), item_pos.y)
-                items_node_pos_new = Mengine.vec2f(items_node_pos.x - item_size.x - ITEMS_OFFSET_BETWEEN,
-                                                   items_node_pos.y)
-
-            elif items_before_len < items_after_len:
-                if item not in items_after:
-                    continue
-
-                # item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN))
-                item_move_pos = Mengine.vec2f(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN), item_pos.y)
-                items_node_pos_new = items_node_pos
-
-            elif items_before_len == items_after_len:
-                if item in items_before:
-                    # item.setLocalPositionX(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN) / 2)
-                    item_move_pos = Mengine.vec2f(item_pos.x + (item_size.x + ITEMS_OFFSET_BETWEEN) / 2, item_pos.y)
-
-                    items_node_pos_new = Mengine.vec2f(items_node_pos.x + item_size.x / 2 - ITEMS_OFFSET_BETWEEN / 2,
-                                                       items_node_pos.y)
-
-                elif item in items_after:
-                    # item.setLocalPositionX(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN) / 2)
-                    item_move_pos = Mengine.vec2f(item_pos.x - (item_size.x + ITEMS_OFFSET_BETWEEN) / 2, item_pos.y)
-
-                    items_node_pos_new = Mengine.vec2f(items_node_pos.x - item_size.x / 2 - ITEMS_OFFSET_BETWEEN / 2,
-                                                       items_node_pos.y)
-
-            tc.addFunction(self._calcVirtualAreaContentSize)
+        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
+            items_node_pos = self._calcItemsNodeLocalPosition(item)
+            item_pos = self._calcItemLocalPosition(i, item)
 
             with tc.addParallelTask(2) as(tc_item, tc_items_node):
-                tc_item.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_move_pos)
-                tc_items_node.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos_new)
+                tc_item.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+                with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+                    move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
 
             tc.addFunction(self._updateAvailableItems)
 
+        # fix VA after removing 1 item and moving all items
+        source.addFunction(self.virtual_area.update_target)
+
+        # allow other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
-        source.addPrint("- END ITEMS MOVING LOGIC")
+        source.addPrint("END ITEMS MOVE ANIM")
