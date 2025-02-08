@@ -66,7 +66,7 @@ class Item(Initializer):
         return self.root
 
     def getRootWorldPosition(self):
-        node_screen_position = Mengine.getNodeScreenPosition(self.root)
+        node_screen_position = Mengine.getNodeScreenAdaptPosition(self.root)
 
         panel_pos = self.game.search_panel.getRoot().getWorldPosition()
         panel_size = self.game.search_panel.getSize()

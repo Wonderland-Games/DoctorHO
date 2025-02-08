@@ -1,0 +1,9 @@
+<Pak>
+    <Scripts>
+        <Script Path = "Scripts/" Module = "Game" Initializer = "onInitialize" Finalizer = "onFinalize"/>
+    </Scripts>
+    
+    <Settings>
+        <Setting Name = "Test" Path = "Settings/Test.json"/>
+    </Settings>
+</Pak>

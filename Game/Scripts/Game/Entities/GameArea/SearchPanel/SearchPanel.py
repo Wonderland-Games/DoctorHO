@@ -130,7 +130,7 @@ class SearchPanel(Initializer):
 
     def _updateAvailableItems(self):
         for item in self.items:
-            item_pos = Mengine.getNodeScreenPosition(item.getRoot())
+            item_pos = Mengine.getNodeScreenAdaptPosition(item.getRoot())
 
             if self.items_range.x <= item_pos.x <= self.items_range.y:
                 if item not in self.available_items:
@@ -220,10 +220,10 @@ class SearchPanel(Initializer):
         self.virtual_area.add_node(border_node)
 
         border_node.setLocalPosition(Mengine.vec2f(0, panel_size.y / 2))
-        range_left = Mengine.getNodeScreenPosition(border_node)
+        range_left = Mengine.getNodeScreenAdaptPosition(border_node)
 
         border_node.setLocalPosition(Mengine.vec2f(panel_size.x, panel_size.y / 2))
-        range_right = Mengine.getNodeScreenPosition(border_node)
+        range_right = Mengine.getNodeScreenAdaptPosition(border_node)
 
         self.items_range = Mengine.vec2f(range_left.x, range_right.x)
 
