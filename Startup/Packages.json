@@ -1,74 +1,74 @@
 {
-	"GAME_PACKAGES": {
-		"FrameworkPack": [
-			"Foundation",
-			"HOPA",
-			"Game"
-		],
+    "GAME_PACKAGES": {
+        "FrameworkPack": [
+            "Foundation",
+            "HOPA",
+            "Game"
+        ],
 
-		"ResourcePack": [
-			"Resources"
-		],
+        "ResourcePack": [
+            "Resources"
+        ],
 
-		"LanguagePack": [
-			"Glyphs",
-			
-			"Fonts_Latin",
-			
-			"Texts_All",
-			"Texts_English"
-		]
-	},
-	"Foundation": {
-		"Name": "Foundation",
-		"Path": "../Foundation/",
-		"Description": "Package.json"
-	},
-	"HOPA": {
-		"Name": "HOPA",
-		"Path": "../HOPA/",
-		"Description": "Package.bin"
-	},
-	"Game": {
-		"Name": "Game",
-		"Path": "../Game/",
-		"Description": "Package.json"
-	},
-	
-	"Resources": {
-		"Name": "Resources",
-		"Path": "../Resources/",
-		"Description": "Package.bin"
-	},
-	
-	"Glyphs": {
+        "LanguagePack": [
+            "Glyphs",
+            
+            "Fonts_Latin",
+            
+            "Texts_All",
+            "Texts_English"
+        ]
+    },
+    "Foundation": {
+        "Name": "Foundation",
+        "Path": "../Foundation/",
+        "Description": "Package.bin"
+    },
+    "HOPA": {
+        "Name": "HOPA",
+        "Path": "../HOPA/",
+        "Description": "Package.bin"
+    },
+    "Game": {
+        "Name": "Game",
+        "Path": "../Game/",
+        "Description": "Package.bin"
+    },
+    
+    "Resources": {
+        "Name": "Resources",
+        "Path": "../Resources/",
+        "Description": "Package.bin"
+    },
+    
+    "Glyphs": {
         "Name": "Glyphs",
         "Path": "../Localization/Glyphs/",
         "Description": "Package.bin",
         "Locales": ["all"],
         "NoPak": 1
     },
-	
-	"Fonts_Latin": {
-		"Name": "Fonts_Latin",
-		"Path": "../Localization/Fonts/Latin/",
-		"Description": "Package.bin",
-		"Locales": ["en"],
-		"NoPak": 1
-	},
-	
-	"Texts_All": {
-		"Name": "Texts_All",
-		"Path": "../Localization/Texts/All/",
-		"Description": "Package.bin",
-		"Locales": ["all"],
-		"NoPak": 1
-	},
-	"Texts_English": {
-		"Name": "Texts_English",
-		"Path": "../Localization/Texts/English/",
-		"Description": "Package.bin",
-		"Locales": ["en"],
-		"NoPak": 1
-	}
+    
+    "Fonts_Latin": {
+        "Name": "Fonts_Latin",
+        "Path": "../Localization/Fonts/Latin/",
+        "Description": "Package.bin",
+        "Locales": ["en"],
+        "NoPak": 1
+    },
+    
+    "Texts_All": {
+        "Name": "Texts_All",
+        "Path": "../Localization/Texts/All/",
+        "Description": "Package.bin",
+        "Locales": ["all"],
+        "NoPak": 1
+    },
+    "Texts_English": {
+        "Name": "Texts_English",
+        "Path": "../Localization/Texts/English/",
+        "Description": "Package.bin",
+        "Locales": ["en"],
+        "NoPak": 1
+    }
 }
