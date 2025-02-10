@@ -21,19 +21,55 @@ class GameArea(BaseEntity):
         self.tcs = []
         self.search_level = None
         self.search_panel = None
-        self.items = []
-        self.level_group = None
+
+    # - Initializer ----------------------------------------------------------------------------------------------------
+
+    def _onInitialize(self, obj):
+        super(GameArea, self)._onInitialize(obj)
+        pass
+
+    def _onFinalize(self):
+        super(GameArea, self)._onFinalize()
+        pass
+
+    # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
         self.content = self.object.getObject(MOVIE_CONTENT)
         if self.content is None:
             return
 
+        # self._initSearchLevel("01_Forest")
+        # self._initSearchPanel()
+        #
+        # self._attachSearchPanel()
+        # self._attachSearchLevel()
+
+    def _onActivate(self):
         self._initSearchLevel("01_Forest")
         self._initSearchPanel()
 
         self._attachSearchPanel()
         self._attachSearchLevel()
+
+        self._runTaskChains()
+
+    def _onDeactivate(self):
+        self.content = None
+
+        for tc in self.tcs:
+            tc.cancel()
+        self.tcs = []
+
+        if self.search_panel is not None:
+            self.search_panel.onFinalize()
+            self.search_panel = None
+
+        if self.search_level is not None:
+            self.search_level.onFinalize()
+            self.search_level = None
+
+    # - SearchLevel ----------------------------------------------------------------------------------------------------
 
     def _initSearchLevel(self, level_name):
         frame = Mengine.getGameViewport()
@@ -62,6 +98,8 @@ class GameArea(BaseEntity):
         search_level_root = self.search_level.getRoot()
         search_level_root.setLocalPosition(Mengine.vec2f(-game_center_x, -pos_y))
 
+    # - SearchPanel ----------------------------------------------------------------------------------------------------
+
     def _initSearchPanel(self):
         self.search_panel = SearchPanel()
         self.search_panel.onInitialize(self)
@@ -82,26 +120,7 @@ class GameArea(BaseEntity):
 
         self.search_panel.attachTo(search_panel_slot)
 
-    def _onActivate(self):
-        self._runTaskChains()
-
-    def _onDeactivate(self):
-        self.content = None
-
-        for tc in self.tcs:
-            tc.cancel()
-        self.tcs = []
-
-        if self.search_panel is not None:
-            self.search_panel.onFinalize()
-            self.search_panel = None
-
-        if self.search_level is not None:
-            self.search_level.onFinalize()
-            self.search_level = None
-
-        self.items = []
-        self.level_group = None
+    # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def _createTaskChain(self, name, **params):
         tc_base = self.__class__.__name__
