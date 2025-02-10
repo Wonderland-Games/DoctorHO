@@ -47,3 +47,12 @@ class Hint(Initializer):
         self.button = self.game.object.getObject(BUTTON_HINT)
         button_node = self.button.getEntityNode()
         self._root.addChild(button_node)
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def clickHint(self, source):
+        source.addFunction(self.game.search_panel.hint.button.setBlock, True)
+
+        source.addPrint("CLICKED HINT")
+
+        source.addFunction(self.game.search_panel.hint.button.setBlock, False)

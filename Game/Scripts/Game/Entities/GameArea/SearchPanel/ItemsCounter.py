@@ -11,6 +11,8 @@ class ItemsCounter(Initializer):
         self.items_amount = None
         self.node = None
 
+    # - Initializer ----------------------------------------------------------------------------------------------------
+
     def _onInitialize(self, items_count, items_amount):
         self.items_count = items_count
         self.items_amount = items_amount
@@ -25,6 +27,8 @@ class ItemsCounter(Initializer):
             self.node.removeFromParent()
             Mengine.destroyNode(self.node)
             self.node = None
+
+    # - Node -----------------------------------------------------------------------------------------------------------
 
     def _createTextNode(self):
         self.node = Mengine.createNode("TextField")
@@ -41,6 +45,8 @@ class ItemsCounter(Initializer):
 
     def setLocalPosition(self, pos):
         self.node.setLocalPosition(pos)
+
+    # - Text -----------------------------------------------------------------------------------------------------------
 
     def updateTextArgs(self, value_1=None, value_2=None):
         if value_1 is None:

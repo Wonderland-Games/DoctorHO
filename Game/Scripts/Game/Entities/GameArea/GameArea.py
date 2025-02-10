@@ -138,6 +138,11 @@ class GameArea(BaseEntity):
                 parallel.addScope(self._playMoveSceneItemToPanelItem, item)
                 parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
 
+        # hint logic
+        with self._createTaskChain("Hint", Repeat=True) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
+            tc.addScope(self.search_panel.hint.clickHint)
+
         # TEST SETTINGS FEATURE
         with self._createTaskChain("TestColorSettings", Repeat=True) as tc:
             tc.addListener(Notificator.onSettingChange)
