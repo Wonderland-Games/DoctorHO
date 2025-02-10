@@ -95,18 +95,12 @@ class SearchLevel(Initializer):
 
         self.hotspot.setPolygon(hotspot_polygon)
         self.hotspot.setDefaultHandle(False)
-        # self.hotspot.compile()
-        # self.hotspot.enable()
-
-        print("::: SearchLevel self.hotspot.isCompile(): {}".format(self.hotspot.isCompile()))
 
         self.root.addChild(self.hotspot)
         self.hotspot.enable()
 
-        print("::: SearchLevel self.hotspot.isCompile(): {}".format(self.hotspot.isCompile()))
-
         # set hotspot to VA
-        self.virtual_area.setup_viewport(self.hotspot)
+        self.virtual_area.setup_viewport(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
         self.virtual_area.init_handlers(self.hotspot)
         self.virtual_area.set_content_size(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
 

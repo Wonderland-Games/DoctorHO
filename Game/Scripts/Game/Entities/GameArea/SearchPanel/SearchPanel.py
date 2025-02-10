@@ -103,19 +103,10 @@ class SearchPanel(Initializer):
         )
 
     def _setupVirtualArea(self):
-        socket = self.movie_panel.getSocket(PANEL_VA)
-        # self.movie_panel.setEnable(True)
-        # self.movie_panel.setInteractive(True)
-        # socket.compile()
-
-        print("::: SearchPanel self.movie_panel.getMovie().isCompile(): {}".format(self.movie_panel.getMovie().isCompile()))
-        print("::: SearchPanel self.movie_panel.socket.isCompile(): {}".format(socket.isCompile()))
-
         self.virtual_area.setup_with_movie(self.movie_panel, PANEL_VA, PANEL_VA)
         panel_size = self.getSize()
 
         self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
-
         self.virtual_area._socket.setDefaultHandle(False)
 
         panel_entity = self.movie_panel.getEntity()
@@ -174,7 +165,6 @@ class SearchPanel(Initializer):
 
     def _attachPanel(self):
         self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
-        # self.movie_panel.setEnable(True)
         self.movie_panel.setInteractive(True)
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
