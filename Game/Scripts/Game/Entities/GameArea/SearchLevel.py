@@ -14,6 +14,8 @@ class SearchLevel(Initializer):
         self.box_points = None
         self.items = None
 
+    # - Initializer ----------------------------------------------------------------------------------------------------
+
     def _onInitialize(self, game, level_name, box_points):
         self.game = game
         self.level_name = level_name
@@ -48,6 +50,8 @@ class SearchLevel(Initializer):
             Mengine.destroyNode(self.hotspot)
             self.hotspot = None
 
+    # - Root -----------------------------------------------------------------------------------------------------------
+
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
         self.root.setName(self.__class__.__name__)
@@ -58,6 +62,8 @@ class SearchLevel(Initializer):
     def attachTo(self, node):
         self.root.removeFromParent()
         node.addChild(self.root)
+
+    # - VirtualArea ----------------------------------------------------------------------------------------------------
 
     def _initVirtualArea(self):
         if _DESKTOP is True:  # run on PC
@@ -89,7 +95,10 @@ class SearchLevel(Initializer):
 
         self.hotspot.setPolygon(hotspot_polygon)
         self.hotspot.setDefaultHandle(False)
+        self.hotspot.compile()
         self.hotspot.enable()
+
+        print("::: SearchLevel self.hotspot.isCompile(): {}".format(self.hotspot.isCompile()))
 
         self.root.addChild(self.hotspot)
 
@@ -101,6 +110,8 @@ class SearchLevel(Initializer):
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()
         self.root.addChild(virtual_area_node)
+
+    # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
         scene_group = GroupManager.getGroup(self.level_name)
@@ -123,6 +134,8 @@ class SearchLevel(Initializer):
         box_width = self.box_points.z - self.box_points.x
         box_height = self.box_points.w - self.box_points.y
         return Mengine.vec2f(box_width, box_height)
+
+    # ------------------------------------------------------------------------------------------------------------------
 
     def _fillItems(self):
         scene_group = GroupManager.getGroup(self.level_name)

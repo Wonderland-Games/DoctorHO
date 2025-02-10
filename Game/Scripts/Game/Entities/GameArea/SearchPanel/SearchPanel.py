@@ -28,6 +28,8 @@ class SearchPanel(Initializer):
         self.print_available_items = True
         self.semaphore_allow_panel_items_move = None
 
+    # - Initializer ----------------------------------------------------------------------------------------------------
+
     def _onInitialize(self, game):
         self.game = game
 
@@ -77,6 +79,21 @@ class SearchPanel(Initializer):
             self.virtual_area.onFinalize()
             self.virtual_area = None
 
+    # - Root -----------------------------------------------------------------------------------------------------------
+
+    def _createRoot(self):
+        self.root = Mengine.createNode("Interender")
+        self.root.setName(self.__class__.__name__)
+
+    def attachTo(self, node):
+        self.root.removeFromParent()
+        node.addChild(self.root)
+
+    def getRoot(self):
+        return self.root
+
+    # - VirtualArea ----------------------------------------------------------------------------------------------------
+
     def _initVirtualArea(self):
         self.virtual_area = VirtualArea()
         self.virtual_area.onInitialize(
@@ -86,6 +103,12 @@ class SearchPanel(Initializer):
         )
 
     def _setupVirtualArea(self):
+        socket = self.movie_panel.getSocket(PANEL_VA)
+        # socket.compile()
+
+        print("::: SearchPanel self.movie_panel.getMovie().isCompile(): {}".format(self.movie_panel.getMovie().isCompile()))
+        print("::: SearchPanel self.movie_panel.socket.isCompile(): {}".format(socket.isCompile()))
+
         self.virtual_area.setup_with_movie(self.movie_panel, PANEL_VA, PANEL_VA)
         panel_size = self.getSize()
 
@@ -145,26 +168,19 @@ class SearchPanel(Initializer):
         print("Available items", [available_item.item_obj.getName() for available_item in self.available_items if
                                   available_item.item_obj is not None])
 
-    def _createRoot(self):
-        self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__)
+    # - Panel ----------------------------------------------------------------------------------------------------------
 
-    def attachTo(self, node):
-        self.root.removeFromParent()
-        node.addChild(self.root)
-
-    def getRoot(self):
-        return self.root
+    def _attachPanel(self):
+        self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
+        movie_panel_node = self.movie_panel.getEntityNode()
+        self.root.addChild(movie_panel_node)
 
     def getSize(self):
         panel_bounds = self.movie_panel.getCompositionBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
         return panel_size
 
-    def _attachPanel(self):
-        self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
-        movie_panel_node = self.movie_panel.getEntityNode()
-        self.root.addChild(movie_panel_node)
+    # - Items ----------------------------------------------------------------------------------------------------------
 
     def _initItems(self):
         # create items node
@@ -232,6 +248,8 @@ class SearchPanel(Initializer):
 
     def getAvailableItems(self):
         return self.available_items
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def playRemovePanelItemAnim(self, source, item_obj):
         # find item by object
