@@ -15,12 +15,14 @@ ITEM_REMOVE_ALPHA_TIME = 150.0
 class Item(Initializer):
     def __init__(self):
         super(Item, self).__init__()
-        self.root = None
+        self._root = None
         self.game = None
         self.item_obj = None
         self.sprite_node = None
         self.sprite = None
         self.box = None
+
+    # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game, item_obj):
         self.game = game
@@ -52,21 +54,27 @@ class Item(Initializer):
             self.box.onDestroy()
             self.box = None
 
-        if self.root is not None:
-            self.root.removeFromParent()
-            Mengine.destroyNode(self.root)
-            self.root = None
+        if self._root is not None:
+            self._root.removeFromParent()
+            Mengine.destroyNode(self._root)
+            self._root = None
+
+    # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
-        self.root = Mengine.createNode("Interender")
+        self._root = Mengine.createNode("Interender")
         root_name = self.item_obj.getName()
-        self.root.setName(root_name)
+        self._root.setName(root_name)
+
+    def attachTo(self, node):
+        self._root.removeFromParent()
+        node.addChild(self._root)
 
     def getRoot(self):
-        return self.root
+        return self._root
 
     def getRootWorldPosition(self):
-        node_screen_position = Mengine.getNodeScreenAdaptPosition(self.root)
+        node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
         panel_pos = self.game.search_panel.getRoot().getWorldPosition()
         panel_size = self.game.search_panel.getSize()
@@ -77,28 +85,28 @@ class Item(Initializer):
 
         return world_position
 
-    def attachTo(self, node):
-        self.root.removeFromParent()
-        node.addChild(self.root)
-
     def setLocalPositionX(self, position):
-        curr_position = self.root.getLocalPosition()
-        self.root.setLocalPosition(Mengine.vec2f(position, curr_position.y))
+        curr_position = self._root.getLocalPosition()
+        self._root.setLocalPosition(Mengine.vec2f(position, curr_position.y))
+
+    # - Box ------------------------------------------------------------------------------------------------------------
 
     def _createBox(self):
         self.box = self.game.object.generateObjectUnique(MOVIE_BOX, MOVIE_BOX)
         self.box.setEnable(True)
-        self.root.addChild(self.box.getEntityNode())
+        self._root.addChild(self.box.getEntityNode())
 
     def getSize(self):
         box_bounds = self.box.getCompositionBounds()
         box_size = Utils.getBoundingBoxSize(box_bounds)
         return box_size
 
+    # - Sprite ---------------------------------------------------------------------------------------------------------
+
     def _createSpriteNode(self):
         self.sprite_node = Mengine.createNode("Interender")
         self.sprite_node.setName("SpriteNode")
-        self.root.addChild(self.sprite_node)
+        self._root.addChild(self.sprite_node)
 
     def _createSprite(self):
         self.sprite = self.item_obj.getEntity().generatePure()
@@ -127,13 +135,15 @@ class Item(Initializer):
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
         self.sprite.setLocalPosition(sprite_position)
 
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
     def playItemDestroyAnim(self, source):
         source.addPrint("START REMOVE ITEM ANIM")
 
         source.addTask("TaskNodeScaleTo", Node=self.sprite_node, To=ITEM_REMOVE_SCALE_UP_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
 
         with source.addParallelTask(2) as (scale, alpha):
-            scale.addTask("TaskNodeScaleTo", Node=self.root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
-            alpha.addTask("TaskNodeAlphaTo", Node=self.root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
+            scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
+            alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
 
         source.addPrint("END REMOVE ITEM ANIM")
