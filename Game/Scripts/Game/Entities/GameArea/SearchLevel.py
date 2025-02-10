@@ -132,10 +132,24 @@ class SearchLevel(Initializer):
         box_height = self.box_points.w - self.box_points.y
         return Mengine.vec2f(box_width, box_height)
 
-    # ------------------------------------------------------------------------------------------------------------------
+    # - Items ----------------------------------------------------------------------------------------------------------
 
     def _fillItems(self):
         scene_group = GroupManager.getGroup(self.level_name)
         scene_objects = scene_group.getObjects()
 
         self.items = [obj for obj in scene_objects if obj.getEntityType() is "Item"]
+
+    def getItemWorldPosition(self, item_obj):
+        item = None
+
+        for obj in self.items:
+            if obj == item_obj:
+                item = obj
+                break
+
+        if item is None:
+            return None
+
+        item_pos = item.calcWorldHintPoint()
+        return item_pos
