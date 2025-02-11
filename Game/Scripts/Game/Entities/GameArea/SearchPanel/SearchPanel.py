@@ -275,7 +275,7 @@ class SearchPanel(Initializer):
     def _setupLivesCounter(self):
         lives_count = 3
         self.lives_counter = LivesCounter()
-        self.lives_counter.onInitialize(lives_count)
+        self.lives_counter.onInitialize(self.game, lives_count)
 
         panel_size = self.getSize()
         self.lives_counter.attachTo(self.root)

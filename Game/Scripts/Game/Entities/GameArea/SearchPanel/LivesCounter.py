@@ -1,12 +1,14 @@
 from Foundation.Initializer import Initializer
 
 
+MOVIE_ICON = "Movie2_LivesCounterIcon"
 TEXT_ID = "ID_SearchPanel_LivesCounter"
 
 
 class LivesCounter(Initializer):
     def __init__(self):
         super(LivesCounter, self).__init__()
+        self.game = None
         self.count = None
         self.root = None
         self.icon = None
@@ -14,8 +16,9 @@ class LivesCounter(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, count):
+    def _onInitialize(self, game, count):
         super(LivesCounter, self)._onInitialize()
+        self.game = game
         self.count = count
 
         self._createRoot()
@@ -25,6 +28,7 @@ class LivesCounter(Initializer):
 
     def _onFinalize(self):
         super(LivesCounter, self)._onFinalize()
+        self.game = None
         self.count = None
 
         if self.icon is not None:
@@ -63,8 +67,9 @@ class LivesCounter(Initializer):
         self.text.setHorizontalCenterAlign()
         self.text.setTextId(TEXT_ID)
         self.updateTextArgs()
-        self.root.addChild(self.text)
         self.text.enable()
+
+        self.root.addChild(self.text)
 
     def updateTextArgs(self, value=None):
         if value is None:
@@ -79,4 +84,7 @@ class LivesCounter(Initializer):
     # - Icon -----------------------------------------------------------------------------------------------------------
 
     def _setupIcon(self):
-        pass
+        self.icon = self.game.object.generateObjectUnique(MOVIE_ICON, MOVIE_ICON)
+        self.icon.setEnable(True)
+        icon_node = self.icon.getEntityNode()
+        self.root.addChild(icon_node)
