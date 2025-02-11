@@ -2,6 +2,7 @@ from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
+from Game.Entities.GameArea.SearchPanel.LivesCounter import LivesCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
 
 
@@ -21,6 +22,7 @@ class SearchPanel(Initializer):
         self.virtual_area = None
         self.root = None
         self.movie_panel = None
+        self.lives_counter = None
         self.items_counter = None
         self.hint = None
         self.items = []
@@ -41,6 +43,7 @@ class SearchPanel(Initializer):
         self._attachPanel()
         self._initItems()
 
+        self._setupLivesCounter()
         self._setupItemsCounter()
         self._setupHint()
 
@@ -65,6 +68,10 @@ class SearchPanel(Initializer):
         if self.hint is not None:
             self.hint.onFinalize()
             self.hint = None
+
+        if self.lives_counter is not None:
+            self.lives_counter.onFinalize()
+            self.lives_counter = None
 
         if self.items_counter is not None:
             self.items_counter.onFinalize()
@@ -262,6 +269,17 @@ class SearchPanel(Initializer):
         panel_size = self.getSize()
         self.items_counter.attachTo(self.root)
         self.items_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.75))
+
+    # - LivesCounter ---------------------------------------------------------------------------------------------------
+
+    def _setupLivesCounter(self):
+        lives_count = 3
+        self.lives_counter = LivesCounter()
+        self.lives_counter.onInitialize(lives_count)
+
+        panel_size = self.getSize()
+        self.lives_counter.attachTo(self.root)
+        self.lives_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * -0.85, (panel_size.y / 2) * -0.75))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
