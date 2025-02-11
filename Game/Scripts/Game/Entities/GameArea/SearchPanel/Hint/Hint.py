@@ -1,7 +1,10 @@
 from Foundation.Initializer import Initializer
+from Foundation.GroupManager import GroupManager
 
 
 BUTTON_HINT = "Movie2Button_Hint"
+MOVIE_HINT_EFFECT = "Movie2_HintEffect"
+LAYER_HINT_EFFECT_CUTOUT = "Hint_Effect_Cutout_16.png"
 
 
 class Hint(Initializer):
@@ -51,8 +54,20 @@ class Hint(Initializer):
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def clickHint(self, source):
+        game_group = self.game.object.getGroupName()
+        hint_effect = GroupManager.getObject(game_group, MOVIE_HINT_EFFECT)
+
+        comp_name = hint_effect.getCompositionName()
+        movie_res = hint_effect.getResourceMovie()
+        layers = movie_res.getCompositionLayers(comp_name)
+        print(layers)
+
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addPrint("CLICKED HINT")
+
+        source.addFunction(hint_effect.setEnable, True)
+        source.addDelay(3000.0)
+        source.addFunction(hint_effect.setEnable, False)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, False)
