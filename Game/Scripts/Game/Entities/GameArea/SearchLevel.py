@@ -9,6 +9,7 @@ class SearchLevel(Initializer):
         super(SearchLevel, self).__init__()
         self.root = None
         self.virtual_area = None
+        self.hotspot = None
         self.game = None
         self.level_name = None
         self.box_points = None
