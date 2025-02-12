@@ -35,6 +35,7 @@ class SearchPanel(Initializer):
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game):
+        super(SearchPanel, self)._onInitialize()
         self.game = game
 
         self._initVirtualArea()
@@ -59,11 +60,7 @@ class SearchPanel(Initializer):
         return True
 
     def _onFinalize(self):
-        self.movie_panel = None
-        self.items_range = None
-        self.available_items = []
-        self.print_available_items = None
-        self.semaphore_allow_panel_items_move = None
+        super(SearchPanel, self)._onFinalize()
 
         if self.hint is not None:
             self.hint.onFinalize()
@@ -92,6 +89,12 @@ class SearchPanel(Initializer):
         if self.virtual_area is not None:
             self.virtual_area.onFinalize()
             self.virtual_area = None
+
+        self.movie_panel = None
+        self.items_range = None
+        self.available_items = []
+        self.print_available_items = None
+        self.semaphore_allow_panel_items_move = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 

@@ -35,6 +35,8 @@ class GameArea(BaseEntity):
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
+        super(GameArea, self)._onPreparation()
+
         self.content = self.object.getObject(MOVIE_CONTENT)
         if self.content is None:
             return
@@ -46,6 +48,8 @@ class GameArea(BaseEntity):
         # self._attachSearchLevel()
 
     def _onActivate(self):
+        super(GameArea, self)._onActivate()
+
         self._initSearchLevel("01_Forest")
         self._initSearchPanel()
 
@@ -55,7 +59,7 @@ class GameArea(BaseEntity):
         self._runTaskChains()
 
     def _onDeactivate(self):
-        self.content = None
+        super(GameArea, self)._onDeactivate()
 
         for tc in self.tcs:
             tc.cancel()
@@ -68,6 +72,8 @@ class GameArea(BaseEntity):
         if self.search_level is not None:
             self.search_level.onFinalize()
             self.search_level = None
+
+        self.content = None
 
     # - SearchLevel ----------------------------------------------------------------------------------------------------
 
@@ -137,11 +143,6 @@ class GameArea(BaseEntity):
                 parallel.addFunction(self.search_level.items.remove, item)
                 parallel.addScope(self._playMoveSceneItemToPanelItem, item)
                 parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
-
-        # hint logic
-        with self._createTaskChain("Hint", Repeat=True) as tc:
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
-            tc.addScope(self.search_panel.hint.clickHint)
 
         # lives logic
         with self._createTaskChain("Lives", Repeat=True) as tc:
