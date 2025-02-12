@@ -4,7 +4,7 @@ from Foundation.GroupManager import GroupManager
 
 BUTTON_HINT = "Movie2Button_Hint"
 MOVIE_HINT_EFFECT = "Movie2_HintEffect"
-LAYER_HINT_EFFECT_CUTOUT = "Hint_Effect_Cutout_Cirlce_16.png"
+LAYER_HINT_EFFECT_CUTOUT = "cutout"
 
 
 class Hint(Initializer):
