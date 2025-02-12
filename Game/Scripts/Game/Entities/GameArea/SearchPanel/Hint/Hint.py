@@ -1,28 +1,43 @@
 from Foundation.Initializer import Initializer
-from Foundation.GroupManager import GroupManager
+from Foundation.TaskManager import TaskManager
+from Game.Entities.GameArea.SearchPanel.Hint.HintEffect import HintEffect
 
 
 BUTTON_HINT = "Movie2Button_Hint"
-MOVIE_HINT_EFFECT = "Movie2_HintEffect"
-LAYER_HINT_EFFECT_CUTOUT = "cutout"
 
 
 class Hint(Initializer):
     def __init__(self):
         super(Hint, self).__init__()
         self._root = None
+        self.tcs = []
         self.game = None
         self.button = None
+        self.hint_effect = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game):
+        super(Hint, self)._onInitialize()
         self.game = game
 
         self._createRoot()
         self._attachButton()
+        self._initHintEffect()
+
+        self._runTaskChains()
 
     def _onFinalize(self):
+        super(Hint, self)._onFinalize()
+
+        for tc in self.tcs:
+            tc.cancel()
+        self.tcs = []
+
+        if self.hint_effect is not None:
+            self.hint_effect.onFinalize()
+            self.hint_effect = None
+
         if self._root is not None:
             self._root.removeFromParent()
             Mengine.destroyNode(self._root)
@@ -51,41 +66,52 @@ class Hint(Initializer):
         button_node = self.button.getEntityNode()
         self._root.addChild(button_node)
 
+    # - HintEffect -----------------------------------------------------------------------------------------------------
+
+    def _initHintEffect(self):
+        self.hint_effect = HintEffect()
+        self.hint_effect.onInitialize(self.game)
+
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
-    def clickHint(self, source):
-        game_group = self.game.object.getGroupName()
-        hint_effect = GroupManager.getObject(game_group, MOVIE_HINT_EFFECT)
+    def _createTaskChain(self, name, **params):
+        tc_base = self.__class__.__name__
+        tc = TaskManager.createTaskChain(Name=tc_base + "_" + name, **params)
+        self.tcs.append(tc)
+        return tc
 
+    def _runTaskChains(self):
+        # hint logic
+        with self._createTaskChain("Hint", Repeat=True) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button)
+            tc.addScope(self._clickHint)
+
+    def _clickHint(self, source):
+        # get item from scene
         item_index = Mengine.range_rand(0, len(self.game.search_level.items))
-        print(item_index)
         scene_item = self.game.search_level.items[item_index]
-        print(scene_item.getName())
-        scene_item_node = scene_item.getEntityNode()
-        scene_item_node_transformation = scene_item_node.getTransformation()
-        print(scene_item_node_transformation)
 
+        # calc item hint point
         hint_point = scene_item.calcWorldHintPoint()
 
+        # create temp hint node to get transformation later
         temp_hint_node = Mengine.createNode("Interender")
         temp_hint_node.setName("TempHintNode")
 
+        # setting items position to temp node
         self.game.addChild(temp_hint_node)
         temp_hint_node.setWorldPosition(hint_point)
 
-        scene_item_node_transformation = temp_hint_node.getTransformation()
-
-        hint_effect_movie = hint_effect.getMovie()
+        # getting transformation from temp node
+        hint_item_transformation = temp_hint_node.getTransformation()
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addPrint("CLICKED HINT")
 
-        source.addFunction(hint_effect.setEnable, True)
-        source.addFunction(hint_effect_movie.setExtraTransformation, LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation, True)
+        source.addScope(self.hint_effect.show, hint_item_transformation)
         source.addDelay(3000.0)
-        source.addFunction(hint_effect_movie.removeExtraTransformation, LAYER_HINT_EFFECT_CUTOUT)
-        source.addFunction(hint_effect.setEnable, False)
+        source.addScope(self.hint_effect.hide, hint_item_transformation)
 
         source.addTask("TaskNodeRemoveFromParent", Node=temp_hint_node)
         source.addTask("TaskNodeDestroy", Node=temp_hint_node)
