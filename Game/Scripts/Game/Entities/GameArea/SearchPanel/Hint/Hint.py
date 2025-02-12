@@ -71,14 +71,17 @@ class Hint(Initializer):
         print(scene_item_node_transformation)
 
         hint_effect_movie = hint_effect.getMovie()
-        hint_effect_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
+        print(hint_effect_movie.isCompile())
+        # hint_effect_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addPrint("CLICKED HINT")
 
         source.addFunction(hint_effect.setEnable, True)
+        source.addFunction(hint_effect_movie.setExtraTransformation, LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
         source.addDelay(3000.0)
+        source.addFunction(hint_effect_movie.removeExtraTransformation, LAYER_HINT_EFFECT_CUTOUT)
         source.addFunction(hint_effect.setEnable, False)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, False)
