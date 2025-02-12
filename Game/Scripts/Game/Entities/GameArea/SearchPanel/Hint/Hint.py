@@ -57,10 +57,21 @@ class Hint(Initializer):
         game_group = self.game.object.getGroupName()
         hint_effect = GroupManager.getObject(game_group, MOVIE_HINT_EFFECT)
 
-        comp_name = hint_effect.getCompositionName()
-        movie_res = hint_effect.getResourceMovie()
-        layers = movie_res.getCompositionLayers(comp_name)
-        print(layers)
+        # comp_name = hint_effect.getCompositionName()
+        # movie_res = hint_effect.getResourceMovie()
+        # layers = movie_res.getCompositionLayers(comp_name)
+        # print(layers)
+
+        item_index = Mengine.range_rand(0, len(self.game.search_level.items))
+        print(item_index)
+        scene_item = self.game.search_level.items[item_index]
+        print(scene_item.getName())
+        scene_item_node = scene_item.getEntityNode()
+        scene_item_node_transformation = scene_item_node.getTransformation()
+        print(scene_item_node_transformation)
+
+        hint_effect_movie = hint_effect.getMovie()
+        hint_effect_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
