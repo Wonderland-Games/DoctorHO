@@ -143,6 +143,11 @@ class GameArea(BaseEntity):
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
             tc.addScope(self.search_panel.hint.clickHint)
 
+        # lives logic
+        with self._createTaskChain("Lives", Repeat=True) as tc:
+            tc.addEvent(self.search_level.miss_click_event)
+            tc.addFunction(self.search_panel.lives_counter.decItemsCount)
+
         # TEST SETTINGS FEATURE
         with self._createTaskChain("TestColorSettings", Repeat=True) as tc:
             tc.addListener(Notificator.onSettingChange)

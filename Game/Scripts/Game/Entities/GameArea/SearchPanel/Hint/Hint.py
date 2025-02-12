@@ -4,7 +4,7 @@ from Foundation.GroupManager import GroupManager
 
 BUTTON_HINT = "Movie2Button_Hint"
 MOVIE_HINT_EFFECT = "Movie2_HintEffect"
-LAYER_HINT_EFFECT_CUTOUT = "Hint_Effect_Cutout_16.png"
+LAYER_HINT_EFFECT_CUTOUT = "Hint_Effect_Cutout_Cirlce_16.png"
 
 
 class Hint(Initializer):
@@ -57,11 +57,6 @@ class Hint(Initializer):
         game_group = self.game.object.getGroupName()
         hint_effect = GroupManager.getObject(game_group, MOVIE_HINT_EFFECT)
 
-        # comp_name = hint_effect.getCompositionName()
-        # movie_res = hint_effect.getResourceMovie()
-        # layers = movie_res.getCompositionLayers(comp_name)
-        # print(layers)
-
         item_index = Mengine.range_rand(0, len(self.game.search_level.items))
         print(item_index)
         scene_item = self.game.search_level.items[item_index]
@@ -70,18 +65,29 @@ class Hint(Initializer):
         scene_item_node_transformation = scene_item_node.getTransformation()
         print(scene_item_node_transformation)
 
+        hint_point = scene_item.calcWorldHintPoint()
+
+        temp_hint_node = Mengine.createNode("Interender")
+        temp_hint_node.setName("TempHintNode")
+
+        self.game.addChild(temp_hint_node)
+        temp_hint_node.setWorldPosition(hint_point)
+
+        scene_item_node_transformation = temp_hint_node.getTransformation()
+
         hint_effect_movie = hint_effect.getMovie()
-        print(hint_effect_movie.isCompile())
-        # hint_effect_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addPrint("CLICKED HINT")
 
         source.addFunction(hint_effect.setEnable, True)
-        source.addFunction(hint_effect_movie.setExtraTransformation, LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation)
+        source.addFunction(hint_effect_movie.setExtraTransformation, LAYER_HINT_EFFECT_CUTOUT, scene_item_node_transformation, True)
         source.addDelay(3000.0)
         source.addFunction(hint_effect_movie.removeExtraTransformation, LAYER_HINT_EFFECT_CUTOUT)
         source.addFunction(hint_effect.setEnable, False)
+
+        source.addTask("TaskNodeRemoveFromParent", Node=temp_hint_node)
+        source.addTask("TaskNodeDestroy", Node=temp_hint_node)
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, False)
