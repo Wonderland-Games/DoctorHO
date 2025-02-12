@@ -9,7 +9,9 @@ class SearchLevel(Initializer):
         super(SearchLevel, self).__init__()
         self.root = None
         self.virtual_area = None
-        self.hotspot = None
+        self.va_hotspot = None
+        self.miss_click_hotspot = None
+        self.miss_click_event = None
         self.game = None
         self.level_name = None
         self.box_points = None
@@ -25,9 +27,9 @@ class SearchLevel(Initializer):
         self._initVirtualArea()
 
         self._createRoot()
+        self._setupMissClickHotSpot()
         self._setupVirtualArea()
         self._attachScene()
-
         self._fillItems()
         return True
 
@@ -46,10 +48,17 @@ class SearchLevel(Initializer):
             self.virtual_area.onFinalize()
             self.virtual_area = None
 
-        if self.hotspot is not None:
-            self.hotspot.removeFromParent()
-            Mengine.destroyNode(self.hotspot)
-            self.hotspot = None
+        if self.miss_click_hotspot is not None:
+            self.miss_click_hotspot.removeFromParent()
+            Mengine.destroyNode(self.miss_click_hotspot)
+            self.miss_click_hotspot = None
+
+        self.miss_click_event = None
+
+        if self.va_hotspot is not None:
+            self.va_hotspot.removeFromParent()
+            Mengine.destroyNode(self.va_hotspot)
+            self.va_hotspot = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -84,8 +93,8 @@ class SearchLevel(Initializer):
 
     def _setupVirtualArea(self):
         # create hotspot to handle VA
-        self.hotspot = Mengine.createNode("HotSpotPolygon")
-        self.hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
+        self.va_hotspot = Mengine.createNode("HotSpotPolygon")
+        self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
         hotspot_polygon = [
             (self.box_points.x, self.box_points.y),
@@ -94,15 +103,15 @@ class SearchLevel(Initializer):
             (self.box_points.x, self.box_points.w)
         ]
 
-        self.hotspot.setPolygon(hotspot_polygon)
-        self.hotspot.setDefaultHandle(False)
+        self.va_hotspot.setPolygon(hotspot_polygon)
+        self.va_hotspot.setDefaultHandle(False)
 
-        self.root.addChild(self.hotspot)
-        self.hotspot.enable()
+        self.root.addChild(self.va_hotspot)
+        self.va_hotspot.enable()
 
         # set hotspot to VA
         self.virtual_area.setup_viewport(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
-        self.virtual_area.init_handlers(self.hotspot)
+        self.virtual_area.init_handlers(self.va_hotspot)
         self.virtual_area.set_content_size(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
 
         # attach VA to root
@@ -132,6 +141,42 @@ class SearchLevel(Initializer):
         box_width = self.box_points.z - self.box_points.x
         box_height = self.box_points.w - self.box_points.y
         return Mengine.vec2f(box_width, box_height)
+
+    def _setupMissClickHotSpot(self):
+        # create hotspot to handle miss clicks
+        self.miss_click_hotspot = Mengine.createNode("HotSpotPolygon")
+        self.miss_click_hotspot.setName(self.__class__.__name__ + "_" + "MissClickSocket")
+
+        hotspot_polygon = [
+            (self.box_points.x, self.box_points.y),
+            (self.box_points.z, self.box_points.y),
+            (self.box_points.z, self.box_points.w),
+            (self.box_points.x, self.box_points.w)
+        ]
+
+        self.miss_click_hotspot.setPolygon(hotspot_polygon)
+
+        self.root.addChild(self.miss_click_hotspot)
+        self.miss_click_hotspot.enable()
+
+        self.miss_click_event = Event("onItemMissClick")
+        self.miss_click_hotspot.setEventListener(onHandleMouseButtonEvent=self._onItemMissClickButtonEvent)
+
+    def _onItemMissClickButtonEvent(self, touchId, x, y, button, pressure, isDown, isPressed):
+        print("----------------------------------------------------")
+        print("touchId, x, y, button, pressure, isDown, isPressed")
+        print(touchId, x, y, button, pressure, isDown, isPressed)
+
+        if touchId != Mengine.TC_TOUCH0:
+            return False
+
+        if button != 0 or isDown is False:
+            return False
+
+        print("CALL MISS CLICK EVENT")
+        self.miss_click_event()
+
+        return False
 
     # - Items ----------------------------------------------------------------------------------------------------------
 
