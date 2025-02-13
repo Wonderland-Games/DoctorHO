@@ -12,6 +12,7 @@ class SearchLevel(Initializer):
         self.va_hotspot = None
         self.miss_click_hotspot = None
         self.miss_click_event = None
+        self.miss_click_data = {}
         self.game = None
         self.level_name = None
         self.box_points = None
@@ -54,6 +55,7 @@ class SearchLevel(Initializer):
             self.miss_click_hotspot = None
 
         self.miss_click_event = None
+        self.miss_click_data = {}
 
         if self.va_hotspot is not None:
             self.va_hotspot.removeFromParent()
@@ -163,18 +165,27 @@ class SearchLevel(Initializer):
         self.miss_click_hotspot.setEventListener(onHandleMouseButtonEvent=self._onItemMissClickButtonEvent)
 
     def _onItemMissClickButtonEvent(self, touchId, x, y, button, pressure, isDown, isPressed):
-        print("----------------------------------------------------")
-        print("touchId, x, y, button, pressure, isDown, isPressed")
-        print(touchId, x, y, button, pressure, isDown, isPressed)
+        last_click_data = self.miss_click_data
+        self.miss_click_data = {
+            "x": x,
+            "y": y,
+        }
+
+        if self.game.search_panel.hint.hint_item is not None:
+            return False
 
         if touchId != Mengine.TC_TOUCH0:
             return False
 
-        if button != 0 or isDown is False:
+        if button != 0 or isDown is True:
             return False
 
-        print("CALL MISS CLICK EVENT")
-        self.miss_click_event()
+        if len(last_click_data) != 0:
+            if x != last_click_data["x"] or y != last_click_data["y"]:
+                return False
+
+            print("CALL MISS CLICK EVENT")
+            self.miss_click_event()
 
         return False
 
