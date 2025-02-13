@@ -27,6 +27,7 @@ class SearchPanel(Initializer):
         self.hint = None
         self.items = []
         self.available_items = []
+        self.removing_items = []
         self.items_node = None
         self.items_range = None
         self.print_available_items = True
@@ -93,6 +94,7 @@ class SearchPanel(Initializer):
         self.movie_panel = None
         self.items_range = None
         self.available_items = []
+        self.removing_items = []
         self.print_available_items = None
         self.semaphore_allow_panel_items_move = None
 
@@ -160,23 +162,6 @@ class SearchPanel(Initializer):
 
     def _cbVirtualAreaDragEnd(self):
         self.print_available_items = True
-
-    def _updateAvailableItems(self):
-        for item in self.items:
-            item_pos = Mengine.getNodeScreenAdaptPosition(item.getRoot())
-
-            if self.items_range.x <= item_pos.x <= self.items_range.y:
-                if item not in self.available_items:
-                    self.available_items.append(item)
-            else:
-                if item in self.available_items:
-                    self.available_items.remove(item)
-
-        if self.print_available_items is False:
-            return
-
-        print("Available items", [available_item.item_obj.getName() for available_item in self.available_items if
-                                  available_item.item_obj is not None])
 
     # - Panel ----------------------------------------------------------------------------------------------------------
 
@@ -254,13 +239,49 @@ class SearchPanel(Initializer):
         border_node.setLocalPosition(Mengine.vec2f(panel_size.x, panel_size.y / 2))
         range_right = Mengine.getNodeScreenAdaptPosition(border_node)
 
-        self.items_range = Mengine.vec2f(range_left.x, range_right.x)
+        self.items_range = (range_left.x, range_right.x)
 
         border_node.removeFromParent()
         Mengine.destroyNode(border_node)
 
+    def _updateAvailableItems(self):
+        for item in self.items:
+            item_pos = Mengine.getNodeScreenAdaptPosition(item.getRoot())
+
+            if self.items_range[0] <= item_pos.x <= self.items_range[1]:
+                if item not in self.available_items and item not in self.removing_items:
+                    self.available_items.append(item)
+                    print("Append available item", item.item_obj.getName())
+            else:
+                if item in self.available_items:
+                    self.available_items.remove(item)
+                    print("Remove available item", item.item_obj.getName())
+
+        if self.print_available_items is False:
+            return
+
+        print("Available items", [available_item.item_obj.getName() for available_item in self.available_items if
+                                  available_item.item_obj is not None])
+
     def getAvailableItems(self):
         return self.available_items
+
+    def getRandomAvailableItem(self):
+        if len(self.available_items) is 0:
+            return None
+
+        item_index = Mengine.range_rand(0, len(self.available_items))
+        return self.available_items[item_index]
+
+    def changeItemFromAvailableToRemove(self, item_obj):
+        for item in self.items:
+            if item.item_obj is item_obj:
+                self.available_items.remove(item)
+                self.removing_items.append(item)
+                break
+
+        print("Removing items", [removing_item.item_obj.getName() for removing_item in self.removing_items if
+                                 removing_item.item_obj is not None])
 
     # - ItemsCounter ---------------------------------------------------------------------------------------------------
 
@@ -297,10 +318,9 @@ class SearchPanel(Initializer):
             break
 
         # remove item
+        self.removing_items.remove(item_to_remove)
         self.items.remove(item_to_remove)
         self.items_counter.incItemsCount()
-
-        # items_node_pos = self.items_node.getLocalPosition()
 
         # play destroy panel item anim
         source.addScope(item_to_remove.playItemDestroyAnim)

@@ -141,6 +141,7 @@ class GameArea(BaseEntity):
                 parallel.addTask("TaskItemClick", Item=item, Filter=self._filterItemClick)
                 parallel.addPrint(item.getName())
                 parallel.addFunction(self.search_level.items.remove, item)
+                parallel.addFunction(self.search_panel.changeItemFromAvailableToRemove, item)
                 parallel.addScope(self._playMoveSceneItemToPanelItem, item)
                 parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
 
