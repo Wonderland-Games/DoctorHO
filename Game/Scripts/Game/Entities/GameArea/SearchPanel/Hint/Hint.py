@@ -91,18 +91,16 @@ class Hint(Initializer):
             tc.addScope(self._clickHint)
 
     def _clickHint(self, source):
-        # get random item from search panel
+        # get random panel item from search panel
         panel_item = self.game.search_panel.getRandomAvailableItem()
         if panel_item is None:
             return
 
-        self.hint_item = panel_item
-
-        # get scene item by panel item
-        scene_item = panel_item.item_obj
+        # save hint item
+        self.hint_item = panel_item.item_obj
 
         # calc item hint point
-        hint_point = scene_item.calcWorldHintPoint()
+        hint_point = self.hint_item.calcWorldHintPoint()
 
         # create temp hint node
         temp_hint_node = Mengine.createNode("Interender")
@@ -121,13 +119,18 @@ class Hint(Initializer):
 
         # hint effect logic
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
+        source.addFunction(self.game.search_panel.virtual_area.freeze, True)
+        source.addFunction(self.game.search_level.virtual_area.freeze, True)
 
         source.addScope(self.hint_effect.show, hint_item_transformation)
-        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.hint_item.item_obj)
+        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.hint_item)
         source.addScope(self.hint_effect.hide, hint_item_transformation)
 
         source.addFunction(self._cleanHintItem)
+
         source.addFunction(self.game.search_panel.hint.button.setBlock, False)
+        source.addFunction(self.game.search_panel.virtual_area.freeze, False)
+        source.addFunction(self.game.search_level.virtual_area.freeze, False)
 
     def _cleanHintItem(self):
         self.hint_item = None
