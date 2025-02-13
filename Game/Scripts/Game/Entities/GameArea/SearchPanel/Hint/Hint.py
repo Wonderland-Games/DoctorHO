@@ -13,6 +13,7 @@ class Hint(Initializer):
         self.tcs = []
         self.game = None
         self.button = None
+        self.hint_item = None
         self.hint_effect = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -45,6 +46,7 @@ class Hint(Initializer):
 
         self.game = None
         self.button = None
+        self.hint_item = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -94,13 +96,15 @@ class Hint(Initializer):
         if panel_item is None:
             return
 
+        self.hint_item = panel_item
+
         # get scene item by panel item
         scene_item = panel_item.item_obj
 
         # calc item hint point
         hint_point = scene_item.calcWorldHintPoint()
 
-        # create temp hint node to get transformation later
+        # create temp hint node
         temp_hint_node = Mengine.createNode("Interender")
         temp_hint_node.setName("TempHintNode")
 
@@ -111,13 +115,19 @@ class Hint(Initializer):
         # getting transformation from temp node
         hint_item_transformation = temp_hint_node.getTransformation()
 
+        # destroy temp hint node
+        temp_hint_node.removeFromParent()
+        Mengine.destroyNode(temp_hint_node)
+
+        # hint effect logic
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addScope(self.hint_effect.show, hint_item_transformation)
         source.addDelay(1000.0)
         source.addScope(self.hint_effect.hide, hint_item_transformation)
 
-        source.addTask("TaskNodeRemoveFromParent", Node=temp_hint_node)
-        source.addTask("TaskNodeDestroy", Node=temp_hint_node)
-
+        source.addFunction(self._cleanHintItem)
         source.addFunction(self.game.search_panel.hint.button.setBlock, False)
+
+    def _cleanHintItem(self):
+        self.hint_item = None
