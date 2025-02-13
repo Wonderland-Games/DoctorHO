@@ -147,7 +147,9 @@ class GameArea(BaseEntity):
 
         # lives logic
         with self._createTaskChain("Lives", Repeat=True) as tc:
-            tc.addEvent(self.search_level.miss_click_event)
+            with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
+                hotspot_click.addEvent(self.search_level.miss_click_event)
+                unavailable_item_click.addListener(Notificator.onItemClick, Filter=self._filterUnavailableItemClick)
             tc.addFunction(self.search_panel.lives_counter.decItemsCount)
 
         # TEST SETTINGS FEATURE
@@ -172,6 +174,26 @@ class GameArea(BaseEntity):
                 return True
 
         return False
+
+    def _filterUnavailableItemClick(self, scene_item):
+        # check if hint is activated
+        hint_item = self.search_panel.hint.hint_item
+        if hint_item is not None:
+            return False
+
+        # check if scene_item is unavailable in search panel
+        available_items = self.search_panel.getAvailableItems()
+        for panel_item in available_items:
+            if panel_item.item_obj is scene_item:
+                return False
+
+        # check if scene_item is removing in search panel
+        removing_items = self.search_panel.getRemovingItems()
+        for panel_item in removing_items:
+            if panel_item.item_obj is scene_item:
+                return False
+
+        return True
 
     def _changeItemColor(self, item):
         def cb(_, __, ___):

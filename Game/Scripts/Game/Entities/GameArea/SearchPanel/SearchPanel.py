@@ -283,6 +283,9 @@ class SearchPanel(Initializer):
         print("Removing items", [removing_item.item_obj.getName() for removing_item in self.removing_items if
                                  removing_item.item_obj is not None])
 
+    def getRemovingItems(self):
+        return self.removing_items
+
     # - ItemsCounter ---------------------------------------------------------------------------------------------------
 
     def _setupItemsCounter(self):
