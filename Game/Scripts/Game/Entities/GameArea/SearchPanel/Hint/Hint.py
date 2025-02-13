@@ -71,6 +71,7 @@ class Hint(Initializer):
     def _initHintEffect(self):
         self.hint_effect = HintEffect()
         self.hint_effect.onInitialize(self.game)
+        self.hint_effect.attachTo(self.game.node)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
