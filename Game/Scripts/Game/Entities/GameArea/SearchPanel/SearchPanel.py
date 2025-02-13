@@ -126,7 +126,7 @@ class SearchPanel(Initializer):
         panel_size = self.getSize()
 
         self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
-        self.virtual_area._socket.setDefaultHandle(False)
+        self.virtual_area._socket.setDefaultHandle(True)
 
         panel_entity = self.movie_panel.getEntity()
         panel_entity.setSocketHandle(PANEL_VA, "button", False)

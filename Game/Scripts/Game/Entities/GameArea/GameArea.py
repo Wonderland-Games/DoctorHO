@@ -160,7 +160,7 @@ class GameArea(BaseEntity):
         # check if hint activated and scene_item is hint_item
         hint_item = self.search_panel.hint.hint_item
         if hint_item is not None:
-            if hint_item.item_obj is scene_item:
+            if hint_item is scene_item:
                 return True
 
             return False
