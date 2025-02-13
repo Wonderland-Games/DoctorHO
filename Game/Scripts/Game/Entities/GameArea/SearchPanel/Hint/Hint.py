@@ -85,12 +85,17 @@ class Hint(Initializer):
         # hint logic
         with self._createTaskChain("Hint", Repeat=True) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button)
+            tc.addPrint("CLICK HINT")
             tc.addScope(self._clickHint)
 
     def _clickHint(self, source):
-        # get item from scene
-        item_index = Mengine.range_rand(0, len(self.game.search_level.items))
-        scene_item = self.game.search_level.items[item_index]
+        # get random item from search panel
+        panel_item = self.game.search_panel.getRandomAvailableItem()
+        if panel_item is None:
+            return
+
+        # get scene item by panel item
+        scene_item = panel_item.item_obj
 
         # calc item hint point
         hint_point = scene_item.calcWorldHintPoint()
@@ -108,10 +113,8 @@ class Hint(Initializer):
 
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
-        source.addPrint("CLICKED HINT")
-
         source.addScope(self.hint_effect.show, hint_item_transformation)
-        source.addDelay(3000.0)
+        source.addDelay(1000.0)
         source.addScope(self.hint_effect.hide, hint_item_transformation)
 
         source.addTask("TaskNodeRemoveFromParent", Node=temp_hint_node)

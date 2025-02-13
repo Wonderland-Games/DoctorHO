@@ -36,9 +36,6 @@ class Item(Initializer):
         self._positionSprite()
 
     def _onFinalize(self):
-        self.game = None
-        self.item_obj = None
-
         if self.sprite is not None:
             self.sprite.removeFromParent()
             Mengine.destroyNode(self.sprite)
@@ -58,6 +55,9 @@ class Item(Initializer):
             self._root.removeFromParent()
             Mengine.destroyNode(self._root)
             self._root = None
+
+        self.item_obj = None
+        self.game = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
