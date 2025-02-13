@@ -123,7 +123,7 @@ class Hint(Initializer):
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
 
         source.addScope(self.hint_effect.show, hint_item_transformation)
-        source.addDelay(1000.0)
+        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.hint_item.item_obj)
         source.addScope(self.hint_effect.hide, hint_item_transformation)
 
         source.addFunction(self._cleanHintItem)
