@@ -157,18 +157,21 @@ class GameArea(BaseEntity):
                 parallel.addFunction(self._changeItemColor, item)
 
     def _filterItemClick(self, scene_item):
-        result = False
+        # check if hint activated and scene_item is hint_item
+        hint_item = self.search_panel.hint.hint_item
+        if hint_item is not None:
+            if hint_item.item_obj is scene_item:
+                return True
 
+            return False
+
+        # check if scene_item is available in search panel
         available_items = self.search_panel.getAvailableItems()
-        if len(available_items) is 0:
-            return result
-
         for panel_item in available_items:
             if panel_item.item_obj is scene_item:
-                result = True
-                break
+                return True
 
-        return result
+        return False
 
     def _changeItemColor(self, item):
         def cb(_, __, ___):
