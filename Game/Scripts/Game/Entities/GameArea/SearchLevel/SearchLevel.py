@@ -92,12 +92,17 @@ class SearchLevel(Initializer):
             (self.box_points.z, self.box_points.w),
             (self.box_points.x, self.box_points.w)
         ]
+        hotspot_polygon_center = Mengine.vec2f(
+            -((self.box_points.z - self.box_points.x) / 2 + self.box_points.x),
+            -((self.box_points.w - self.box_points.y) / 2 + self.box_points.y)
+        )
 
         self.va_hotspot.setPolygon(hotspot_polygon)
         self.va_hotspot.setDefaultHandle(False)
 
         self.root.addChild(self.va_hotspot)
         self.va_hotspot.enable()
+        self.va_hotspot.setLocalPosition(hotspot_polygon_center)
 
         # set hotspot to VA
         self.virtual_area.setup_viewport(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
@@ -107,6 +112,7 @@ class SearchLevel(Initializer):
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()
         self.root.addChild(virtual_area_node)
+        virtual_area_node.setLocalPosition(hotspot_polygon_center)
 
     # - Scene ----------------------------------------------------------------------------------------------------------
 

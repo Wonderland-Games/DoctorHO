@@ -67,17 +67,15 @@ class MissClick(Initializer):
             (self.hotspot_points.z, self.hotspot_points.w),
             (self.hotspot_points.x, self.hotspot_points.w)
         ]
-
-        self.miss_click_hotspot.setPolygon(hotspot_polygon)
-
-        self.root.addChild(self.miss_click_hotspot)
-        self.miss_click_hotspot.enable()
-
         hotspot_polygon_center = Mengine.vec2f(
             -((self.hotspot_points.z - self.hotspot_points.x) / 2 + self.hotspot_points.x),
             -((self.hotspot_points.w - self.hotspot_points.y) / 2 + self.hotspot_points.y)
         )
 
+        self.miss_click_hotspot.setPolygon(hotspot_polygon)
+
+        self.root.addChild(self.miss_click_hotspot)
+        self.miss_click_hotspot.enable()
         self.miss_click_hotspot.setLocalPosition(hotspot_polygon_center)
 
         self.miss_click_event = Event("onMissClick")
