@@ -1,6 +1,7 @@
 from Foundation.Initializer import Initializer
 from Foundation.TaskManager import TaskManager
 from Game.Entities.GameArea.SearchPanel.Hint.HintEffect import HintEffect
+from Game.Entities.GameArea.SearchPanel.Hint.HintCounter import HintCounter
 
 
 BUTTON_HINT = "Movie2Button_Hint"
@@ -13,6 +14,7 @@ class Hint(Initializer):
         self.tcs = []
         self.game = None
         self.button = None
+        self.hint_counter = None
         self.hint_item = None
         self.hint_effect = None
 
@@ -24,6 +26,7 @@ class Hint(Initializer):
 
         self._createRoot()
         self._attachButton()
+        self._setupHintCounter()
         self._initHintEffect()
 
         self._runTaskChains()
@@ -38,6 +41,10 @@ class Hint(Initializer):
         if self.hint_effect is not None:
             self.hint_effect.onFinalize()
             self.hint_effect = None
+
+        if self.hint_counter is not None:
+            self.hint_counter.onFinalize()
+            self.hint_counter = None
 
         if self._root is not None:
             self._root.removeFromParent()
@@ -68,6 +75,25 @@ class Hint(Initializer):
         button_node = self.button.getEntityNode()
         self._root.addChild(button_node)
 
+    def getSize(self):
+        button_bounding_box = self.button.getCompositionBounds()
+        button_size = Utils.getBoundingBoxSize(button_bounding_box)
+        return button_size
+
+    def isAvailable(self):
+        return self.hint_counter.count > 0
+
+    # - HintCounter ----------------------------------------------------------------------------------------------------
+
+    def _setupHintCounter(self):
+        hint_count = 5
+        self.hint_counter = HintCounter()
+        self.hint_counter.onInitialize(self.game, hint_count)
+
+        button_size = self.getSize()
+        self.hint_counter.attachTo(self._root)
+        self.hint_counter.setLocalPosition(Mengine.vec2f(button_size.x / 2, - button_size.y / 2))
+
     # - HintEffect -----------------------------------------------------------------------------------------------------
 
     def _initHintEffect(self):
@@ -88,7 +114,9 @@ class Hint(Initializer):
         with self._createTaskChain("Hint", Repeat=True) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button)
             tc.addPrint("CLICK HINT")
-            tc.addScope(self._clickHint)
+            with tc.addIfTask(self.isAvailable) as (hint, advetisement):
+                hint.addScope(self._clickHint)
+                advetisement.addPrint("[Hint] Call onPopUpAdvertisement event")
 
     def _clickHint(self, source):
         # get random panel item from search panel
@@ -118,6 +146,8 @@ class Hint(Initializer):
         Mengine.destroyNode(temp_hint_node)
 
         # hint effect logic
+        source.addFunction(self.hint_counter.decHintCount)
+
         source.addFunction(self.game.search_panel.hint.button.setBlock, True)
         source.addFunction(self.game.search_panel.virtual_area.freeze, True)
         source.addFunction(self.game.search_level.virtual_area.freeze, True)

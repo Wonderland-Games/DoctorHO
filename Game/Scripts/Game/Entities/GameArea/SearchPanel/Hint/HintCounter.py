@@ -1,13 +1,13 @@
 from Foundation.Initializer import Initializer
 
 
-MOVIE_ICON = "Movie2_LivesCounterIcon"
-TEXT_ID = "ID_LivesCounter"
+MOVIE_ICON = "Movie2_HintCounterIcon"
+TEXT_ID = "ID_HintCounter"
 
 
-class LivesCounter(Initializer):
+class HintCounter(Initializer):
     def __init__(self):
-        super(LivesCounter, self).__init__()
+        super(HintCounter, self).__init__()
         self.game = None
         self.count = None
         self.root = None
@@ -17,7 +17,7 @@ class LivesCounter(Initializer):
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game, count):
-        super(LivesCounter, self)._onInitialize()
+        super(HintCounter, self)._onInitialize()
         self.game = game
         self.count = count
 
@@ -27,7 +27,7 @@ class LivesCounter(Initializer):
         self._setupText()
 
     def _onFinalize(self):
-        super(LivesCounter, self)._onFinalize()
+        super(HintCounter, self)._onFinalize()
         self.game = None
         self.count = None
 
@@ -77,15 +77,12 @@ class LivesCounter(Initializer):
 
         self.text.setTextFormatArgs(value)
 
-    def decItemsCount(self):
+    def decHintCount(self):
         if self.count <= 0:
             return
 
         self.count -= 1
         self.updateTextArgs()
-
-        if self.count == 0:
-            print("[LivesCounter] Call onLevelLose event")
 
     # - Icon -----------------------------------------------------------------------------------------------------------
 

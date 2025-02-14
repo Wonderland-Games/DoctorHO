@@ -1,7 +1,7 @@
 from Foundation.Initializer import Initializer
 
 
-TEXT_ID = "ID_SearchPanel_ItemsCounter"
+TEXT_ID = "ID_ItemsCounter"
 
 
 class ItemsCounter(Initializer):
