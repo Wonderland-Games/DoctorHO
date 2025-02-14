@@ -1,5 +1,4 @@
 from Foundation.Initializer import Initializer
-from Foundation.TaskManager import TaskManager
 from Game.Entities.GameArea.SearchPanel.Hint.HintEffect import HintEffect
 from Game.Entities.GameArea.SearchPanel.Hint.HintCounter import HintCounter
 
@@ -11,7 +10,6 @@ class Hint(Initializer):
     def __init__(self):
         super(Hint, self).__init__()
         self._root = None
-        self.tcs = []
         self.game = None
         self.button = None
         self.hint_counter = None
@@ -29,14 +27,8 @@ class Hint(Initializer):
         self._setupHintCounter()
         self._initHintEffect()
 
-        self._runTaskChains()
-
     def _onFinalize(self):
         super(Hint, self)._onFinalize()
-
-        for tc in self.tcs:
-            tc.cancel()
-        self.tcs = []
 
         if self.hint_effect is not None:
             self.hint_effect.onFinalize()
@@ -103,22 +95,7 @@ class Hint(Initializer):
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
-    def _createTaskChain(self, name, **params):
-        tc_base = self.__class__.__name__
-        tc = TaskManager.createTaskChain(Name=tc_base + "_" + name, **params)
-        self.tcs.append(tc)
-        return tc
-
-    def _runTaskChains(self):
-        # hint logic
-        with self._createTaskChain("Hint", Repeat=True) as tc:
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button)
-            tc.addPrint("CLICK HINT")
-            with tc.addIfTask(self.isAvailable) as (hint, advetisement):
-                hint.addScope(self._clickHint)
-                advetisement.addPrint("[Hint] Call onPopUpAdvertisement event")
-
-    def _clickHint(self, source):
+    def clickHint(self, source):
         # get random panel item from search panel
         panel_item = self.game.search_panel.getRandomAvailableItem()
         if panel_item is None:
