@@ -1,6 +1,7 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
-from Game.Entities.GameArea.SearchLevel import SearchLevel
+from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
+from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 
 
@@ -20,6 +21,7 @@ class GameArea(BaseEntity):
         self.content = None
         self.tcs = []
         self.search_level = None
+        self.miss_click = None
         self.search_panel = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -51,8 +53,10 @@ class GameArea(BaseEntity):
         super(GameArea, self)._onActivate()
 
         self._initSearchLevel("01_Forest")
+        self._initMissClick()
         self._initSearchPanel()
 
+        self._attachMissClick()
         self._attachSearchPanel()
         self._attachSearchLevel()
 
@@ -68,6 +72,10 @@ class GameArea(BaseEntity):
         if self.search_panel is not None:
             self.search_panel.onFinalize()
             self.search_panel = None
+
+        if self.miss_click is not None:
+            self.miss_click.onFinalize()
+            self.miss_click = None
 
         if self.search_level is not None:
             self.search_level.onFinalize()
@@ -90,6 +98,7 @@ class GameArea(BaseEntity):
         game_width = game_viewport.end.x - game_viewport.begin.x
         game_height = game_viewport.end.y - game_viewport.begin.y
         game_center_x = game_viewport.begin.x + game_width / 2
+        game_center_y = game_viewport.begin.y + game_height / 2
 
         search_panel_size = self.search_panel.getSize()
         # Rework pos_y with SETTINGS json
@@ -97,12 +106,33 @@ class GameArea(BaseEntity):
         # pos_y = game_viewport.begin.y + game_height / 2 - search_panel_size.y / 2
 
         search_level_slot = self.content.getMovieSlot(SLOT_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(game_center_x, pos_y))
+        search_level_slot.setWorldPosition(Mengine.vec2f(game_center_x, game_center_y))
 
         self.search_level.attachTo(search_level_slot)
 
         search_level_root = self.search_level.getRoot()
-        search_level_root.setLocalPosition(Mengine.vec2f(-game_center_x, -pos_y))
+        search_level_root.setLocalPosition(Mengine.vec2f(-game_center_x, -game_center_y))
+
+    # - MissClick ------------------------------------------------------------------------------------------------------
+
+    def _initMissClick(self):
+        frame = Mengine.getGameViewport()
+        frame_points = Mengine.vec4f(frame.begin.x, frame.begin.y, frame.end.x, frame.end.y)
+
+        self.miss_click = MissClick()
+        self.miss_click.onInitialize(self, frame_points)
+
+    def _attachMissClick(self):
+        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
+        game_viewport = Mengine.getGameViewport()
+        game_width = game_viewport.end.x - game_viewport.begin.x
+        game_height = game_viewport.end.y - game_viewport.begin.y
+        game_center_x = game_viewport.begin.x + game_width / 2
+        game_center_y = game_viewport.begin.y + game_height / 2
+
+        miss_click_root = self.miss_click.getRoot()
+        self.addChildFront(miss_click_root)
+        miss_click_root.setWorldPosition(Mengine.vec2f(game_center_x, game_center_y))
 
     # - SearchPanel ----------------------------------------------------------------------------------------------------
 
@@ -148,7 +178,7 @@ class GameArea(BaseEntity):
         # lives logic
         with self._createTaskChain("Lives", Repeat=True) as tc:
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
-                hotspot_click.addEvent(self.search_level.miss_click_event)
+                hotspot_click.addEvent(self.miss_click.miss_click_event)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=self._filterUnavailableItemClick)
             tc.addFunction(self.search_panel.lives_counter.decItemsCount)
 
