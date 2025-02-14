@@ -4,6 +4,8 @@ def onInitialize():
     from Foundation.Notificator import Notificator
     identities = [
         "onChangeScene",
+
+        "onLevelStart",
     ]
 
     Notificator.addIdentities(identities)

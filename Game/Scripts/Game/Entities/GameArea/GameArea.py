@@ -157,6 +157,14 @@ class GameArea(BaseEntity):
                 parallel.addScope(self._playMoveSceneItemToPanelItem, item)
                 parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
 
+        # hint logic
+        with self._createTaskChain("Hint", Repeat=True) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
+            tc.addPrint("CLICK HINT")
+            with tc.addIfTask(self.search_panel.hint.isAvailable) as (hint, advetisement):
+                hint.addScope(self.search_panel.hint.clickHint)
+                advetisement.addPrint("[Hint] Call onPopUpAdvertisement event")
+
         # lives logic
         with self._createTaskChain("Lives", Repeat=True) as tc:
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
