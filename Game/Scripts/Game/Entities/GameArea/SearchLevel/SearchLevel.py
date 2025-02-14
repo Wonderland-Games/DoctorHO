@@ -10,9 +10,6 @@ class SearchLevel(Initializer):
         self.root = None
         self.virtual_area = None
         self.va_hotspot = None
-        self.miss_click_hotspot = None
-        self.miss_click_event = None
-        self.miss_click_data = {}
         self.game = None
         self.level_name = None
         self.box_points = None
@@ -28,7 +25,6 @@ class SearchLevel(Initializer):
         self._initVirtualArea()
 
         self._createRoot()
-        self._setupMissClickHotSpot()
         self._setupVirtualArea()
         self._attachScene()
         self._fillItems()
@@ -48,14 +44,6 @@ class SearchLevel(Initializer):
         if self.virtual_area is not None:
             self.virtual_area.onFinalize()
             self.virtual_area = None
-
-        if self.miss_click_hotspot is not None:
-            self.miss_click_hotspot.removeFromParent()
-            Mengine.destroyNode(self.miss_click_hotspot)
-            self.miss_click_hotspot = None
-
-        self.miss_click_event = None
-        self.miss_click_data = {}
 
         if self.va_hotspot is not None:
             self.va_hotspot.removeFromParent()
@@ -144,51 +132,6 @@ class SearchLevel(Initializer):
         box_height = self.box_points.w - self.box_points.y
         return Mengine.vec2f(box_width, box_height)
 
-    def _setupMissClickHotSpot(self):
-        # create hotspot to handle miss clicks
-        self.miss_click_hotspot = Mengine.createNode("HotSpotPolygon")
-        self.miss_click_hotspot.setName(self.__class__.__name__ + "_" + "MissClickSocket")
-
-        hotspot_polygon = [
-            (self.box_points.x, self.box_points.y),
-            (self.box_points.z, self.box_points.y),
-            (self.box_points.z, self.box_points.w),
-            (self.box_points.x, self.box_points.w)
-        ]
-
-        self.miss_click_hotspot.setPolygon(hotspot_polygon)
-
-        self.root.addChild(self.miss_click_hotspot)
-        self.miss_click_hotspot.enable()
-
-        self.miss_click_event = Event("onItemMissClick")
-        self.miss_click_hotspot.setEventListener(onHandleMouseButtonEvent=self._onItemMissClickButtonEvent)
-
-    def _onItemMissClickButtonEvent(self, touchId, x, y, button, pressure, isDown, isPressed):
-        last_click_data = self.miss_click_data
-        self.miss_click_data = {
-            "x": x,
-            "y": y,
-        }
-
-        if self.game.search_panel.hint.hint_item is not None:
-            return False
-
-        if touchId != Mengine.TC_TOUCH0:
-            return False
-
-        if button != 0 or isDown is True:
-            return False
-
-        if len(last_click_data) != 0:
-            if x != last_click_data["x"] or y != last_click_data["y"]:
-                return False
-
-            print("CALL MISS CLICK EVENT")
-            self.miss_click_event()
-
-        return False
-
     # - Items ----------------------------------------------------------------------------------------------------------
 
     def _fillItems(self):
@@ -196,17 +139,3 @@ class SearchLevel(Initializer):
         scene_objects = scene_group.getObjects()
 
         self.items = [obj for obj in scene_objects if obj.getEntityType() is "Item"]
-
-    def getItemWorldPosition(self, item_obj):
-        item = None
-
-        for obj in self.items:
-            if obj == item_obj:
-                item = obj
-                break
-
-        if item is None:
-            return None
-
-        item_pos = item.calcWorldHintPoint()
-        return item_pos
