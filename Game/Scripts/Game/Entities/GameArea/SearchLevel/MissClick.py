@@ -101,7 +101,7 @@ class MissClick(Initializer):
             if x != last_click_data["x"] or y != last_click_data["y"]:
                 return False
 
-            print("CALL MISS CLICK EVENT")
+            print(" * CALL MISS CLICK EVENT")
             self.miss_click_event()
 
         return False

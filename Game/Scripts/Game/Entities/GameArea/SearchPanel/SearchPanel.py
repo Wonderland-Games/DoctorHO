@@ -334,7 +334,7 @@ class SearchPanel(Initializer):
 
         # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
-        source.addPrint("START ITEMS MOVE ANIM")
+        source.addPrint(" * START ITEMS MOVE ANIM")
 
         # move items in parallel with condition of sides
         for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
@@ -353,4 +353,4 @@ class SearchPanel(Initializer):
 
         # allow other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
-        source.addPrint("END ITEMS MOVE ANIM")
+        source.addPrint(" * END ITEMS MOVE ANIM")

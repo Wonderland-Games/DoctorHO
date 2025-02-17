@@ -151,7 +151,7 @@ class GameArea(BaseEntity):
         with self._createTaskChain("PickItems", Repeat=True) as tc:
             for item, parallel in tc.addParallelTaskList(self.search_level.items):
                 parallel.addTask("TaskItemClick", Item=item, Filter=self._filterItemClick)
-                parallel.addPrint(item.getName())
+                parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
                 parallel.addFunction(self.search_level.items.remove, item)
                 parallel.addFunction(self.search_panel.changeItemFromAvailableToRemove, item)
                 parallel.addScope(self._playMoveSceneItemToPanelItem, item)
@@ -160,7 +160,7 @@ class GameArea(BaseEntity):
         # hint logic
         with self._createTaskChain("Hint", Repeat=True) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
-            tc.addPrint("CLICK HINT")
+            tc.addPrint(" * CLICK HINT")
             with tc.addIfTask(self.search_panel.hint.isAvailable) as (hint, advetisement):
                 hint.addScope(self.search_panel.hint.clickHint)
                 advetisement.addPrint("[Hint] Call onPopUpAdvertisement event")
@@ -264,7 +264,7 @@ class GameArea(BaseEntity):
         source.addFunction(scene_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
 
-        source.addPrint("START SCENE ITEM ANIM")
+        source.addPrint(" * START SCENE ITEM ANIM")
 
         with source.addParallelTask(2) as (scale, move):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
@@ -272,7 +272,7 @@ class GameArea(BaseEntity):
             move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, From=pos_from, To=pos_to,
                          Time=SCENE_ITEM_MOVE_TIME)
 
-        source.addPrint("END SCENE ITEM ANIM")
+        source.addPrint(" * END SCENE ITEM ANIM")
 
         source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
         source.addTask("TaskNodeDestroy", Node=item_pure)
