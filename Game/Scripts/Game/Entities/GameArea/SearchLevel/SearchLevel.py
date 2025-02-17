@@ -13,7 +13,7 @@ class SearchLevel(Initializer):
         self.game = None
         self.level_name = None
         self.box_points = None
-        self.items = None
+        self.items = []
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ class SearchLevel(Initializer):
         self.game = None
         self.level_name = None
         self.box_points = None
-        self.items = None
+        self.items = []
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -144,4 +144,9 @@ class SearchLevel(Initializer):
         scene_group = GroupManager.getGroup(self.level_name)
         scene_objects = scene_group.getObjects()
 
-        self.items = [obj for obj in scene_objects if obj.getEntityType() is "Item"]
+        for obj in scene_objects:
+            if obj.getEntityType() is not "Item":
+                continue
+
+            self.items.append(obj)
+            obj.setEnable(True)

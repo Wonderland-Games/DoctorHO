@@ -147,30 +147,7 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        # search items in scene logic
-        with self._createTaskChain("PickItems", Repeat=True) as tc:
-            for item, parallel in tc.addParallelTaskList(self.search_level.items):
-                parallel.addTask("TaskItemClick", Item=item, Filter=self._filterItemClick)
-                parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
-                parallel.addFunction(self.search_level.items.remove, item)
-                parallel.addFunction(self.search_panel.changeItemFromAvailableToRemove, item)
-                parallel.addScope(self._playMoveSceneItemToPanelItem, item)
-                parallel.addScope(self.search_panel.playRemovePanelItemAnim, item)
-
-        # hint logic
-        with self._createTaskChain("Hint", Repeat=True) as tc:
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.search_panel.hint.button)
-            tc.addPrint(" * CLICK HINT")
-            with tc.addIfTask(self.search_panel.hint.isAvailable) as (hint, advetisement):
-                hint.addScope(self.search_panel.hint.clickHint)
-                advetisement.addPrint("[Hint] Call onPopUpAdvertisement event")
-
-        # lives logic
-        with self._createTaskChain("Lives", Repeat=True) as tc:
-            with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
-                hotspot_click.addEvent(self.miss_click.miss_click_event)
-                unavailable_item_click.addListener(Notificator.onItemClick, Filter=self._filterUnavailableItemClick)
-            tc.addFunction(self.search_panel.lives_counter.decItemsCount)
+        Notification.notify(Notificator.onLevelStart, self)
 
         # TEST SETTINGS FEATURE
         with self._createTaskChain("TestColorSettings", Repeat=True) as tc:
@@ -178,7 +155,15 @@ class GameArea(BaseEntity):
             for item, parallel in tc.addParallelTaskList(self.search_level.items):
                 parallel.addFunction(self._changeItemColor, item)
 
-    def _filterItemClick(self, scene_item):
+    def _changeItemColor(self, item):
+        def cb(_, __, ___):
+            pass
+
+        color = SETTINGS.Test.color
+        sprite = item.getEntity().getSprite()
+        sprite.colorTo(500.0, color, "easyLinear", cb)
+
+    def filterItemClick(self, scene_item):
         # check if hint activated and scene_item is hint_item
         hint_item = self.search_panel.hint.hint_item
         if hint_item is not None:
@@ -195,7 +180,7 @@ class GameArea(BaseEntity):
 
         return False
 
-    def _filterUnavailableItemClick(self, scene_item):
+    def filterUnavailableItemClick(self, scene_item):
         # check if hint is activated
         hint_item = self.search_panel.hint.hint_item
         if hint_item is not None:
@@ -215,41 +200,33 @@ class GameArea(BaseEntity):
 
         return True
 
-    def _changeItemColor(self, item):
-        def cb(_, __, ___):
-            pass
+    def moveLevelItemToPanelItem(self, source, level_item):
+        # generate level item pure sprite
+        level_item_entity = level_item.getEntity()
+        level_item_pure = level_item_entity.generatePure()
+        level_item_pure.enable()
 
-        color = SETTINGS.Test.color
-        sprite = item.getEntity().getSprite()
-        sprite.colorTo(500.0, color, "easyLinear", cb)
+        # get level item node with position data
+        level_item_node = level_item.getEntityNode()
+        level_item_node_pos = level_item_node.getWorldPosition()
+        level_item_node_center = level_item.getEntity().getSpriteCenter()
+        level_item_node_pos_true = Mengine.vec2f(level_item_node_pos.x + level_item_node_center[0],
+                                                 level_item_node_pos.y + level_item_node_center[1])
 
-    def _playMoveSceneItemToPanelItem(self, source, scene_item):
-        # generate scene item pure sprite
-        item_entity = scene_item.getEntity()
-        item_pure = item_entity.generatePure()
-        item_pure.enable()
-
-        # get scene item node with position data
-        scene_item_node = scene_item.getEntityNode()
-        scene_item_node_pos = scene_item_node.getWorldPosition()
-        scene_item_node_center = scene_item.getEntity().getSpriteCenter()
-        scene_item_node_pos_true = Mengine.vec2f(scene_item_node_pos.x + scene_item_node_center[0],
-                                                 scene_item_node_pos.y + scene_item_node_center[1])
-
-        # create attach node
+        # create moving node
         moving_node = Mengine.createNode("Interender")
         moving_node.setName("Temp")
 
-        # attach scene item to attach node with position fix
+        # attach level item to moving node with position fix
         self.addChild(moving_node)
-        moving_node.addChild(item_pure)
-        moving_node.setWorldPosition(scene_item_node_pos_true)
-        item_pure.setLocalPosition(Mengine.vec2f(-scene_item_node_center[0], -scene_item_node_center[1]))
+        moving_node.addChild(level_item_pure)
+        moving_node.setWorldPosition(level_item_node_pos_true)
+        level_item_pure.setLocalPosition(Mengine.vec2f(-level_item_node_center[0], -level_item_node_center[1]))
 
         # find panel item by object
         panel_item = None
         for item in self.search_panel.items:
-            if item.item_obj is not scene_item:
+            if item.item_obj is not level_item:
                 continue
 
             panel_item = item
@@ -257,11 +234,11 @@ class GameArea(BaseEntity):
 
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
-        pos_from = scene_item_node_pos_true
+        pos_from = level_item_node_pos_true
         pos_to = panel_item.getRootWorldPosition()
 
-        # destroy/disable scene item and run move animation
-        source.addFunction(scene_item.setEnable, False)
+        # destroy/disable level item and run move animation
+        source.addFunction(level_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
 
         source.addPrint(" * START SCENE ITEM ANIM")
@@ -274,7 +251,7 @@ class GameArea(BaseEntity):
 
         source.addPrint(" * END SCENE ITEM ANIM")
 
-        source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
-        source.addTask("TaskNodeDestroy", Node=item_pure)
+        source.addTask("TaskNodeRemoveFromParent", Node=level_item_pure)
+        source.addTask("TaskNodeDestroy", Node=level_item_pure)
         source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
         source.addTask("TaskNodeDestroy", Node=moving_node)

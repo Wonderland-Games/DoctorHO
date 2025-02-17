@@ -29,7 +29,6 @@ class SystemGame(System):
     def _onRun(self):
         super(SystemGame, self)._onRun()
 
-        self.addObserver(Notificator.onChangeScene, self._onSceneEnterFilter)
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
 
         return True
@@ -38,29 +37,46 @@ class SystemGame(System):
         super(SystemGame, self)._onStop()
         pass
 
-    # - TaskChain ------------------------------------------------------------------------------------------------------
+    # - Observers ------------------------------------------------------------------------------------------------------
 
-    def _onSceneEnterFilter(self, scene_name):
-        print("_onSceneEnterFilter", scene_name)
-        if scene_name is not "GameArea":
-            return False
+    def _onLevelStart(self, game):
+        print("_onLevelStart", game)
 
-        if self.existTaskChain("SystemGame") is True:
-            self.removeTaskChain("SystemGame")
+        # pick items from level
+        if self.existTaskChain("LevelItemsPick") is True:
+            self.removeTaskChain("LevelItemsPick")
 
-        self._runTaskChains()
+        with self.createTaskChain("LevelItemsPick", Repeat=True) as tc:
+            for item, parallel in tc.addParallelTaskList(game.search_level.items):
+                parallel.addTask("TaskItemClick", Item=item, Filter=game.filterItemClick)
+                parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
+                parallel.addFunction(game.search_level.items.remove, item)
+                parallel.addFunction(game.search_panel.changeItemFromAvailableToRemove, item)
+                parallel.addScope(game.moveLevelItemToPanelItem, item)
+                parallel.addScope(game.search_panel.playRemovePanelItemAnim, item)
 
-        return False
+        # hint logic
+        if self.existTaskChain("SearchPanelHint") is True:
+            self.removeTaskChain("SearchPanelHint")
 
-    def _runTaskChains(self):
-        with self.createTaskChain("SystemGame") as tc:
-            tc.addPrint(" * RUN GAME LOGIC")
-            tc.addNotify(Notificator.onLevelStart)
+        with self.createTaskChain("SearchPanelHint", Repeat=True) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button)
+            tc.addPrint(" * CLICK HINT")
 
-    def _onLevelStart(self):
+            with tc.addIfTask(game.search_panel.hint.isAvailable) as (hint, advertisement):
+                hint.addScope(game.search_panel.hint.clickHint)
+                advertisement.addPrint("[Hint] Call onPopUpAdvertisement event")
 
-        if self.existTaskChain("PickLevelItems") is True:
-            self.removeTaskChain("PickLevelItems")
+        # lives logic
+        if self.existTaskChain("SearchPanelLives") is True:
+            self.removeTaskChain("SearchPanelLives")
+
+        with self.createTaskChain("SearchPanelLives", Repeat=True) as tc:
+            with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
+                hotspot_click.addEvent(game.miss_click.miss_click_event)
+                unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
+
+            tc.addFunction(game.search_panel.lives_counter.decItemsCount)
 
         return False
 
