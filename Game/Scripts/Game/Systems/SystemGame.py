@@ -54,7 +54,7 @@ class SystemGame(System):
 
     def _runTaskChains(self):
         with self.createTaskChain("SystemGame") as tc:
-            tc.addPrint("RUN GAME LOGIC")
+            tc.addPrint(" * RUN GAME LOGIC")
             tc.addNotify(Notificator.onLevelStart)
 
     def _onLevelStart(self):

@@ -138,7 +138,7 @@ class Item(Initializer):
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def playItemDestroyAnim(self, source):
-        source.addPrint("START REMOVE ITEM ANIM")
+        source.addPrint(" * START REMOVE ITEM ANIM")
 
         source.addTask("TaskNodeScaleTo", Node=self.sprite_node, To=ITEM_REMOVE_SCALE_UP_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
 
@@ -146,4 +146,4 @@ class Item(Initializer):
             scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
             alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
 
-        source.addPrint("END REMOVE ITEM ANIM")
+        source.addPrint(" * END REMOVE ITEM ANIM")

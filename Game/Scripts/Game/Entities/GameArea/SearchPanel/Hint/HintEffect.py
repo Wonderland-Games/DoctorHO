@@ -47,7 +47,7 @@ class HintEffect(Initializer):
     # - Effect ---------------------------------------------------------------------------------------------------------
 
     def _createEffect(self, state, transformation):
-        print("CREATE HINT EFFECT '{}'".format(state))
+        print(" * CREATE HINT EFFECT '{}'".format(state))
 
         movie_name = MOVIE_HINT_EFFECT + state
 
@@ -62,7 +62,7 @@ class HintEffect(Initializer):
         prototype_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, transformation, True)
 
     def _playEffect(self, source, state):
-        print("PLAY HINT EFFECT '{}'".format(state))
+        print(" * PLAY HINT EFFECT '{}'".format(state))
 
         prototype = self.movies.get(state)
         if prototype is None:
@@ -71,7 +71,7 @@ class HintEffect(Initializer):
         source.addPlay(prototype)
 
     def _destroyEffect(self, state):
-        print("DESTROY HINT EFFECT '{}'".format(state))
+        print(" * DESTROY HINT EFFECT '{}'".format(state))
 
         prototype = self.movies.get(state)
         if prototype is None:
