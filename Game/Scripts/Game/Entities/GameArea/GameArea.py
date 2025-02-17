@@ -3,6 +3,7 @@ from Foundation.TaskManager import TaskManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
+from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -86,15 +87,10 @@ class GameArea(BaseEntity):
         self.miss_click.onInitialize(self, frame_points)
 
     def _attachMissClick(self):
-        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
-        game_viewport = Mengine.getGameViewport()
-        game_width = game_viewport.end.x - game_viewport.begin.x
-        game_height = game_viewport.end.y - game_viewport.begin.y
-        game_center_x = game_viewport.begin.x + game_width / 2
-        game_center_y = game_viewport.begin.y + game_height / 2
+        _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
 
         miss_click_slot = self.content.getMovieSlot(SLOT_MISS_CLICK)
-        miss_click_slot.setWorldPosition(Mengine.vec2f(game_center_x, game_center_y))
+        miss_click_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
         self.miss_click.attachTo(miss_click_slot)
 
     # - SearchLevel ----------------------------------------------------------------------------------------------------
@@ -107,15 +103,10 @@ class GameArea(BaseEntity):
         self.search_level.onInitialize(self, level_name, frame_points)
 
     def _attachSearchLevel(self):
-        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
-        game_viewport = Mengine.getGameViewport()
-        game_width = game_viewport.end.x - game_viewport.begin.x
-        game_height = game_viewport.end.y - game_viewport.begin.y
-        game_center_x = game_viewport.begin.x + game_width / 2
-        game_center_y = game_viewport.begin.y + game_height / 2
+        _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
 
         search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(game_center_x, game_center_y))
+        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
         self.search_level.attachTo(search_level_slot)
 
     # - SearchPanel ----------------------------------------------------------------------------------------------------
@@ -125,17 +116,13 @@ class GameArea(BaseEntity):
         self.search_panel.onInitialize(self)
 
     def _attachSearchPanel(self):
-        # from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
-        game_viewport = Mengine.getGameViewport()
-        game_width = game_viewport.end.x - game_viewport.begin.x
-        game_height = game_viewport.end.y - game_viewport.begin.y
-        game_center_x = game_viewport.begin.x + game_width / 2
+        _, game_height, _, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
 
         search_panel_size = self.search_panel.getSize()
         pos_y = game_height - search_panel_size.y / 2
 
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
-        search_panel_slot.setWorldPosition(Mengine.vec2f(game_center_x, pos_y))
+        search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
         self.search_panel.attachTo(search_panel_slot)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------

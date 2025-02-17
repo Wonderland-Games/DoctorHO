@@ -83,9 +83,7 @@ class LivesCounter(Initializer):
 
         self.count -= 1
         self.updateTextArgs()
-
-        if self.count == 0:
-            print("[LivesCounter] Call onLevelLose event")
+        Notification.notify(Notificator.onLevelLivesChanged, self.count)
 
     # - Icon -----------------------------------------------------------------------------------------------------------
 

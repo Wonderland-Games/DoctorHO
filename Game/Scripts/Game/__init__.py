@@ -6,6 +6,11 @@ def onInitialize():
         "onChangeScene",
 
         "onLevelStart",
+        "onLevelEnd",
+        "onLevelMissClicked",
+        "onLevelHintClicked",
+        "onLevelLivesDecrease",
+        "onLevelLivesChanged",
     ]
 
     Notificator.addIdentities(identities)

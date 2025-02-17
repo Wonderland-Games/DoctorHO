@@ -30,6 +30,9 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
+        self.addObserver(Notificator.onLevelMissClicked, self._onLevelMissClicked)
+        self.addObserver(Notificator.onLevelLivesChanged, self._onLevelLivesChanged)
+        self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
 
         return True
 
@@ -46,7 +49,7 @@ class SystemGame(System):
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
 
-        with self.createTaskChain("LevelItemsPick", Repeat=True) as tc:
+        with self.createTaskChain("LevelItemsPick") as tc:
             for item, parallel in tc.addParallelTaskList(game.search_level.items):
                 parallel.addTask("TaskItemClick", Item=item, Filter=game.filterItemClick)
                 parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
@@ -54,6 +57,8 @@ class SystemGame(System):
                 parallel.addFunction(game.search_panel.changeItemFromAvailableToRemove, item)
                 parallel.addScope(game.moveLevelItemToPanelItem, item)
                 parallel.addScope(game.search_panel.playRemovePanelItemAnim, item)
+
+            tc.addNotify(Notificator.onLevelEnd, True)
 
         # hint logic
         if self.existTaskChain("SearchPanelHint") is True:
@@ -80,3 +85,33 @@ class SystemGame(System):
 
         return False
 
+    def _onLevelMissClicked(self):
+        print("_onLevelMissClicked")
+        Notification.notify(Notificator.onLevelLivesDecrease)
+
+    def _onLevelLivesChanged(self, lives_count):
+        print("_onLevelLivesChanged", lives_count)
+
+        if lives_count <= 0:
+            Notification.notify(Notificator.onLevelEnd, False)
+
+        return False
+
+    def _onLevelEnd(self, is_win):
+        print("_onLevelEnd", is_win)
+
+        if is_win is True:
+            print("WIN")
+        else:
+            print("LOSE")
+
+        if self.existTaskChain("LevelItemsPick") is True:
+            self.removeTaskChain("LevelItemsPick")
+
+        if self.existTaskChain("SearchPanelHint") is True:
+            self.removeTaskChain("SearchPanelHint")
+
+        if self.existTaskChain("SearchPanelLives") is True:
+            self.removeTaskChain("SearchPanelLives")
+
+        return False
