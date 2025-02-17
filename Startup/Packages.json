@@ -3,6 +3,7 @@
         "FrameworkPack": [
             "Foundation",
             "HOPA",
+			"MobileKit",
             "Game"
         ],
 
@@ -27,6 +28,11 @@
     "HOPA": {
         "Name": "HOPA",
         "Path": "../HOPA/",
+        "Description": "Package.bin"
+    },
+	"MobileKit": {
+        "Name": "MobileKit",
+        "Path": "../MobileKit/",
         "Description": "Package.bin"
     },
     "Game": {
