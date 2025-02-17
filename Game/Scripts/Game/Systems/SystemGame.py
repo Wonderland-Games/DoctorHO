@@ -101,9 +101,9 @@ class SystemGame(System):
         print("_onLevelEnd", is_win)
 
         if is_win is True:
-            print("WIN")
+            print("YOU WIN!")
         else:
-            print("LOSE")
+            print("YOU LOSE!")
 
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
