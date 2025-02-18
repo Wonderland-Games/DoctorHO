@@ -30,7 +30,6 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
-        self.addObserver(Notificator.onLevelMissClicked, self._onLevelMissClicked)
         self.addObserver(Notificator.onLevelLivesChanged, self._onLevelLivesChanged)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
 
@@ -76,16 +75,12 @@ class SystemGame(System):
 
         with self.createTaskChain("SearchPanelLives", Repeat=True) as tc:
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
-                hotspot_click.addEvent(game.miss_click.miss_click_event)
+                hotspot_click.addListener(Notificator.onLevelMissClicked)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
 
-            # tc.addFunction(game.search_panel.lives_counter.decItemsCount)
             tc.addNotify(Notificator.onLevelLivesDecrease)
 
         return False
-
-    def _onLevelMissClicked(self):
-        Notification.notify(Notificator.onLevelLivesDecrease)
 
     def _onLevelLivesChanged(self, lives_count):
         if lives_count <= 0:
