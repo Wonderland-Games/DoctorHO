@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Foundation.TaskManager import TaskManager
 from MobileKit.IconManager import IconManager
 
 
@@ -10,6 +11,7 @@ TEXT_ID = "ID_LivesCounter"
 class LivesCounter(Initializer):
     def __init__(self):
         super(LivesCounter, self).__init__()
+        self.tcs = []
         self.game = None
         self.count = None
         self.root = None
@@ -28,10 +30,14 @@ class LivesCounter(Initializer):
         self._setupIcon()
         self._setupText()
 
+        self._runTaskChains()
+
     def _onFinalize(self):
         super(LivesCounter, self)._onFinalize()
-        self.game = None
-        self.count = None
+
+        for tc in self.tcs:
+            tc.cancel()
+        self.tcs = []
 
         if self.icon is not None:
             self.icon.onDestroy()
@@ -46,6 +52,9 @@ class LivesCounter(Initializer):
             self.root.removeFromParent()
             Mengine.destroyNode(self.root)
             self.root = None
+
+        self.game = None
+        self.count = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -95,3 +104,15 @@ class LivesCounter(Initializer):
         self.icon.setEnable(True)
         icon_node = self.icon.getEntityNode()
         self.root.addChild(icon_node)
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def _createTaskChain(self, name, **params):
+        tc = TaskManager.createTaskChain(Name=self.__class__.__name__ + "_" + name, **params)
+        self.tcs.append(tc)
+        return tc
+
+    def _runTaskChains(self):
+        with self._createTaskChain("Main", Repeat=True) as tc:
+            tc.addListener(Notificator.onLevelLivesDecrease)
+            tc.addFunction(self.decItemsCount)

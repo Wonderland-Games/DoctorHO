@@ -43,8 +43,6 @@ class SystemGame(System):
     # - Observers ------------------------------------------------------------------------------------------------------
 
     def _onLevelStart(self, game):
-        print("_onLevelStart", game)
-
         # pick items from level
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
@@ -81,25 +79,21 @@ class SystemGame(System):
                 hotspot_click.addEvent(game.miss_click.miss_click_event)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
 
-            tc.addFunction(game.search_panel.lives_counter.decItemsCount)
+            # tc.addFunction(game.search_panel.lives_counter.decItemsCount)
+            tc.addNotify(Notificator.onLevelLivesDecrease)
 
         return False
 
     def _onLevelMissClicked(self):
-        print("_onLevelMissClicked")
         Notification.notify(Notificator.onLevelLivesDecrease)
 
     def _onLevelLivesChanged(self, lives_count):
-        print("_onLevelLivesChanged", lives_count)
-
         if lives_count <= 0:
             Notification.notify(Notificator.onLevelEnd, False)
 
         return False
 
     def _onLevelEnd(self, is_win):
-        print("_onLevelEnd", is_win)
-
         if is_win is True:
             print("YOU WIN!")
         else:
