@@ -8,7 +8,6 @@ class MissClick(Initializer):
         self.game = None
         self.hotspot_points = None
         self.miss_click_hotspot = None
-        self.miss_click_event = None
         self.miss_click_data = {}
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -38,7 +37,6 @@ class MissClick(Initializer):
 
         self.game = None
         self.hotspot_points = None
-        self.miss_click_event = None
         self.miss_click_data = {}
 
     # - Root -----------------------------------------------------------------------------------------------------------
@@ -78,7 +76,6 @@ class MissClick(Initializer):
         self.miss_click_hotspot.enable()
         self.miss_click_hotspot.setLocalPosition(hotspot_polygon_center)
 
-        self.miss_click_event = Event("onMissClick")
         self.miss_click_hotspot.setEventListener(onHandleMouseButtonEvent=self._onMissClickButtonEvent)
 
     def _onMissClickButtonEvent(self, touchId, x, y, button, pressure, isDown, isPressed):
@@ -101,7 +98,6 @@ class MissClick(Initializer):
             if x != last_click_data["x"] or y != last_click_data["y"]:
                 return False
 
-            print(" * CALL MISS CLICK EVENT")
-            self.miss_click_event()
+            Notification.notify(Notificator.onLevelMissClicked)
 
         return False
