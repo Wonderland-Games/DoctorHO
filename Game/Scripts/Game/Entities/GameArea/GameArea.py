@@ -3,7 +3,7 @@ from Foundation.TaskManager import TaskManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
-from MobileKit.AdjustableScreenUtils import AdjustableScreenUtils
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
