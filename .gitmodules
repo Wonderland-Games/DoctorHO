@@ -14,3 +14,6 @@
 	path = MobileKit
 	url = https://github.com/irov/Mengine-Python-MobileKit.git
 	branch = master
+[submodule "UIKit"]
+	path = UIKit
+	url = https://github.com/irov/Mengine-Python-UIKit.git
