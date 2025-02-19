@@ -17,3 +17,4 @@
 [submodule "UIKit"]
 	path = UIKit
 	url = https://github.com/irov/Mengine-Python-UIKit.git
+	branch = master
