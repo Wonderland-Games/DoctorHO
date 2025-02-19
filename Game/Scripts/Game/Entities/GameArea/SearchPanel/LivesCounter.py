@@ -1,6 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.TaskManager import TaskManager
-from MobileKit.IconManager import IconManager
+from UIKit.Managers.IconManager import IconManager
 
 
 ICON_PROTOTYPE = "Heart"

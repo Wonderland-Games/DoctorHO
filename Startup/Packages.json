@@ -4,6 +4,7 @@
             "Foundation",
             "HOPA",
 			"MobileKit",
+			"UIKit",
             "Game"
         ],
 
@@ -33,6 +34,11 @@
 	"MobileKit": {
         "Name": "MobileKit",
         "Path": "../MobileKit/",
+        "Description": "Package.bin"
+    },
+	"UIKit": {
+        "Name": "UIKit",
+        "Path": "../UIKit/",
         "Description": "Package.bin"
     },
     "Game": {
