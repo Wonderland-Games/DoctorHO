@@ -39,6 +39,7 @@ def onInitialize():
 
     pop_ups = [
         "LevelLost",
+        "LevelWon"
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False

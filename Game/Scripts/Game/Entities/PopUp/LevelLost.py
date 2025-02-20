@@ -4,29 +4,18 @@ from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 class LevelLost(PopUpContent):
     popup_id = "LevelLost"
     title_text_id = "APPLICATION_TITLE"
-    content_movie_name = "Movie2_Content_LevelLost"
+    content_movie_name = "Movie2_Content_" + popup_id
 
     def __init__(self):
         super(LevelLost, self).__init__()
         pass
 
-    # - Initializer ----------------------------------------------------------------------------------------------------
-
-    def _onInitialize(self):
-        return
-
-    def _onFinalize(self):
-        pass
-
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
-    def _onPreparation(self):
+    def _onInitializeContent(self):
+        super(LevelLost, self)._onInitializeContent()
         pass
 
-    def _onActivate(self):
-
-        self.content.setEnable(True)
-
-    def _onDeactivate(self):
-
-        self.content.setEnable(False)
+    def _onFinalizeContent(self):
+        super(LevelLost, self)._onFinalizeContent()
+        pass
