@@ -35,6 +35,14 @@ def onInitialize():
     if ObjectManager.importObjects("Game.Objects", types) is False:
         return False
 
+    from UIKit.Managers.PopUpManager import PopUpManager
+
+    pop_ups = [
+        "LevelLost",
+    ]
+    if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
+        return False
+
     from Foundation.AccountManager import AccountManager
 
     def accountSetuper(accountID, isGlobal):
