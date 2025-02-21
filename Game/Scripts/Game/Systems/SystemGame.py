@@ -96,6 +96,13 @@ class SystemGame(System):
             print("YOU LOSE!")
             Notification.notify(Notificator.onPopUpShow, "LevelLost")
 
+        # with self.createTaskChain("TESTING_POPUPS") as tc:
+        #     tc.addNotify(Notificator.onPopUpShow)
+        #     tc.addDelay(5000)
+        #     tc.addNotify(Notificator.onPopUpShow, "LevelWon")
+        #     tc.addDelay(5000)
+        #     tc.addNotify(Notificator.onPopUpShow, "LevelLost")
+
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
 
