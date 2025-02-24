@@ -97,8 +97,6 @@ class SystemGame(System):
             Notification.notify(Notificator.onPopUpShow, "LevelLost")
 
         # with self.createTaskChain("TESTING_POPUPS") as tc:
-        #     tc.addNotify(Notificator.onPopUpShow)
-        #     tc.addDelay(5000)
         #     tc.addNotify(Notificator.onPopUpShow, "LevelWon")
         #     tc.addDelay(5000)
         #     tc.addNotify(Notificator.onPopUpShow, "LevelLost")
