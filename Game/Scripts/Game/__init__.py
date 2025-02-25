@@ -28,6 +28,8 @@ def onInitialize():
     types = [
         "Lobby",
         "GameArea",
+        {"name": "Header", "override": True},
+        "GameHeader",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:
@@ -44,6 +46,14 @@ def onInitialize():
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False
+
+    from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+
+    headers = [
+        "Header",
+        "GameHeader",
+    ]
+    AdjustableScreenUtils.registerHeaders(headers)
 
     from Foundation.AccountManager import AccountManager
 
