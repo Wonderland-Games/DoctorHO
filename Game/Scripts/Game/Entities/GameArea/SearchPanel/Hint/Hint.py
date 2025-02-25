@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Foundation.SceneManager import SceneManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from Game.Entities.GameArea.SearchPanel.Hint.HintEffect import HintEffect
 from Game.Entities.GameArea.SearchPanel.Hint.HintCounter import HintCounter
@@ -94,7 +95,14 @@ class Hint(Initializer):
     def _initHintEffect(self):
         self.hint_effect = HintEffect()
         self.hint_effect.onInitialize(self.game)
-        self.hint_effect.attachTo(self.game.node)
+
+        # self.hint_effect.attachTo(self.game.node)
+
+        current_scene = SceneManager.getCurrentScene()
+        current_scene_main_layer = current_scene.getMainLayer()
+        scene_parent = current_scene_main_layer.getParent()
+
+        self.hint_effect.attachTo(scene_parent)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
