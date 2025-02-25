@@ -1,9 +1,10 @@
 from Foundation.Initializer import Initializer
+from UIKit.Managers.PrototypeManager import PrototypeManager
 from Game.Entities.GameArea.SearchPanel.Hint.HintEffect import HintEffect
 from Game.Entities.GameArea.SearchPanel.Hint.HintCounter import HintCounter
 
 
-BUTTON_HINT = "Movie2Button_Hint"
+PROTOTYPE_BUTTON = "Hint"
 
 
 class Hint(Initializer):
@@ -30,6 +31,10 @@ class Hint(Initializer):
     def _onFinalize(self):
         super(Hint, self)._onFinalize()
 
+        if self.button is not None:
+            self.button.onDestroy()
+            self.button = None
+
         if self.hint_effect is not None:
             self.hint_effect.onFinalize()
             self.hint_effect = None
@@ -44,7 +49,6 @@ class Hint(Initializer):
             self._root = None
 
         self.game = None
-        self.button = None
         self.hint_item = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
@@ -63,9 +67,8 @@ class Hint(Initializer):
     # - Button ---------------------------------------------------------------------------------------------------------
 
     def _attachButton(self):
-        self.button = self.game.object.getObject(BUTTON_HINT)
-        button_node = self.button.getEntityNode()
-        self._root.addChild(button_node)
+        self.button = PrototypeManager.generateObjectContainerOnNode(self._root, PROTOTYPE_BUTTON, PROTOTYPE_BUTTON)
+        self.button.setEnable(True)
 
     def getSize(self):
         button_bounding_box = self.button.getCompositionBounds()
@@ -125,7 +128,7 @@ class Hint(Initializer):
         # hint effect logic
         source.addFunction(self.hint_counter.decHintCount)
 
-        source.addFunction(self.game.search_panel.hint.button.setBlock, True)
+        source.addFunction(self.game.search_panel.hint.button.movie.setBlock, True)
         source.addFunction(self.game.search_panel.virtual_area.freeze, True)
         source.addFunction(self.game.search_level.virtual_area.freeze, True)
 
@@ -135,7 +138,7 @@ class Hint(Initializer):
 
         source.addFunction(self._cleanHintItem)
 
-        source.addFunction(self.game.search_panel.hint.button.setBlock, False)
+        source.addFunction(self.game.search_panel.hint.button.movie.setBlock, False)
         source.addFunction(self.game.search_panel.virtual_area.freeze, False)
         source.addFunction(self.game.search_level.virtual_area.freeze, False)
 

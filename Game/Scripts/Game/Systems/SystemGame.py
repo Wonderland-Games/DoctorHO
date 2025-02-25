@@ -62,7 +62,7 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelHint")
 
         with self.createTaskChain("SearchPanelHint", Repeat=True) as tc:
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button)
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button.movie)
             tc.addPrint(" * CLICK HINT")
 
             with tc.addIfTask(game.search_panel.hint.isAvailable) as (hint, advertisement):
