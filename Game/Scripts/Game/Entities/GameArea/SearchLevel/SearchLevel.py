@@ -73,12 +73,15 @@ class SearchLevel(Initializer):
 
         self.virtual_area = VirtualArea()
         self.virtual_area.onInitialize(
+            name="SearchLevelVirtualArea",
             dragging_mode="free",
             enable_scale=True,
             max_scale=DefaultManager.getDefaultFloat("TouchpadMaxScale", 2.0),
             scale_factor=scale_factor,
             disable_drag_if_invalid=False,
-            allow_out_of_bounds=False
+            allow_out_of_bounds=False,
+            camera_name="SearchLevelVirtualCamera",
+            viewport_name="SearchLevelViewport",
         )
 
     def _setupVirtualArea(self):

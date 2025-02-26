@@ -193,22 +193,17 @@ class GameArea(BaseEntity):
         level_item_pure = level_item_entity.generatePure()
         level_item_pure.enable()
 
-        # get level item node with position data
-        level_item_node = level_item.getEntityNode()
-        level_item_node_pos = level_item_node.getWorldPosition()
-        level_item_node_center = level_item.getEntity().getSpriteCenter()
-        level_item_node_pos_true = Mengine.vec2f(level_item_node_pos.x + level_item_node_center[0],
-                                                 level_item_node_pos.y + level_item_node_center[1])
-
         # create moving node
         moving_node = Mengine.createNode("Interender")
         moving_node.setName("Temp")
 
+        level_item_entity_sp = level_item_entity.getScreenPosition()
+        moving_node.setScreenPosition(level_item_entity_sp, 0.0)
+
+        moving_node.addChild(level_item_pure)
+
         # attach level item to moving node with position fix
         self.addChild(moving_node)
-        moving_node.addChild(level_item_pure)
-        moving_node.setWorldPosition(level_item_node_pos_true)
-        level_item_pure.setLocalPosition(Mengine.vec2f(-level_item_node_center[0], -level_item_node_center[1]))
 
         # find panel item by object
         panel_item = None
@@ -219,10 +214,10 @@ class GameArea(BaseEntity):
             panel_item = item
             break
 
+        panel_item_root = panel_item.getRoot()
+
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
-        pos_from = level_item_node_pos_true
-        pos_to = panel_item.getRootWorldPosition()
 
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
@@ -233,7 +228,7 @@ class GameArea(BaseEntity):
         with source.addParallelTask(2) as (scale, move):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
                           Time=SCENE_ITEM_SCALE_TIME)
-            move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, From=pos_from, To=pos_to,
+            move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=panel_item_root,
                          Time=SCENE_ITEM_MOVE_TIME)
 
         source.addPrint(" * END SCENE ITEM ANIM")
