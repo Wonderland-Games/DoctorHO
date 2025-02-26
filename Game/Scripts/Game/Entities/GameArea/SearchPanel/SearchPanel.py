@@ -116,13 +116,17 @@ class SearchPanel(Initializer):
     def _initVirtualArea(self):
         self.virtual_area = VirtualArea()
         self.virtual_area.onInitialize(
+            name="SearchPanelVirtualArea",
             dragging_mode="horizontal",
             enable_scale=False,
-            disable_drag_if_invalid=False
+            disable_drag_if_invalid=False,
+            camera_name="SearchPanelVirtualCamera",
+            viewport_name="SearchPanelViewport",
         )
 
     def _setupVirtualArea(self):
         self.virtual_area.setup_with_movie(self.movie_panel, PANEL_VA, PANEL_VA)
+        panel_bounds = self.getBounds()
         panel_size = self.getSize()
 
         self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
@@ -171,8 +175,12 @@ class SearchPanel(Initializer):
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
 
-    def getSize(self):
+    def getBounds(self):
         panel_bounds = self.movie_panel.getCompositionBounds()
+        return panel_bounds
+
+    def getSize(self):
+        panel_bounds = self.getBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
         return panel_size
 
