@@ -27,7 +27,7 @@ class Settings(PopUpContent):
     def _onInitializeContent(self):
         super(Settings, self)._onInitializeContent()
 
-        self._fillCheckboxes()
+        self._fillCheckBoxes()
         self._fillButtons()
         self._setupSlotsPositions()
 
@@ -61,7 +61,7 @@ class Settings(PopUpContent):
         slot = self.content.getMovieSlot(name)
         slot.addChild(object_node)
 
-    def _fillCheckboxes(self):
+    def _fillCheckBoxes(self):
         checkboxes = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
 
         for name in checkboxes:
@@ -84,7 +84,12 @@ class Settings(PopUpContent):
             self.buttons[name] = container
 
     def _setupSlotsPositions(self):
-        pass
+        objects_list = []
+        objects_list.append(self.checkboxes)
+        for (key, button) in self.buttons.items():
+            objects_list.append({key: button})
+
+        self.setupObjectsSlotsAsTable(objects_list)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -94,63 +99,52 @@ class Settings(PopUpContent):
             with self._createTaskChain(SLOT_SOUND, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_sound.movie, Value=True)
-                    true.addScope(self._scopeSound, checkbox_sound.movie, True)
+                    true.addScope(self._scopeCheckBox, checkbox_sound.movie, "MuteSound", True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_sound.movie, Value=False)
-                    false.addScope(self._scopeSound, checkbox_sound.movie, False)
+                    false.addScope(self._scopeCheckBox, checkbox_sound.movie, "MuteSound", False)
 
         checkbox_music = self.checkboxes.get(SLOT_MUSIC)
         if checkbox_music is not None:
             with self._createTaskChain(SLOT_MUSIC, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_music.movie, Value=True)
-                    true.addScope(self._scopeMusic, checkbox_music.movie, True)
+                    true.addScope(self._scopeCheckBox, checkbox_music.movie, "MuteMusic", True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_music.movie, Value=False)
-                    false.addScope(self._scopeMusic, checkbox_music.movie, False)
+                    false.addScope(self._scopeCheckBox, checkbox_music.movie, "MuteMusic", False)
 
         checkbox_vibration = self.checkboxes.get(SLOT_VIBRATION)
         if checkbox_vibration is not None:
             with self._createTaskChain(SLOT_VIBRATION, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_vibration.movie, Value=True)
-                    true.addScope(self._scopeVibration, checkbox_vibration.movie, True)
+                    true.addScope(self._scopeCheckBox, checkbox_vibration.movie, "MuteVibration", True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_vibration.movie, Value=False)
-                    false.addScope(self._scopeVibration, checkbox_vibration.movie, False)
+                    false.addScope(self._scopeCheckBox, checkbox_vibration.movie, "MuteVibration", False)
 
         button_languages = self.buttons.get(SLOT_LANGUAGES)
         if button_languages is not None:
             with self._createTaskChain(SLOT_LANGUAGES) as tc:
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_languages.movie)
-                tc.addScope(self._scopeLanguages)
+                tc.addScope(self._scopeButton, "Languages")
 
         button_support = self.buttons.get(SLOT_SUPPORT)
         if button_support is not None:
             with self._createTaskChain(SLOT_SUPPORT) as tc:
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_support.movie)
-                tc.addScope(self._scopeSupport)
+                tc.addScope(self._scopeButton, "Support")
 
         button_credits = self.buttons.get(SLOT_CREDITS)
         if button_credits is not None:
             with self._createTaskChain(SLOT_CREDITS) as tc:
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_credits.movie)
-                tc.addScope(self._scopeCredits)
+                tc.addScope(self._scopeButton, "Credits")
 
-    def _scopeSound(self, source, checkbox, value):
-        source.addPrint("{}".format(SLOT_SOUND))
+    def _scopeCheckBox(self, source, checkbox, account_setting, value):
+        source.addFunction(checkbox.setValue, value)
+        source.addFunction(Mengine.changeCurrentAccountSetting, account_setting, unicode(value))
 
-    def _scopeMusic(self, source, checkbox, value):
-        source.addPrint("{}".format(SLOT_MUSIC))
-
-    def _scopeVibration(self, source, checkbox, value):
-        source.addPrint("{}".format(SLOT_VIBRATION))
-
-    def _scopeLanguages(self, source):
-        source.addNotify(Notificator.onPopUpShow, "Languages")
-
-    def _scopeSupport(self, source):
-        source.addNotify(Notificator.onPopUpShow, "Support")
-
-    def _scopeCredits(self, source):
-        source.addNotify(Notificator.onPopUpShow, "Credits")
+    def _scopeButton(self, source, content_id):
+        source.addNotify(Notificator.onPopUpShow, content_id)
