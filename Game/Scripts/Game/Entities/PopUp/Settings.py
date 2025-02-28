@@ -99,30 +99,30 @@ class Settings(PopUpContent):
             with self._createTaskChain(SLOT_SOUND, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_sound.movie, Value=True)
-                    true.addScope(self._scopeCheckBox, checkbox_sound.movie, "MuteSound", True)
+                    true.addScope(self._scopeSound, checkbox_sound.movie, True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_sound.movie, Value=False)
-                    false.addScope(self._scopeCheckBox, checkbox_sound.movie, "MuteSound", False)
+                    false.addScope(self._scopeSound, checkbox_sound.movie, False)
 
         checkbox_music = self.checkboxes.get(SLOT_MUSIC)
         if checkbox_music is not None:
             with self._createTaskChain(SLOT_MUSIC, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_music.movie, Value=True)
-                    true.addScope(self._scopeCheckBox, checkbox_music.movie, "MuteMusic", True)
+                    true.addScope(self._scopeMusic, checkbox_music.movie, True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_music.movie, Value=False)
-                    false.addScope(self._scopeCheckBox, checkbox_music.movie, "MuteMusic", False)
+                    false.addScope(self._scopeMusic, checkbox_music.movie, False)
 
         checkbox_vibration = self.checkboxes.get(SLOT_VIBRATION)
         if checkbox_vibration is not None:
             with self._createTaskChain(SLOT_VIBRATION, Repeat=True) as tc:
                 with tc.addRaceTask(2) as (true, false):
                     true.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_vibration.movie, Value=True)
-                    true.addScope(self._scopeCheckBox, checkbox_vibration.movie, "MuteVibration", True)
+                    true.addScope(self._scopeVibration, checkbox_vibration.movie, True)
 
                     false.addTask("TaskMovie2CheckBox", Movie2CheckBox=checkbox_vibration.movie, Value=False)
-                    false.addScope(self._scopeCheckBox, checkbox_vibration.movie, "MuteVibration", False)
+                    false.addScope(self._scopeVibration, checkbox_vibration.movie, False)
 
         button_languages = self.buttons.get(SLOT_LANGUAGES)
         if button_languages is not None:
@@ -142,9 +142,16 @@ class Settings(PopUpContent):
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_credits.movie)
                 tc.addScope(self._scopeButton, "Credits")
 
-    def _scopeCheckBox(self, source, checkbox, account_setting, value):
+    def _scopeSound(self, source, checkbox, value):
         source.addFunction(checkbox.setValue, value)
-        source.addFunction(Mengine.changeCurrentAccountSetting, account_setting, unicode(value))
+        source.addFunction(Mengine.changeCurrentAccountSetting, "MuteSound", unicode(value))
+
+    def _scopeMusic(self, source, checkbox, value):
+        source.addFunction(checkbox.setValue, value)
+        source.addFunction(Mengine.changeCurrentAccountSetting, "MuteMusic", unicode(value))
+
+    def _scopeVibration(self, source, checkbox, value):
+        Mengine.androidBooleanMethod("Vibrator", "vibrate", 250L)
 
     def _scopeButton(self, source, content_id):
         source.addNotify(Notificator.onPopUpShow, content_id)
