@@ -162,4 +162,4 @@ class Life(object):
             self._icon.setAlpha(1.0)
         else:
             self._icon.setRGB((0.0, 0.0, 0.0))
-            self._icon.setAlpha(0.5)
+            self._icon.setAlpha(0.25)
