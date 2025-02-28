@@ -72,8 +72,7 @@ class Hint(Initializer):
         self.button.setEnable(True)
 
     def getSize(self):
-        button_bounding_box = self.button.getCompositionBounds()
-        button_size = Utils.getBoundingBoxSize(button_bounding_box)
+        button_size = self.button.getSize()
         return button_size
 
     def isAvailable(self):
