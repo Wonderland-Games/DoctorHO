@@ -1,6 +1,7 @@
 from MobileKit.Entities.Header.Header import Header as HeaderBase
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Entities.HeaderComponents.Settings import Settings
+from Game.Entities.HeaderComponents.Lives import Lives
 
 
 class GameHeader(HeaderBase):
@@ -17,7 +18,18 @@ class GameHeader(HeaderBase):
                 viewport.begin.y + header_height * 0.5
             ))
 
+        if self.movie_content.hasSlot(Lives.slot_name):
+            slot = self.movie_content.getMovieSlot(Lives.slot_name)
+            slot.setWorldPosition(Mengine.vec2f(
+                viewport.begin.x + header_width * 0.15,
+                viewport.begin.y + header_height * 0.5
+            ))
+
     def _setup(self):
         settings = Settings()
         settings.onInitialize(self)
         self.content[Settings.slot_name] = settings
+
+        lives = Lives()
+        lives.onInitialize(self)
+        self.content[Lives.slot_name] = lives
