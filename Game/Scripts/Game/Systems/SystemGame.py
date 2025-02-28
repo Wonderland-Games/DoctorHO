@@ -51,7 +51,7 @@ class SystemGame(System):
                 parallel.addTask("TaskItemClick", Item=item, Filter=game.filterItemClick)
                 parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
                 parallel.addFunction(game.search_level.items.remove, item)
-                parallel.addFunction(game.search_panel.changeItemFromAvailableToRemove, item)
+                parallel.addFunction(game.search_panel.addRemovingItem, item)
                 parallel.addScope(game.moveLevelItemToPanelItem, item)
                 parallel.addScope(game.search_panel.playRemovePanelItemAnim, item)
 
