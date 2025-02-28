@@ -159,10 +159,16 @@ class GameArea(BaseEntity):
 
             return False
 
-        # check if scene_item is available in search panel
-        available_items = self.search_panel.getAvailableItems()
-        for panel_item in available_items:
-            if panel_item.item_obj is scene_item:
+        panel_item = None
+        for item in self.search_panel.items:
+            if item.item_obj is scene_item:
+                panel_item = item
+                break
+
+        if panel_item is not None:
+            panel_item_node = panel_item.getRoot()
+            panel_item_pos = Mengine.getNodeScreenAdaptPosition(panel_item_node)
+            if self.search_panel.items_range[0] <= panel_item_pos.x <= self.search_panel.items_range[1]:
                 return True
 
         return False
@@ -174,9 +180,16 @@ class GameArea(BaseEntity):
             return False
 
         # check if scene_item is unavailable in search panel
-        available_items = self.search_panel.getAvailableItems()
-        for panel_item in available_items:
-            if panel_item.item_obj is scene_item:
+        panel_item = None
+        for item in self.search_panel.items:
+            if item.item_obj is scene_item:
+                panel_item = item
+                break
+
+        if panel_item is not None:
+            panel_item_node = panel_item.getRoot()
+            panel_item_pos = Mengine.getNodeScreenAdaptPosition(panel_item_node)
+            if self.search_panel.items_range[0] <= panel_item_pos.x <= self.search_panel.items_range[1]:
                 return False
 
         # check if scene_item is removing in search panel

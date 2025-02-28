@@ -26,11 +26,9 @@ class SearchPanel(Initializer):
         self.items_counter = None
         self.hint = None
         self.items = []
-        self.available_items = []
         self.removing_items = []
         self.items_node = None
         self.items_range = None
-        self.print_available_items = True
         self.semaphore_allow_panel_items_move = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -53,9 +51,7 @@ class SearchPanel(Initializer):
         self._calcVirtualAreaContentSize()
 
         self._calcItemsRange()
-        self._updateAvailableItems()
 
-        self.print_available_items = True
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
         return True
@@ -93,9 +89,7 @@ class SearchPanel(Initializer):
 
         self.movie_panel = None
         self.items_range = None
-        self.available_items = []
         self.removing_items = []
-        self.print_available_items = None
         self.semaphore_allow_panel_items_move = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
@@ -139,11 +133,6 @@ class SearchPanel(Initializer):
 
         self.movie_panel.setInteractive(True)
 
-        # callbacks
-        self.virtual_area.on_drag_start += self._cbVirtualAreaDragStart
-        self.virtual_area.on_drag += self._cbVirtualAreaDrag
-        self.virtual_area.on_drag_end += self._cbVirtualAreaDragEnd
-
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
 
@@ -157,15 +146,6 @@ class SearchPanel(Initializer):
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
-
-    def _cbVirtualAreaDragStart(self):
-        self.print_available_items = False
-
-    def _cbVirtualAreaDrag(self, x, y):
-        self._updateAvailableItems()
-
-    def _cbVirtualAreaDragEnd(self):
-        self.print_available_items = True
 
     # - Panel ----------------------------------------------------------------------------------------------------------
 
@@ -252,39 +232,25 @@ class SearchPanel(Initializer):
         border_node.removeFromParent()
         Mengine.destroyNode(border_node)
 
-    def _updateAvailableItems(self):
-        for item in self.items:
-            item_pos = Mengine.getNodeScreenAdaptPosition(item.getRoot())
-
-            if self.items_range[0] <= item_pos.x <= self.items_range[1]:
-                if item not in self.available_items and item not in self.removing_items:
-                    self.available_items.append(item)
-                    print("Append available item", item.item_obj.getName())
-            else:
-                if item in self.available_items:
-                    self.available_items.remove(item)
-                    print("Remove available item", item.item_obj.getName())
-
-        if self.print_available_items is False:
-            return
-
-        print("Available items", [available_item.item_obj.getName() for available_item in self.available_items if
-                                  available_item.item_obj is not None])
-
-    def getAvailableItems(self):
-        return self.available_items
-
     def getRandomAvailableItem(self):
-        if len(self.available_items) is 0:
+        if len(self.items) is 0:
             return None
 
-        item_index = Mengine.range_rand(0, len(self.available_items))
-        return self.available_items[item_index]
+        available_items = []
+        for item in self.items:
+            item_node = item.getRoot()
+            item_pos = Mengine.getNodeScreenAdaptPosition(item_node)
 
-    def changeItemFromAvailableToRemove(self, item_obj):
+            if self.items_range[0] <= item_pos.x <= self.items_range[1]:
+                if item not in self.removing_items:
+                    available_items.append(item)
+
+        item_index = Mengine.range_rand(0, len(available_items))
+        return available_items[item_index]
+
+    def addRemovingItem(self, item_obj):
         for item in self.items:
             if item.item_obj is item_obj:
-                self.available_items.remove(item)
                 self.removing_items.append(item)
                 break
 
@@ -346,15 +312,14 @@ class SearchPanel(Initializer):
 
         # move items in parallel with condition of sides
         for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
+            item_node = item.getRoot()
             items_node_pos = self._calcItemsNodeLocalPosition(item)
             item_pos = self._calcItemLocalPosition(i, item)
 
             with tc.addParallelTask(2) as(tc_item, tc_items_node):
-                tc_item.addTask("TaskNodeMoveTo", Node=item.getRoot(), Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+                tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
                 with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
                     move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
-
-            tc.addFunction(self._updateAvailableItems)
 
         # fix VA after removing 1 item and moving all items
         source.addFunction(self.virtual_area.update_target)
