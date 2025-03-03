@@ -1,5 +1,4 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
-from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
 SLOT_ICON = "icon"
