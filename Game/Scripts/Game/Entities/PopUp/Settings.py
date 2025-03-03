@@ -1,5 +1,4 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
-from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
 SLOT_SOUND = "sound"
@@ -8,7 +7,6 @@ SLOT_VIBRATION = "vibration"
 SLOT_LANGUAGES = "languages"
 SLOT_SUPPORT = "support"
 SLOT_CREDITS = "credits"
-SLOT_VERSION = "version"
 
 
 class Settings(PopUpContent):
