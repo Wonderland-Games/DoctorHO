@@ -27,8 +27,8 @@ class Settings(PopUpContent):
     def _onInitializeContent(self):
         super(Settings, self)._onInitializeContent()
 
-        self._fillCheckBoxes()
-        self._fillButtons()
+        self._setupCheckBoxes()
+        self._setupButtons()
         self._setupSlotsPositions()
 
         self._runTaskChains()
@@ -61,7 +61,7 @@ class Settings(PopUpContent):
         slot = self.content.getMovieSlot(name)
         slot.addChild(object_node)
 
-    def _fillCheckBoxes(self):
+    def _setupCheckBoxes(self):
         checkboxes = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
 
         for name in checkboxes:
@@ -72,7 +72,30 @@ class Settings(PopUpContent):
             self._attachObjectToSlot(container, name)
             self.checkboxes[name] = container
 
-    def _fillButtons(self):
+        self._updateCheckBoxesValues()
+
+    def _updateCheckBoxesValues(self):
+        checkbox_sound = self.checkboxes.get(SLOT_SOUND)
+        sound_value = Mengine.getCurrentAccountSettingBool("MuteSound")
+        if None not in [checkbox_sound, sound_value]:
+            checkbox_sound.movie.setParam("Value", sound_value)
+
+        checkbox_music = self.checkboxes.get(SLOT_MUSIC)
+        music_value = Mengine.getCurrentAccountSettingBool("MuteMusic")
+        if None not in [checkbox_music, music_value]:
+            checkbox_music.movie.setParam("Value", music_value)
+
+        checkbox_vibration = self.checkboxes.get(SLOT_VIBRATION)
+        if checkbox_vibration is not None:
+            if _DEVELOPMENT is True:
+                vibration_value = Mengine.getCurrentAccountSettingBool("MuteVibration")
+            else:
+                vibration_value = Mengine.androidMethod("Vibrator", "isMute")
+
+            if vibration_value is not None:
+                checkbox_vibration.movie.setParam("Value", vibration_value)
+
+    def _setupButtons(self):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
         for name in buttons:
@@ -143,15 +166,19 @@ class Settings(PopUpContent):
                 tc.addScope(self._scopeButton, "Credits")
 
     def _scopeSound(self, source, checkbox, value):
-        source.addFunction(checkbox.setValue, value)
+        source.addFunction(checkbox.setParam, "Value", value)
         source.addFunction(Mengine.changeCurrentAccountSetting, "MuteSound", unicode(value))
 
     def _scopeMusic(self, source, checkbox, value):
-        source.addFunction(checkbox.setValue, value)
+        source.addFunction(checkbox.setParam, "Value", value)
         source.addFunction(Mengine.changeCurrentAccountSetting, "MuteMusic", unicode(value))
 
     def _scopeVibration(self, source, checkbox, value):
-        Mengine.androidBooleanMethod("Vibrator", "vibrate", 250L)
+        source.addFunction(checkbox.setParam, "Value", value)
+        if _DEVELOPMENT is True:
+            source.addFunction(Mengine.changeCurrentAccountSetting, "MuteVibration", unicode(value))
+        else:
+            source.addFunction(Mengine.androidMethod, "Vibrator", "mute", value)
 
     def _scopeButton(self, source, content_id):
         source.addNotify(Notificator.onPopUpShow, content_id)
