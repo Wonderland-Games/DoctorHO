@@ -1,21 +1,90 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Managers.PrototypeManager import PrototypeManager
+
+
+SLOT_ICON = "icon"
+SLOT_AD = "ad"
+SLOT_RESTART = "restart"
 
 
 class LevelLost(PopUpContent):
-    popup_id = "LevelLost"
+    content_id = "LevelLost"
     title_text_id = "ID_PopUpTitle_LevelLost"
-    content_movie_name = "Movie2_Content_" + popup_id
+    content_movie_name = "Movie2_Content_" + content_id
 
     def __init__(self):
         super(LevelLost, self).__init__()
-        pass
+
+        self.icon = None
+        self.buttons = {}
 
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
     def _onInitializeContent(self):
         super(LevelLost, self)._onInitializeContent()
-        pass
+
+        self._setupIcon()
+        self._setupButtons()
+        self._setupSlotsPositions()
+
+        self._runTaskChains()
 
     def _onFinalizeContent(self):
         super(LevelLost, self)._onFinalizeContent()
-        pass
+
+        if self.icon is not None:
+            self.icon.onDestroy()
+            self.icon = None
+
+        for button in self.buttons.values():
+            button.onDestroy()
+        self.buttons = {}
+
+    # - Setup ----------------------------------------------------------------------------------------------------------
+
+    def _setupIcon(self):
+        self.icon = self._generateContainter(self.content_id, Size=SLOT_ICON)
+        if self.icon is None:
+            return
+
+        self._attachObjectToSlot(self.icon, SLOT_ICON)
+
+    def _setupButtons(self):
+        buttons = [SLOT_AD, SLOT_RESTART]
+
+        for name in buttons:
+            container = self._generateContainter(self.content_id, Size=name)
+            if container is None:
+                continue
+
+            self._attachObjectToSlot(container, name)
+            self.buttons[name] = container
+
+    def _setupSlotsPositions(self):
+        objects_list = []
+        objects_list.append({SLOT_ICON: self.icon})
+        for (key, button) in self.buttons.items():
+            objects_list.append({key: button})
+
+        self.setupObjectsSlotsAsTable(objects_list)
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def _runTaskChains(self):
+        button_ad = self.buttons.get(SLOT_AD)
+        if button_ad is not None:
+            with self._createTaskChain(SLOT_AD) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_ad.movie)
+                tc.addScope(self._scopeAdvertisement)
+
+        button_restart = self.buttons.get(SLOT_RESTART)
+        if button_restart is not None:
+            with self._createTaskChain(SLOT_RESTART) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_restart.movie)
+                tc.addScope(self._scopeRestart)
+
+    def _scopeAdvertisement(self, source):
+        source.addPrint("[LevelLost] Call onPopUpAdvertisement event")
+
+    def _scopeRestart(self, source):
+        source.addPrint(SLOT_RESTART)

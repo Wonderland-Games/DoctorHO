@@ -2,9 +2,9 @@ from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 
 
 class LevelWon(PopUpContent):
-    popup_id = "LevelWon"
+    content_id = "LevelWon"
     title_text_id = "ID_PopUpTitle_LevelWon"
-    content_movie_name = "Movie2_Content_" + popup_id
+    content_movie_name = "Movie2_Content_" + content_id
 
     def __init__(self):
         super(LevelWon, self).__init__()
