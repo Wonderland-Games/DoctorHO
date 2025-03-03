@@ -90,16 +90,9 @@ class SystemGame(System):
 
     def _onLevelEnd(self, is_win):
         if is_win is True:
-            print("YOU WIN!")
             Notification.notify(Notificator.onPopUpShow, "LevelWon")
         else:
-            print("YOU LOSE!")
             Notification.notify(Notificator.onPopUpShow, "LevelLost")
-
-        # with self.createTaskChain("TESTING_POPUPS") as tc:
-        #     tc.addNotify(Notificator.onPopUpShow, "LevelWon")
-        #     tc.addDelay(5000)
-        #     tc.addNotify(Notificator.onPopUpShow, "LevelLost")
 
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")

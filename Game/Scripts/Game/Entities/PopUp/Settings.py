@@ -12,9 +12,9 @@ SLOT_VERSION = "version"
 
 
 class Settings(PopUpContent):
-    popup_id = "Settings"
+    content_id = "Settings"
     title_text_id = "ID_PopUpTitle_Settings"
-    content_movie_name = "Movie2_Content_" + popup_id
+    content_movie_name = "Movie2_Content_" + content_id
 
     def __init__(self):
         super(Settings, self).__init__()
@@ -46,26 +46,11 @@ class Settings(PopUpContent):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _generateContainter(self, name):
-        container = PrototypeManager.generateObjectContainer("Settings", Size=name)
-        if container is None:
-            return None
-
-        container.setTextAliasEnvironment(name)
-        container.setEnable(True)
-
-        return container
-
-    def _attachObjectToSlot(self, obj, name):
-        object_node = obj.getEntityNode()
-        slot = self.content.getMovieSlot(name)
-        slot.addChild(object_node)
-
     def _setupCheckBoxes(self):
         checkboxes = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
 
         for name in checkboxes:
-            container = self._generateContainter(name)
+            container = self._generateContainter(self.content_id, Size=name)
             if container is None:
                 continue
 
@@ -99,7 +84,7 @@ class Settings(PopUpContent):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
         for name in buttons:
-            container = self._generateContainter(name)
+            container = self._generateContainter(self.content_id, Size=name)
             if container is None:
                 continue
 

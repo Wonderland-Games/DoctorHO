@@ -81,7 +81,7 @@ class Hint(Initializer):
     # - HintCounter ----------------------------------------------------------------------------------------------------
 
     def _setupHintCounter(self):
-        hint_count = 5
+        hint_count = 2
         self.hint_counter = HintCounter()
         self.hint_counter.onInitialize(self.game, hint_count)
 
