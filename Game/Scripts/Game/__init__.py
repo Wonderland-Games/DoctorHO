@@ -96,6 +96,8 @@ def onInitialize():
 
         Mengine.addCurrentAccountSetting("MuteMusic", u"False", __updateMuteMusic)
         Mengine.addCurrentAccountSetting("MuteSound", u"False", __updateMuteSound)
+        if _DEVELOPMENT is True:
+            Mengine.addCurrentAccountSetting("MuteVibration", u"False", None)
         Mengine.addCurrentAccountSetting("SoundVolumePercent", unicode(default_sound_volume), __updateSoundVolumePercent)
         Mengine.addCurrentAccountSetting("MusicVolumePercent", unicode(default_music_volume), __updateMusicVolumePercent)
         Mengine.addCurrentAccountSetting("FirstName", u"", None)
