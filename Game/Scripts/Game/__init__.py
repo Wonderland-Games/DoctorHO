@@ -28,6 +28,7 @@ def onInitialize():
     types = [
         "Lobby",
         "GameArea",
+        {"name": "AdvertisingScene", "override": True},
         {"name": "Header", "override": True},
         "GameHeader",
     ]
