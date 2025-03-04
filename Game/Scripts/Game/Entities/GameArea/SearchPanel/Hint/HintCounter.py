@@ -1,7 +1,10 @@
 from Foundation.Initializer import Initializer
+from UIKit.Managers.PrototypeManager import PrototypeManager
+from UIKit.Managers.IconManager import IconManager
 
 
-MOVIE_ICON = "Movie2_HintCounterIcon"
+MOVIE_BG = "HintCounterBackground"
+ICON_AD = "Advertising"
 TEXT_ID = "ID_HintCounter"
 
 
@@ -11,8 +14,9 @@ class HintCounter(Initializer):
         self.game = None
         self.count = None
         self.root = None
-        self.icon = None
+        self.background = None
         self.text = None
+        self.ad_icon = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -23,7 +27,7 @@ class HintCounter(Initializer):
 
         self._createRoot()
 
-        self._setupIcon()
+        self._setupBackground()
         self._setupText()
 
     def _onFinalize(self):
@@ -31,14 +35,16 @@ class HintCounter(Initializer):
         self.game = None
         self.count = None
 
-        if self.icon is not None:
-            self.icon.onDestroy()
-            self.icon = None
+        self._destroyAdIcon()
 
         if self.text is not None:
             self.text.removeFromParent()
             Mengine.destroyNode(self.text)
             self.text = None
+
+        if self.background is not None:
+            self.background.onDestroy()
+            self.background = None
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -77,6 +83,37 @@ class HintCounter(Initializer):
 
         self.text.setTextFormatArgs(value)
 
+    # - Background -----------------------------------------------------------------------------------------------------
+
+    def _setupBackground(self):
+        self.background = PrototypeManager.generateObjectUniqueOnNode(self.root, MOVIE_BG)
+        self.background.setEnable(True)
+
+    # - Ad Icon --------------------------------------------------------------------------------------------------------
+
+    def _setupAdIcon(self):
+        self.ad_icon = IconManager.generateIconOnNode(self.root, ICON_AD)
+        self.ad_icon.setEnable(True)
+
+        icon_bounds = self.ad_icon.getCompositionBounds()
+        icon_size = Utils.getBoundingBoxSize(icon_bounds)
+
+        background_bounds = self.background.getCompositionBounds()
+        background_size = Utils.getBoundingBoxSize(background_bounds)
+
+        size_perc = background_size / icon_size
+        max_dimension = max(size_perc.x, size_perc.y)
+        new_scale = Mengine.vec2f(max_dimension, max_dimension)
+
+        self.ad_icon.setScale(new_scale)
+
+    def _destroyAdIcon(self):
+        if self.ad_icon is not None:
+            self.ad_icon.onDestroy()
+            self.ad_icon = None
+
+    # - Tools ----------------------------------------------------------------------------------------------------------
+
     def decHintCount(self):
         if self.count <= 0:
             return
@@ -84,10 +121,14 @@ class HintCounter(Initializer):
         self.count -= 1
         self.updateTextArgs()
 
-    # - Icon -----------------------------------------------------------------------------------------------------------
+        if self.count == 0:
+            self._setupAdIcon()
+            self.text.disable()
 
-    def _setupIcon(self):
-        self.icon = self.game.object.generateObjectUnique(MOVIE_ICON, MOVIE_ICON)
-        self.icon.setEnable(True)
-        icon_node = self.icon.getEntityNode()
-        self.root.addChild(icon_node)
+    def incHintCount(self):
+        self.count += 1
+        self.updateTextArgs()
+
+        if self.count >= 1:
+            self._destroyAdIcon()
+            self.text.enable()
