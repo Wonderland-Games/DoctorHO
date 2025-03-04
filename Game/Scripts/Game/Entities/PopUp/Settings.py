@@ -1,12 +1,12 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 
 
-SLOT_SOUND = "sound"
-SLOT_MUSIC = "music"
-SLOT_VIBRATION = "vibration"
-SLOT_LANGUAGES = "languages"
-SLOT_SUPPORT = "support"
-SLOT_CREDITS = "credits"
+SLOT_SOUND = "Sound"
+SLOT_MUSIC = "Music"
+SLOT_VIBRATION = "Vibration"
+SLOT_LANGUAGES = "Languages"
+SLOT_SUPPORT = "Support"
+SLOT_CREDITS = "Credits"
 
 
 class Settings(PopUpContent):
@@ -48,7 +48,8 @@ class Settings(PopUpContent):
         checkboxes = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
 
         for name in checkboxes:
-            container = self._generateContainter(self.content_id, Size=name)
+            name_capital = name.capitalize()
+            container = self._generateContainter(name_capital)
             if container is None:
                 continue
 
@@ -82,7 +83,8 @@ class Settings(PopUpContent):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
         for name in buttons:
-            container = self._generateContainter(self.content_id, Size=name)
+            name_capital = name.capitalize()
+            container = self._generateContainter(name_capital)
             if container is None:
                 continue
 

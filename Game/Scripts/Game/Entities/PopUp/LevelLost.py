@@ -1,9 +1,9 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 
 
-SLOT_ICON = "icon"
-SLOT_AD = "ad"
-SLOT_RESTART = "restart"
+SLOT_ICON = "Icon"
+SLOT_AD = "Ad"
+SLOT_RESTART = "Restart"
 
 
 class LevelLost(PopUpContent):
@@ -42,7 +42,7 @@ class LevelLost(PopUpContent):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupIcon(self):
-        self.icon = self._generateContainter(self.content_id, Size=SLOT_ICON)
+        self.icon = self._generateContainter(SLOT_ICON)
         if self.icon is None:
             return
 
@@ -52,7 +52,7 @@ class LevelLost(PopUpContent):
         buttons = [SLOT_AD, SLOT_RESTART]
 
         for name in buttons:
-            container = self._generateContainter(self.content_id, Size=name)
+            container = self._generateContainter(name)
             if container is None:
                 continue
 
