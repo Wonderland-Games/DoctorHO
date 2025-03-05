@@ -18,6 +18,13 @@ SCENE_ITEM_SCALE_TIME = 1000.0
 
 
 class GameArea(BaseEntity):
+
+    @staticmethod
+    def declareORM(Type):
+        BaseEntity.declareORM(Type)
+        Type.addActionActivate(Type, "GameType")
+        Type.addActionActivate(Type, "LevelName")
+
     def __init__(self):
         super(GameArea, self).__init__()
         self.tcs = []
