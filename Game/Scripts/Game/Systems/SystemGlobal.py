@@ -13,9 +13,11 @@ class SystemGlobal(System):
 
     def __cbSceneTransition(self, scene_name):
         with TaskManager.createTaskChain() as tc:
-            tc.addNotify(Notificator.onTransitionBegin, SceneManager.getCurrentSceneName(), scene_name, None)
-            tc.addTask("TaskTransition", SceneName=scene_name)
-            tc.addNotify(Notificator.onTransitionEnd, SceneManager.getCurrentSceneName(), scene_name, None)
+            # tc.addNotify(Notificator.onTransitionBegin, SceneManager.getCurrentSceneName(), scene_name, None)
+            # tc.addTask("TaskTransition", SceneName=scene_name)
+            # tc.addNotify(Notificator.onTransitionEnd, SceneManager.getCurrentSceneName(), scene_name, None)
+
+            tc.addTask("AliasTransition", SceneName=scene_name)
 
         return False
 
