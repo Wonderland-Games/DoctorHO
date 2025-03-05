@@ -1,4 +1,5 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from Game.Managers.GameManager import GameManager
 
 
 SLOT_SOUND = "Sound"
@@ -7,6 +8,7 @@ SLOT_VIBRATION = "Vibration"
 SLOT_LANGUAGES = "Languages"
 SLOT_SUPPORT = "Support"
 SLOT_CREDITS = "Credits"
+SLOT_LOBBY = "Lobby"
 
 
 class Settings(PopUpContent):
@@ -82,6 +84,10 @@ class Settings(PopUpContent):
     def _setupButtons(self):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
+        current_level_name = GameManager.getCurrentGameParam("LevelName")
+        if current_level_name is not None:
+            buttons.append(SLOT_LOBBY)
+
         for name in buttons:
             name_capital = name.capitalize()
             container = self._generateContainter(name_capital)
@@ -150,6 +156,12 @@ class Settings(PopUpContent):
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_credits.movie)
                 tc.addScope(self._scopeButton, "Credits")
 
+        button_lobby = self.buttons.get(SLOT_LOBBY)
+        if button_lobby is not None:
+            with self._createTaskChain(SLOT_LOBBY) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_lobby.movie)
+                tc.addScope(self._scopeLobby)
+
     def _scopeSound(self, source, checkbox, value):
         source.addFunction(checkbox.setParam, "Value", value)
         source.addFunction(Mengine.changeCurrentAccountSetting, "MuteSound", unicode(value))
@@ -167,3 +179,6 @@ class Settings(PopUpContent):
 
     def _scopeButton(self, source, content_id):
         source.addNotify(Notificator.onPopUpShow, content_id)
+
+    def _scopeLobby(self, source):
+        source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)
