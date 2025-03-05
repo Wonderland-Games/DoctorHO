@@ -181,4 +181,5 @@ class Settings(PopUpContent):
         source.addNotify(Notificator.onPopUpShow, content_id)
 
     def _scopeLobby(self, source):
+        source.addNotify(Notificator.onPopUpHide)
         source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)

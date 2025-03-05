@@ -61,4 +61,5 @@ class LevelWon(PopUpContent):
                 tc.addScope(self._scopeLobby)
 
     def _scopeLobby(self, source):
+        source.addNotify(Notificator.onPopUpHide)
         source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)
