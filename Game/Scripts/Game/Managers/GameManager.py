@@ -41,6 +41,11 @@ class GameManager(Manager):
         pass
 
     @staticmethod
+    def getCurrentGame():
+        game = DemonManager.getDemon("GameArea")
+        return game
+
+    @staticmethod
     def getCurrentGameParams():
         return GameManager._current_game_params
 
