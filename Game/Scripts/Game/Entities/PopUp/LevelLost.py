@@ -89,4 +89,5 @@ class LevelLost(PopUpContent):
         # current_level_name = "01_Forest"
         # source.addNotify(Notificator.onLevelStart, current_level_name)
 
+        source.addNotify(Notificator.onPopUpHide)
         source.addFunction(Mengine.restartCurrentScene, True, None)
