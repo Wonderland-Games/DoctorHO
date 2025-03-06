@@ -1,4 +1,5 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from Game.Managers.GameManager import GameManager
 
 
 SLOT_ICON = "Icon"
@@ -90,4 +91,6 @@ class LevelLost(PopUpContent):
         # source.addNotify(Notificator.onLevelStart, current_level_name)
 
         source.addNotify(Notificator.onPopUpHide)
+        source.addFunction(GameManager.removeGame)
+        source.addFunction(GameManager.prepareGame, "HO", "01_Forest")
         source.addFunction(Mengine.restartCurrentScene, True, None)
