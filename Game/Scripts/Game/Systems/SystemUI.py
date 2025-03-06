@@ -13,6 +13,8 @@ class SystemUI(BaseSystem):
             "LevelLost_Restart",
 
             "LevelWon_Lobby",
+
+            "Lobby_Play",
         ]
         
         for env in environments:
