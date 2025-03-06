@@ -1,5 +1,6 @@
 from Foundation.Manager import Manager
 from Foundation.DemonManager import DemonManager
+from Foundation.SystemManager import SystemManager
 
 
 class GameManager(Manager):
@@ -41,6 +42,16 @@ class GameManager(Manager):
         pass
 
     @staticmethod
+    def removeGame():
+        """ Finally removes current game """
+        # GameManager._current_game_params = None
+
+        game = DemonManager.getDemon("GameArea")
+        game.setGameType(None)
+        game.setLevelName(None)
+        game.setFoundItems([])
+
+    @staticmethod
     def getCurrentGame():
         game = DemonManager.getDemon("GameArea")
         return game
@@ -54,3 +65,12 @@ class GameManager(Manager):
         game = DemonManager.getDemon("GameArea")
         game_param = game.getParam(param)
         return game_param
+
+    # - Advertising ----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def runLevelStartAdvertisement():
+        """ Do not forget to call setupLevelStartAdvertisement() before. """
+        system_advertising = SystemManager.getSystem("SystemAdvertising")
+        game_type = GameManager.getCurrentGameParam("GameType")
+        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(game_type.lower()))

@@ -1,6 +1,7 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
+from Game.Managers.GameManager import GameManager
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -70,4 +71,8 @@ class Lobby(BaseEntity):
                 tc.addScope(self._scopePlay)
 
     def _scopePlay(self, source):
-        source.addNotify(Notificator.onChangeScene, "GameArea")
+        # source.addNotify(Notificator.onChangeScene, "GameArea")
+
+        GameManager.removeGame()
+        GameManager.prepareGame("HO", "01_Forest")
+        GameManager.runLevelStartAdvertisement()

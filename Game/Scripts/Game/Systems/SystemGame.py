@@ -1,4 +1,5 @@
 from Foundation.System import System
+from Foundation.DemonManager import DemonManager
 
 
 class SystemGame(System):
@@ -50,6 +51,7 @@ class SystemGame(System):
             for item, parallel in tc.addParallelTaskList(game.search_level.items):
                 parallel.addTask("TaskItemClick", Item=item, Filter=game.filterItemClick)
                 parallel.addPrint(" * CLICK ON '{}'".format(item.getName()))
+                parallel.addTask("TaskAppendParam", Object=game.object, Param="FoundItems", Value=item)
                 parallel.addFunction(game.search_level.items.remove, item)
                 parallel.addFunction(game.search_panel.addRemovingItem, item)
                 parallel.addScope(game.moveLevelItemToPanelItem, item)
