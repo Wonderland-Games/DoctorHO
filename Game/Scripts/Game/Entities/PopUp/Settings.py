@@ -89,8 +89,7 @@ class Settings(PopUpContent):
             buttons.append(SLOT_LOBBY)
 
         for name in buttons:
-            name_capital = name.capitalize()
-            container = self._generateContainter(name_capital)
+            container = self._generateContainter(name)
             if container is None:
                 continue
 
