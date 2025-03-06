@@ -19,18 +19,27 @@ SCENE_ITEM_SCALE_TIME = 1000.0
 
 class GameArea(BaseEntity):
 
-    @staticmethod
-    def declareORM(Type):
-        BaseEntity.declareORM(Type)
-        Type.addActionActivate(Type, "GameType")
-        Type.addActionActivate(Type, "LevelName")
-
     def __init__(self):
         super(GameArea, self).__init__()
         self.tcs = []
         self.miss_click = None
         self.search_level = None
         self.search_panel = None
+
+    # - Object ----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def declareORM(Type):
+        BaseEntity.declareORM(Type)
+        Type.addAction(Type, "GameType")
+        Type.addAction(Type, "LevelName")
+        Type.addAction(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
+
+    def _appendFoundItems(self, id, item):
+        print "FOUND ITEMS", self.FoundItems
+
+    def _updateFoundItems(self, list):
+        pass
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -56,7 +65,7 @@ class GameArea(BaseEntity):
             return
 
         self._initMissClick()
-        self._initSearchLevel("01_Forest")
+        self._initSearchLevel()
         self._initSearchPanel()
 
         self._attachMissClick()
@@ -102,12 +111,12 @@ class GameArea(BaseEntity):
 
     # - SearchLevel ----------------------------------------------------------------------------------------------------
 
-    def _initSearchLevel(self, level_name):
+    def _initSearchLevel(self):
         frame = Mengine.getGameViewport()
         frame_points = Mengine.vec4f(frame.begin.x, frame.begin.y, frame.end.x, frame.end.y)
 
         self.search_level = SearchLevel()
-        self.search_level.onInitialize(self, level_name, frame_points)
+        self.search_level.onInitialize(self, self.LevelName, frame_points)
 
     def _attachSearchLevel(self):
         _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()

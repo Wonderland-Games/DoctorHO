@@ -151,5 +151,8 @@ class SearchLevel(Initializer):
             if obj.getEntityType() is not "Item":
                 continue
 
+            if obj in self.game.FoundItems:
+                continue
+
             self.items.append(obj)
             obj.setEnable(True)
