@@ -76,21 +76,27 @@ class Hint(Initializer):
         return button_size
 
     def isAvailable(self):
-        return self.hint_counter.count > 0
+        return self.game.HintCount > 0
 
     # - HintCounter ----------------------------------------------------------------------------------------------------
 
     def _setupHintCounter(self):
-        hint_count = 2
         self.hint_counter = HintCounter()
-        self.hint_counter.onInitialize(self.game, hint_count)
+        self.hint_counter.onInitialize(self.game, self.game.HintCount)
 
         button_size = self.getSize()
         self.hint_counter.attachTo(self._root)
         self.hint_counter.setLocalPosition(Mengine.vec2f(button_size.x / 2, - button_size.y / 2))
 
     def incHintCount(self):
+        hint_count = self.game.object.getParam("HintCount")
+        self.game.object.setParam("HintCount", hint_count + 1)
         self.hint_counter.incHintCount()
+
+    def decHintCount(self):
+        hint_count = self.game.object.getParam("HintCount")
+        self.game.object.setParam("HintCount", hint_count - 1)
+        self.hint_counter.decHintCount()
 
     # - HintEffect -----------------------------------------------------------------------------------------------------
 
@@ -136,7 +142,7 @@ class Hint(Initializer):
         Mengine.destroyNode(temp_hint_node)
 
         # hint effect logic
-        source.addFunction(self.hint_counter.decHintCount)
+        source.addFunction(self.decHintCount)
         source.addFunction(self.game.search_panel.switchHints)
 
         source.addFunction(self.game.search_panel.hint.button.movie.setBlock, True)

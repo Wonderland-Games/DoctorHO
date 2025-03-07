@@ -33,7 +33,8 @@ class GameArea(BaseEntity):
         BaseEntity.declareORM(Type)
         Type.addAction(Type, "GameType")
         Type.addAction(Type, "LevelName")
-        Type.addAction(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
+        Type.addActionActivate(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
+        Type.addAction(Type, "HintCount")
 
     def _appendFoundItems(self, id, item):
         print "FOUND ITEMS", self.FoundItems
