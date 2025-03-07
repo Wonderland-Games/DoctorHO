@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Game.Entities.GameArea.SearchLevel.MissClickEffect import MissClickEffect
 
 
 class MissClick(Initializer):
@@ -9,6 +10,7 @@ class MissClick(Initializer):
         self.hotspot_points = None
         self.miss_click_hotspot = None
         self.miss_click_data = {}
+        self.miss_click_effect = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -19,11 +21,16 @@ class MissClick(Initializer):
 
         self._createRoot()
         self._setupMissClickHotSpot()
+        self._setupMissClickEffect()
 
         return True
 
     def _onFinalize(self):
         super(MissClick, self)._onFinalize()
+
+        if self.miss_click_effect is not None:
+            self.miss_click_effect.onFinalize()
+            self.miss_click_effect = None
 
         if self.miss_click_hotspot is not None:
             self.miss_click_hotspot.removeFromParent()
@@ -101,3 +108,9 @@ class MissClick(Initializer):
             Notification.notify(Notificator.onLevelMissClicked)
 
         return False
+
+    # - Effect --------------------------------------------------------------------------------------------------------
+
+    def _setupMissClickEffect(self):
+        self.miss_click_effect = MissClickEffect()
+        self.miss_click_effect.onInitialize(self.game)
