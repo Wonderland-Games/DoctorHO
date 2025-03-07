@@ -89,6 +89,9 @@ class Hint(Initializer):
         self.hint_counter.attachTo(self._root)
         self.hint_counter.setLocalPosition(Mengine.vec2f(button_size.x / 2, - button_size.y / 2))
 
+    def incHintCount(self):
+        self.hint_counter.incHintCount()
+
     # - HintEffect -----------------------------------------------------------------------------------------------------
 
     def _initHintEffect(self):
@@ -105,7 +108,7 @@ class Hint(Initializer):
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
-    def clickHint(self, source):
+    def clickAction(self, source):
         # get random panel item from search panel
         panel_item = self.game.search_panel.getRandomAvailableItem()
         if panel_item is None:
@@ -134,6 +137,7 @@ class Hint(Initializer):
 
         # hint effect logic
         source.addFunction(self.hint_counter.decHintCount)
+        source.addFunction(self.game.search_panel.switchHints)
 
         source.addFunction(self.game.search_panel.hint.button.movie.setBlock, True)
         source.addFunction(self.game.search_panel.virtual_area.freeze, True)

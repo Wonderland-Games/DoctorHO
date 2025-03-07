@@ -3,6 +3,7 @@ from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
+from Game.Entities.GameArea.SearchPanel.Hint.HintAd import HintAd
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
@@ -24,6 +25,7 @@ class SearchPanel(Initializer):
         self.lives_counter = None
         self.items_counter = None
         self.hint = None
+        self.hint_ad = None
         self.items = []
         self.removing_items = []
         self.items_node = None
@@ -44,6 +46,8 @@ class SearchPanel(Initializer):
 
         self._setupItemsCounter()
         self._setupHint()
+        self._setupHintAd()
+        self.switchHints()
 
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
@@ -57,9 +61,8 @@ class SearchPanel(Initializer):
     def _onFinalize(self):
         super(SearchPanel, self)._onFinalize()
 
-        if self.hint is not None:
-            self.hint.onFinalize()
-            self.hint = None
+        self.destroyHint()
+        self.destroyHintAd()
 
         if self.lives_counter is not None:
             self.lives_counter.onFinalize()
@@ -172,6 +175,41 @@ class SearchPanel(Initializer):
         panel_size = self.getSize()
         hint_node = self.hint.getRoot()
         hint_node.setLocalPosition(Mengine.vec2f(0, -panel_size.y / 2))
+
+    def destroyHint(self):
+        if self.hint is not None:
+            self.hint.onFinalize()
+            self.hint = None
+
+    # - HintAd ---------------------------------------------------------------------------------------------------------
+
+    def _setupHintAd(self):
+        self.hint_ad = HintAd()
+        self.hint_ad.onInitialize(self.game)
+        self.hint_ad.attachTo(self.root)
+
+        panel_size = self.getSize()
+        hint_node = self.hint_ad.getRoot()
+        hint_node.setLocalPosition(Mengine.vec2f(0, -panel_size.y / 2))
+
+    def destroyHintAd(self):
+        if self.hint_ad is not None:
+            self.hint_ad.onFinalize()
+            self.hint_ad = None
+
+    # - Hint Tools -----------------------------------------------------------------------------------------------------
+
+    def switchHints(self):
+        hint_available = self.hint.isAvailable()
+        hint_node = self.hint.getRoot()
+        hint_ad_node = self.hint_ad.getRoot()
+
+        if hint_available:
+            hint_node.enable()
+            hint_ad_node.disable()
+        else:
+            hint_ad_node.enable()
+            hint_node.disable()
 
     # - Items ----------------------------------------------------------------------------------------------------------
 

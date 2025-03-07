@@ -1,10 +1,8 @@
 from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
-from UIKit.Managers.IconManager import IconManager
 
 
 MOVIE_BG = "HintCounterBackground"
-ICON_AD = "Advertising"
 TEXT_ID = "ID_HintCounter"
 
 
@@ -16,7 +14,6 @@ class HintCounter(Initializer):
         self.root = None
         self.background = None
         self.text = None
-        self.ad_icon = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -34,8 +31,6 @@ class HintCounter(Initializer):
         super(HintCounter, self)._onFinalize()
         self.game = None
         self.count = None
-
-        self._destroyAdIcon()
 
         if self.text is not None:
             self.text.removeFromParent()
@@ -89,29 +84,6 @@ class HintCounter(Initializer):
         self.background = PrototypeManager.generateObjectUniqueOnNode(self.root, MOVIE_BG)
         self.background.setEnable(True)
 
-    # - Ad Icon --------------------------------------------------------------------------------------------------------
-
-    def _setupAdIcon(self):
-        self.ad_icon = IconManager.generateIconOnNode(self.root, ICON_AD)
-        self.ad_icon.setEnable(True)
-
-        icon_bounds = self.ad_icon.getCompositionBounds()
-        icon_size = Utils.getBoundingBoxSize(icon_bounds)
-
-        background_bounds = self.background.getCompositionBounds()
-        background_size = Utils.getBoundingBoxSize(background_bounds)
-
-        size_perc = background_size / icon_size
-        max_dimension = max(size_perc.x, size_perc.y)
-        new_scale = Mengine.vec2f(max_dimension, max_dimension)
-
-        self.ad_icon.setScale(new_scale)
-
-    def _destroyAdIcon(self):
-        if self.ad_icon is not None:
-            self.ad_icon.onDestroy()
-            self.ad_icon = None
-
     # - Tools ----------------------------------------------------------------------------------------------------------
 
     def decHintCount(self):
@@ -121,14 +93,6 @@ class HintCounter(Initializer):
         self.count -= 1
         self.updateTextArgs()
 
-        if self.count == 0:
-            self._setupAdIcon()
-            self.text.disable()
-
     def incHintCount(self):
         self.count += 1
         self.updateTextArgs()
-
-        if self.count >= 1:
-            self._destroyAdIcon()
-            self.text.enable()

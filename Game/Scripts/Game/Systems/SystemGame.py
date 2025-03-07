@@ -1,5 +1,4 @@
 from Foundation.System import System
-from Foundation.DemonManager import DemonManager
 
 
 class SystemGame(System):
@@ -64,12 +63,12 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelHint")
 
         with self.createTaskChain("SearchPanelHint", Repeat=True) as tc:
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button.movie)
-            tc.addPrint(" * CLICK HINT")
+            with tc.addRaceTask(2) as (hint, hint_ad):
+                hint.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button.movie)
+                hint.addScope(game.search_panel.hint.clickAction)
 
-            with tc.addIfTask(game.search_panel.hint.isAvailable) as (hint, advertisement):
-                hint.addScope(game.search_panel.hint.clickHint)
-                advertisement.addPrint("[Hint] Call onPopUpAdvertisement event")
+                hint_ad.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint_ad.button.movie)
+                hint_ad.addScope(game.search_panel.hint_ad.clickAction)
 
         # lives logic
         if self.existTaskChain("SearchPanelLives") is True:
