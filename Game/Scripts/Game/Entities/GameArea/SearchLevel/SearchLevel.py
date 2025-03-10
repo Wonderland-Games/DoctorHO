@@ -131,12 +131,12 @@ class SearchLevel(Initializer):
 
         scene_layer = scene_group.getMainLayer()
         scene_size = scene_layer.getSize()
-        box_size = self.getBoxSize()
+        box_size = self.getSize()
 
         # WORKING WRONG, BUT WHY?
         # scene_node.setLocalPosition(Mengine.vec2f(box_size.x / 2 - scene_size.x / 2, box_size.y / 2 - scene_size.y / 2))
 
-    def getBoxSize(self):
+    def getSize(self):
         box_width = self.box_points.z - self.box_points.x
         box_height = self.box_points.w - self.box_points.y
         return Mengine.vec2f(box_width, box_height)
