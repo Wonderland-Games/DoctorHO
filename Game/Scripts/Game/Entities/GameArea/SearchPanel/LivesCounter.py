@@ -4,7 +4,6 @@ from UIKit.Managers.IconManager import IconManager
 
 
 ICON_PROTOTYPE = "Heart"
-MOVIE_ICON = "Movie2_LivesCounterIcon"
 TEXT_ID = "ID_LivesCounter"
 
 
@@ -99,7 +98,6 @@ class LivesCounter(Initializer):
     # - Icon -----------------------------------------------------------------------------------------------------------
 
     def _setupIcon(self):
-        # self.icon = self.game.object.generateObjectUnique(MOVIE_ICON, MOVIE_ICON)
         self.icon = IconManager.generateIcon(ICON_PROTOTYPE)
         self.icon.setEnable(True)
         icon_node = self.icon.getEntityNode()

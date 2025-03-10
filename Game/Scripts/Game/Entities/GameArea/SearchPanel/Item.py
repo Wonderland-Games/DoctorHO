@@ -1,7 +1,8 @@
 from Foundation.Initializer import Initializer
+from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
-MOVIE_BOX = "Movie2_ItemBox"
+PROTOTYPE_BOX = "ItemBox"
 ITEM_SCALE_MULTIPLIER = 0.8
 
 ITEM_REMOVE_SCALE_UP_TO = Mengine.vec3f(1.15, 1.15, 1.15)
@@ -92,7 +93,7 @@ class Item(Initializer):
     # - Box ------------------------------------------------------------------------------------------------------------
 
     def _createBox(self):
-        self.box = self.game.object.generateObjectUnique(MOVIE_BOX, MOVIE_BOX)
+        self.box = PrototypeManager.generateObjectUnique(PROTOTYPE_BOX)
         self.box.setEnable(True)
         self._root.addChild(self.box.getEntityNode())
 
