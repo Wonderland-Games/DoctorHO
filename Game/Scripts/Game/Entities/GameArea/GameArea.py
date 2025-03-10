@@ -267,3 +267,48 @@ class GameArea(BaseEntity):
         source.addTask("TaskNodeDestroy", Node=level_item_pure)
         source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
         source.addTask("TaskNodeDestroy", Node=moving_node)
+
+    def showHintEffect(self, source):
+        # get random panel item from search panel
+        panel_item = self.search_panel.getRandomAvailableItem()
+        if panel_item is None:
+            return
+
+        # save hint item
+        self.search_panel.hint.hint_item = panel_item.item_obj
+
+        # calc item hint point
+        hint_point = self.search_panel.hint.hint_item.calcWorldHintPoint()
+
+        # create temp hint node
+        temp_hint_node = Mengine.createNode("Interender")
+        temp_hint_node.setName("TempHintNode")
+
+        # setting items position to temp node
+        self.addChild(temp_hint_node)
+        temp_hint_node.setWorldPosition(hint_point)
+
+        # getting transformation from temp node
+        hint_item_transformation = temp_hint_node.getTransformation()
+
+        # destroy temp hint node
+        temp_hint_node.removeFromParent()
+        Mengine.destroyNode(temp_hint_node)
+
+        # hint effect logic
+        source.addFunction(self.search_panel.hint.decHintCount)
+        source.addFunction(self.search_panel.switchHints)
+
+        source.addFunction(self.search_panel.hint.button.movie.setBlock, True)
+        source.addFunction(self.search_panel.virtual_area.freeze, True)
+        source.addFunction(self.search_level.virtual_area.freeze, True)
+
+        source.addScope(self.search_panel.hint.hint_effect.show, hint_item_transformation)
+        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.search_panel.hint.hint_item)
+        source.addScope(self.search_panel.hint.hint_effect.hide, hint_item_transformation)
+
+        source.addFunction(self.search_panel.hint.cleanHintItem)
+
+        source.addFunction(self.search_panel.hint.button.movie.setBlock, False)
+        source.addFunction(self.search_panel.virtual_area.freeze, False)
+        source.addFunction(self.search_level.virtual_area.freeze, False)
