@@ -1,4 +1,5 @@
 from Foundation.System import System
+from Foundation.DemonManager import DemonManager
 
 
 class SystemGame(System):
@@ -65,10 +66,10 @@ class SystemGame(System):
         with self.createTaskChain("SearchPanelHint", Repeat=True) as tc:
             with tc.addRaceTask(2) as (hint, hint_ad):
                 hint.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint.button.movie)
-                hint.addScope(game.search_panel.hint.clickAction)
+                hint.addScope(self._scopeHint)
 
                 hint_ad.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint_ad.button.movie)
-                hint_ad.addScope(game.search_panel.hint_ad.clickAction)
+                hint_ad.addScope(self._scopeHintAd)
 
         # lives logic
         if self.existTaskChain("SearchPanelLives") is True:
@@ -105,3 +106,62 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelLives")
 
         return False
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def _scopeHint(self, source):
+        game_object = DemonManager.getDemon("GameArea")
+        game = game_object.entity
+        hint = game.search_panel.hint
+
+        # get random panel item from search panel
+        panel_item = game.search_panel.getRandomAvailableItem()
+        if panel_item is None:
+            return
+
+        # save hint item
+        hint.hint_item = panel_item.item_obj
+
+        # calc item hint point
+        hint_point = hint.hint_item.calcWorldHintPoint()
+
+        # create temp hint node
+        temp_hint_node = Mengine.createNode("Interender")
+        temp_hint_node.setName("TempHintNode")
+
+        # setting items position to temp node
+        game.addChild(temp_hint_node)
+        temp_hint_node.setWorldPosition(hint_point)
+
+        # getting transformation from temp node
+        hint_item_transformation = temp_hint_node.getTransformation()
+
+        # destroy temp hint node
+        temp_hint_node.removeFromParent()
+        Mengine.destroyNode(temp_hint_node)
+
+        # hint effect logic
+        source.addFunction(hint.decHintCount)
+        source.addFunction(game.search_panel.switchHints)
+
+        source.addFunction(game.search_panel.hint.button.movie.setBlock, True)
+        source.addFunction(game.search_panel.virtual_area.freeze, True)
+        source.addFunction(game.search_level.virtual_area.freeze, True)
+
+        source.addScope(hint.hint_effect.show, hint_item_transformation)
+        source.addListener(Notificator.onItemClick, Filter=lambda item: item == hint.hint_item)
+        source.addScope(hint.hint_effect.hide, hint_item_transformation)
+
+        source.addFunction(hint.cleanHintItem)
+
+        source.addFunction(game.search_panel.hint.button.movie.setBlock, False)
+        source.addFunction(game.search_panel.virtual_area.freeze, False)
+        source.addFunction(game.search_level.virtual_area.freeze, False)
+
+    def _scopeHintAd(self, source):
+        game_object = DemonManager.getDemon("GameArea")
+        game = game_object.entity
+
+        source.addPrint("[HintAd] Call onAdvertisement event")
+        source.addFunction(game.search_panel.hint.incHintCount)
+        source.addFunction(game.search_panel.switchHints)
