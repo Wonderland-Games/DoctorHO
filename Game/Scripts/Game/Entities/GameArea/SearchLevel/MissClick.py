@@ -109,6 +109,11 @@ class MissClick(Initializer):
 
         return False
 
+    def getSize(self):
+        hotspot_width = self.hotspot_points.z - self.hotspot_points.x
+        hotspot_height = self.hotspot_points.w - self.hotspot_points.y
+        return Mengine.vec2f(hotspot_width, hotspot_height)
+
     # - Effect --------------------------------------------------------------------------------------------------------
 
     def _setupMissClickEffect(self):
