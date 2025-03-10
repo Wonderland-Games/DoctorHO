@@ -24,7 +24,7 @@ class HintAd(Initializer):
         self._createRoot()
         self._setupButton()
         self._setupAdIcon()
-        self._adjustAdIconScale()
+        # self._adjustAdIconScale()
 
     def _onFinalize(self):
         super(HintAd, self)._onFinalize()
@@ -80,26 +80,3 @@ class HintAd(Initializer):
         button_size = self.getSize()
         self.ad_icon.attachTo(self._root)
         self.ad_icon.setLocalPosition(Mengine.vec2f(button_size.x / 2, - button_size.y / 2))
-
-    def _adjustAdIconScale(self):
-        icon = self.ad_icon.icon
-        background = self.ad_icon.movie
-
-        icon_bounds = icon.getCompositionBounds()
-        icon_size = Utils.getBoundingBoxSize(icon_bounds)
-
-        background_bounds = background.getCompositionBounds()
-        background_size = Utils.getBoundingBoxSize(background_bounds)
-
-        size_perc = background_size / icon_size
-        max_dimension = max(size_perc.x, size_perc.y)
-        new_scale = Mengine.vec2f(max_dimension, max_dimension)
-
-        icon.setScale(new_scale)
-
-    # - TaskChain ------------------------------------------------------------------------------------------------------
-
-    def clickAction(self, source):
-        source.addPrint("[HintAd] Call onAdvertisement event")
-        source.addFunction(self.game.search_panel.hint.incHintCount)
-        source.addFunction(self.game.search_panel.switchHints)

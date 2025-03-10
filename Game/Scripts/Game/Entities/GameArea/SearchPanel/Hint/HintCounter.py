@@ -2,7 +2,7 @@ from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
-MOVIE_BG = "HintCounterBackground"
+MOVIE_BG = "HintCounter"
 TEXT_ID = "ID_HintCounter"
 
 

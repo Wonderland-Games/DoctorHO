@@ -112,52 +112,7 @@ class Hint(Initializer):
 
         self.hint_effect.attachTo(scene_parent)
 
-    # - TaskChain ------------------------------------------------------------------------------------------------------
+    # - Tools ----------------------------------------------------------------------------------------------------------
 
-    def clickAction(self, source):
-        # get random panel item from search panel
-        panel_item = self.game.search_panel.getRandomAvailableItem()
-        if panel_item is None:
-            return
-
-        # save hint item
-        self.hint_item = panel_item.item_obj
-
-        # calc item hint point
-        hint_point = self.hint_item.calcWorldHintPoint()
-
-        # create temp hint node
-        temp_hint_node = Mengine.createNode("Interender")
-        temp_hint_node.setName("TempHintNode")
-
-        # setting items position to temp node
-        self.game.addChild(temp_hint_node)
-        temp_hint_node.setWorldPosition(hint_point)
-
-        # getting transformation from temp node
-        hint_item_transformation = temp_hint_node.getTransformation()
-
-        # destroy temp hint node
-        temp_hint_node.removeFromParent()
-        Mengine.destroyNode(temp_hint_node)
-
-        # hint effect logic
-        source.addFunction(self.decHintCount)
-        source.addFunction(self.game.search_panel.switchHints)
-
-        source.addFunction(self.game.search_panel.hint.button.movie.setBlock, True)
-        source.addFunction(self.game.search_panel.virtual_area.freeze, True)
-        source.addFunction(self.game.search_level.virtual_area.freeze, True)
-
-        source.addScope(self.hint_effect.show, hint_item_transformation)
-        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.hint_item)
-        source.addScope(self.hint_effect.hide, hint_item_transformation)
-
-        source.addFunction(self._cleanHintItem)
-
-        source.addFunction(self.game.search_panel.hint.button.movie.setBlock, False)
-        source.addFunction(self.game.search_panel.virtual_area.freeze, False)
-        source.addFunction(self.game.search_level.virtual_area.freeze, False)
-
-    def _cleanHintItem(self):
+    def cleanHintItem(self):
         self.hint_item = None
