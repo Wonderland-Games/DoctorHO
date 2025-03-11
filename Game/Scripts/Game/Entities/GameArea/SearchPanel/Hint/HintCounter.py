@@ -4,6 +4,7 @@ from UIKit.Managers.PrototypeManager import PrototypeManager
 
 MOVIE_BG = "HintCounter"
 TEXT_ID = "ID_HintCounter"
+ALIAS = "$HintCounter"
 
 
 class HintCounter(Initializer):
@@ -12,8 +13,9 @@ class HintCounter(Initializer):
         self.game = None
         self.count = None
         self.root = None
-        self.background = None
-        self.text = None
+        # self.background = None
+        # self.text = None
+        self.movie = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -24,22 +26,27 @@ class HintCounter(Initializer):
 
         self._createRoot()
 
-        self._setupBackground()
-        self._setupText()
+        # self._setupBackground()
+        # self._setupText()
+        self._setupMovie()
 
     def _onFinalize(self):
         super(HintCounter, self)._onFinalize()
         self.game = None
         self.count = None
 
-        if self.text is not None:
-            self.text.removeFromParent()
-            Mengine.destroyNode(self.text)
-            self.text = None
+        # if self.text is not None:
+        #     self.text.removeFromParent()
+        #     Mengine.destroyNode(self.text)
+        #     self.text = None
+        #
+        # if self.background is not None:
+        #     self.background.onDestroy()
+        #     self.background = None
 
-        if self.background is not None:
-            self.background.onDestroy()
-            self.background = None
+        if self.movie is not None:
+            self.movie.onDestroy()
+            self.movie = None
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -84,6 +91,25 @@ class HintCounter(Initializer):
         self.background = PrototypeManager.generateObjectUniqueOnNode(self.root, MOVIE_BG)
         self.background.setEnable(True)
 
+    # - Movie ----------------------------------------------------------------------------------------------------------
+
+    def _setupMovie(self):
+        self.movie = PrototypeManager.generateObjectUniqueOnNode(self.root, MOVIE_BG)
+        self.movie.setEnable(True)
+
+        Mengine.setTextAlias("", ALIAS, TEXT_ID)
+        Mengine.setTextAliasArguments("", ALIAS, self._getHintCount)
+        # self._updateAliasArgs()
+
+    def _updateAliasArgs(self, value=None):
+        if value is None:
+            value = self.count
+
+        Mengine.setTextAliasArguments("", ALIAS, value)
+
+    def _getHintCount(self):
+        return self.count
+
     # - Tools ----------------------------------------------------------------------------------------------------------
 
     def decHintCount(self):
@@ -91,8 +117,10 @@ class HintCounter(Initializer):
             return
 
         self.count -= 1
-        self.updateTextArgs()
+        # self.updateTextArgs()
+        # self._updateAliasArgs()
 
     def incHintCount(self):
         self.count += 1
-        self.updateTextArgs()
+        # self.updateTextArgs()
+        # self._updateAliasArgs()
