@@ -42,7 +42,11 @@ class SearchPanel(Initializer):
 
         self._createRoot()
         self._attachPanel()
-        self._initItems()
+
+        return True
+
+    def onInitialize2(self):
+        self.initItems()
 
         self._setupItemsCounter()
         self._setupHint()
@@ -56,7 +60,6 @@ class SearchPanel(Initializer):
 
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
-        return True
 
     def _onFinalize(self):
         super(SearchPanel, self)._onFinalize()
@@ -173,8 +176,12 @@ class SearchPanel(Initializer):
         self.hint.attachTo(self.root)
 
         panel_size = self.getSize()
+        hint_size = self.hint.getSize()
         hint_node = self.hint.getRoot()
-        hint_node.setLocalPosition(Mengine.vec2f(0, -panel_size.y / 2))
+
+        # hint_pos_y = -panel_size.y / 2
+        hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
+        hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
 
     def destroyHint(self):
         if self.hint is not None:
@@ -189,8 +196,12 @@ class SearchPanel(Initializer):
         self.hint_ad.attachTo(self.root)
 
         panel_size = self.getSize()
+        hint_size = self.hint.getSize()
         hint_node = self.hint_ad.getRoot()
-        hint_node.setLocalPosition(Mengine.vec2f(0, -panel_size.y / 2))
+
+        # hint_pos_y = -panel_size.y / 2
+        hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
+        hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
 
     def destroyHintAd(self):
         if self.hint_ad is not None:
@@ -213,7 +224,7 @@ class SearchPanel(Initializer):
 
     # - Items ----------------------------------------------------------------------------------------------------------
 
-    def _initItems(self):
+    def initItems(self):
         # create items node
         self.items_node = Mengine.createNode("Interender")
         self.items_node.setName("Items")
@@ -240,8 +251,10 @@ class SearchPanel(Initializer):
         items_count = len(self.items)
 
         items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
+        # items_node_pos_y = panel_size.y / 2
+        items_node_pos_y = panel_size.y - item_size.y / 2
 
-        items_node_pos = Mengine.vec2f(items_node_pos_x, panel_size.y / 2)
+        items_node_pos = Mengine.vec2f(items_node_pos_x, items_node_pos_y)
         return items_node_pos
 
     def _calcItemLocalPosition(self, i, item):
@@ -305,7 +318,7 @@ class SearchPanel(Initializer):
 
         panel_size = self.getSize()
         self.items_counter.attachTo(self.root)
-        self.items_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.75))
+        self.items_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.25))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 

@@ -65,9 +65,11 @@ class GameArea(BaseEntity):
         if self.content is None:
             return
 
+        self._initSearchPanel()
         self._initMissClick()
         self._initSearchLevel()
-        self._initSearchPanel()
+
+        self.search_panel.onInitialize2()
 
         self._attachMissClick()
         self._attachSearchLevel()
@@ -97,14 +99,14 @@ class GameArea(BaseEntity):
     # - MissClick ------------------------------------------------------------------------------------------------------
 
     def _initMissClick(self):
-        # search_panel_size = self.search_panel.getSize()
+        search_panel_size = self.search_panel.getSize()
         _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
 
         frame_begin_x = viewport.begin.x
         frame_begin_y = viewport.begin.y + header_height
         frame_end_x = viewport.end.x
-        # frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_end_y = viewport.end.y - banner_height
+        frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
         self.miss_click = MissClick()
@@ -123,14 +125,14 @@ class GameArea(BaseEntity):
     # - SearchLevel ----------------------------------------------------------------------------------------------------
 
     def _initSearchLevel(self):
-        # search_panel_size = self.search_panel.getSize()
+        search_panel_size = self.search_panel.getSize()
         _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
 
         frame_begin_x = viewport.begin.x
         frame_begin_y = viewport.begin.y + header_height
         frame_end_x = viewport.end.x
-        # frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_end_y = viewport.end.y - banner_height
+        frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
         self.search_level = SearchLevel()
