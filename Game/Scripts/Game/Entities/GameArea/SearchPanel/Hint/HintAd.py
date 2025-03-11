@@ -24,7 +24,6 @@ class HintAd(Initializer):
         self._createRoot()
         self._setupButton()
         self._setupAdIcon()
-        # self._adjustAdIconScale()
 
     def _onFinalize(self):
         super(HintAd, self)._onFinalize()
