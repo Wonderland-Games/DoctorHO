@@ -4,10 +4,10 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
 from Game.Entities.GameArea.SearchPanel.Hint.HintAd import HintAd
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
-PANEL_VA = "virtual_area"
 ITEMS_OFFSET_BETWEEN = 25.0
 
 ITEMS_NODE_MOVE_TIME = 300.0
@@ -20,6 +20,7 @@ class SearchPanel(Initializer):
         super(SearchPanel, self).__init__()
         self.game = None
         self.virtual_area = None
+        self.va_hotspot = None
         self.root = None
         self.movie_panel = None
         self.lives_counter = None
@@ -90,6 +91,11 @@ class SearchPanel(Initializer):
         if self.virtual_area is not None:
             self.virtual_area.onFinalize()
             self.virtual_area = None
+            
+        if self.va_hotspot is not None:
+            self.va_hotspot.removeFromParent()
+            Mengine.destroyNode(self.va_hotspot)
+            self.va_hotspot = None
 
         self.movie_panel = None
         self.items_range = None
@@ -123,19 +129,43 @@ class SearchPanel(Initializer):
         )
 
     def _setupVirtualArea(self):
-        self.virtual_area.setup_with_movie(self.movie_panel, PANEL_VA, PANEL_VA)
-        panel_bounds = self.getBounds()
+        self.va_hotspot = Mengine.createNode("HotSpotPolygon")
+        self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
+
+        item = self.items[0]
+        item_size = item.getSize()
         panel_size = self.getSize()
 
-        self.virtual_area.setup_viewport(0, 0, panel_size.x, panel_size.y)
-        self.virtual_area._socket.setDefaultHandle(True)
+        va_begin_x = 0
+        va_begin_y = 0
+        va_end_x = panel_size.x
+        va_end_y = item_size.y
+        
+        hotspot_polygon = [
+            (va_begin_x, va_begin_y),
+            (va_end_x, va_begin_y),
+            (va_end_x, va_end_y),
+            (va_begin_x, va_end_y)
+        ]
+        hotspot_polygon_center = Mengine.vec2f(
+            panel_size.x / -2,
+            panel_size.y / 2 - item_size.y
+        )
 
-        panel_entity = self.movie_panel.getEntity()
-        panel_entity.setSocketHandle(PANEL_VA, "button", False)
-        panel_entity.setSocketHandle(PANEL_VA, "enter", False)
-        panel_entity.setSocketHandle(PANEL_VA, "move", False)
+        self.va_hotspot.setPolygon(hotspot_polygon)
+        self.va_hotspot.setDefaultHandle(False)
 
-        self.movie_panel.setInteractive(True)
+        self.root.addChild(self.va_hotspot)
+        self.va_hotspot.enable()
+        self.va_hotspot.setLocalPosition(hotspot_polygon_center)
+
+        self.virtual_area.setup_viewport(va_begin_x, va_begin_y, va_end_x, va_end_y)
+        self.virtual_area.init_handlers(self.va_hotspot)
+
+        # attach VA to root
+        virtual_area_node = self.virtual_area.get_node()
+        self.root.addChild(virtual_area_node)
+        virtual_area_node.setLocalPosition(hotspot_polygon_center)
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
@@ -164,9 +194,10 @@ class SearchPanel(Initializer):
         return panel_bounds
 
     def getSize(self):
+        game_width, _, _, _ = AdjustableScreenUtils.getMainSizes()
         panel_bounds = self.getBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
-        return panel_size
+        return Mengine.vec2f(game_width, panel_size.y)
 
     # - Hint -----------------------------------------------------------------------------------------------------------
 
@@ -179,7 +210,6 @@ class SearchPanel(Initializer):
         hint_size = self.hint.getSize()
         hint_node = self.hint.getRoot()
 
-        # hint_pos_y = -panel_size.y / 2
         hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
         hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
 
@@ -199,7 +229,6 @@ class SearchPanel(Initializer):
         hint_size = self.hint.getSize()
         hint_node = self.hint_ad.getRoot()
 
-        # hint_pos_y = -panel_size.y / 2
         hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
         hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
 
@@ -247,12 +276,10 @@ class SearchPanel(Initializer):
 
     def _calcItemsNodeLocalPosition(self, item):
         item_size = item.getSize()
-        panel_size = self.getSize()
         items_count = len(self.items)
 
         items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
-        # items_node_pos_y = panel_size.y / 2
-        items_node_pos_y = panel_size.y - item_size.y / 2
+        items_node_pos_y = item_size.y / 2
 
         items_node_pos = Mengine.vec2f(items_node_pos_x, items_node_pos_y)
         return items_node_pos
