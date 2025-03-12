@@ -197,7 +197,11 @@ class SearchPanel(Initializer):
         game_width, _, _, _ = AdjustableScreenUtils.getMainSizes()
         panel_bounds = self.getBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
-        return Mengine.vec2f(game_width, panel_size.y)
+
+        panel_width = panel_size.x
+        # panel_width = game_width
+
+        return Mengine.vec2f(panel_width, panel_size.y)
 
     # - Hint -----------------------------------------------------------------------------------------------------------
 
