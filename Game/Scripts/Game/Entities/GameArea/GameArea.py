@@ -105,7 +105,6 @@ class GameArea(BaseEntity):
         frame_begin_x = viewport.begin.x
         frame_begin_y = viewport.begin.y + header_height
         frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height
         frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
@@ -131,7 +130,6 @@ class GameArea(BaseEntity):
         frame_begin_x = viewport.begin.x
         frame_begin_y = viewport.begin.y + header_height
         frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height
         frame_end_y = viewport.end.y - banner_height - search_panel_size.y
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
