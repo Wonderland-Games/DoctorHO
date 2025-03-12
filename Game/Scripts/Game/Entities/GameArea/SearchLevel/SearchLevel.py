@@ -2,6 +2,7 @@ from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 class SearchLevel(Initializer):
@@ -135,6 +136,11 @@ class SearchLevel(Initializer):
 
         # WORKING WRONG, BUT WHY?
         # scene_node.setLocalPosition(Mengine.vec2f(box_size.x / 2 - scene_size.x / 2, box_size.y / 2 - scene_size.y / 2))
+
+        _, _, header_y, _, _, _, _ = AdjustableScreenUtils.getMainSizesExt()
+        diff = box_size.y - scene_size.y
+        pos_y = header_y + diff / 2
+        scene_node.setLocalPosition(Mengine.vec2f(0, pos_y))
 
     def getSize(self):
         box_width = self.box_points.z - self.box_points.x
