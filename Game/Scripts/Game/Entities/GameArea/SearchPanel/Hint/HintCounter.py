@@ -11,38 +11,21 @@ class HintCounter(Initializer):
     def __init__(self):
         super(HintCounter, self).__init__()
         self.game = None
-        self.count = None
         self.root = None
-        # self.background = None
-        # self.text = None
         self.movie = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, count):
+    def _onInitialize(self, game):
         super(HintCounter, self)._onInitialize()
         self.game = game
-        self.count = count
 
         self._createRoot()
-
-        # self._setupBackground()
-        # self._setupText()
         self._setupMovie()
 
     def _onFinalize(self):
         super(HintCounter, self)._onFinalize()
         self.game = None
-        self.count = None
-
-        # if self.text is not None:
-        #     self.text.removeFromParent()
-        #     Mengine.destroyNode(self.text)
-        #     self.text = None
-        #
-        # if self.background is not None:
-        #     self.background.onDestroy()
-        #     self.background = None
 
         if self.movie is not None:
             self.movie.onDestroy()
@@ -66,31 +49,6 @@ class HintCounter(Initializer):
     def setLocalPosition(self, pos):
         self.root.setLocalPosition(pos)
 
-    # - Text -----------------------------------------------------------------------------------------------------------
-
-    def _setupText(self):
-        self.text = Mengine.createNode("TextField")
-        self.text.setName(self.__class__.__name__)
-        self.text.setVerticalCenterAlign()
-        self.text.setHorizontalCenterAlign()
-        self.text.setTextId(TEXT_ID)
-        self.updateTextArgs()
-        self.text.enable()
-
-        self.root.addChild(self.text)
-
-    def updateTextArgs(self, value=None):
-        if value is None:
-            value = self.count
-
-        self.text.setTextFormatArgs(value)
-
-    # - Background -----------------------------------------------------------------------------------------------------
-
-    def _setupBackground(self):
-        self.background = PrototypeManager.generateObjectUniqueOnNode(self.root, MOVIE_BG)
-        self.background.setEnable(True)
-
     # - Movie ----------------------------------------------------------------------------------------------------------
 
     def _setupMovie(self):
@@ -98,29 +56,4 @@ class HintCounter(Initializer):
         self.movie.setEnable(True)
 
         Mengine.setTextAlias("", ALIAS, TEXT_ID)
-        Mengine.setTextAliasArguments("", ALIAS, self._getHintCount)
-        # self._updateAliasArgs()
-
-    def _updateAliasArgs(self, value=None):
-        if value is None:
-            value = self.count
-
-        Mengine.setTextAliasArguments("", ALIAS, value)
-
-    def _getHintCount(self):
-        return self.count
-
-    # - Tools ----------------------------------------------------------------------------------------------------------
-
-    def decHintCount(self):
-        if self.count <= 0:
-            return
-
-        self.count -= 1
-        # self.updateTextArgs()
-        # self._updateAliasArgs()
-
-    def incHintCount(self):
-        self.count += 1
-        # self.updateTextArgs()
-        # self._updateAliasArgs()
+        Mengine.setTextAliasArguments("", ALIAS, self.game.search_panel.hint.getHintCount)
