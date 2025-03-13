@@ -82,21 +82,23 @@ class Hint(Initializer):
 
     def _setupHintCounter(self):
         self.hint_counter = HintCounter()
-        self.hint_counter.onInitialize(self.game, self.game.HintCount)
+        self.hint_counter.onInitialize(self.game)
 
         button_size = self.getSize()
         self.hint_counter.attachTo(self._root)
         self.hint_counter.setLocalPosition(Mengine.vec2f(button_size.x / 2, - button_size.y / 2))
 
-    def incHintCount(self):
+    def getHintCount(self):
         hint_count = self.game.object.getParam("HintCount")
+        return hint_count
+
+    def incHintCount(self):
+        hint_count = self.getHintCount()
         self.game.object.setParam("HintCount", hint_count + 1)
-        self.hint_counter.incHintCount()
 
     def decHintCount(self):
-        hint_count = self.game.object.getParam("HintCount")
+        hint_count = self.getHintCount()
         self.game.object.setParam("HintCount", hint_count - 1)
-        self.hint_counter.decHintCount()
 
     # - HintEffect -----------------------------------------------------------------------------------------------------
 
