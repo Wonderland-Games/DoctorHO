@@ -5,6 +5,7 @@ from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
 from Game.Entities.GameArea.SearchPanel.Hint.HintAd import HintAd
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
@@ -13,6 +14,8 @@ ITEMS_OFFSET_BETWEEN = 25.0
 ITEMS_NODE_MOVE_TIME = 300.0
 ITEMS_MOVE_TIME = 300.0
 ITEMS_MOVE_EASING = "easyCubicInOut"   # easyLinear, easyBackInOut, easyBackOut, easyBounceOut, easyCubicOut, easyQuartOut
+
+PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
 
 
 class SearchPanel(Initializer):
@@ -31,6 +34,7 @@ class SearchPanel(Initializer):
         self.removing_items = []
         self.items_node = None
         self.items_range = None
+        self.movie_items_corners = {}
         self.semaphore_allow_panel_items_move = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -47,7 +51,7 @@ class SearchPanel(Initializer):
         return True
 
     def onInitialize2(self):
-        self.initItems()
+        self._initItems()
 
         self._setupItemsCounter()
         self._setupHint()
@@ -58,6 +62,7 @@ class SearchPanel(Initializer):
         self._calcVirtualAreaContentSize()
 
         self._calcItemsRange()
+        self._setupItemsCorners()
 
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
@@ -75,6 +80,11 @@ class SearchPanel(Initializer):
         if self.items_counter is not None:
             self.items_counter.onFinalize()
             self.items_counter = None
+
+        for corner in self.movie_items_corners.values():
+            if corner is not None:
+                corner.onDestroy()
+        self.movie_items_corners = {}
 
         for item in self.items:
             item.onFinalize()
@@ -198,8 +208,8 @@ class SearchPanel(Initializer):
         panel_bounds = self.getBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
 
-        panel_width = panel_size.x
         # panel_width = game_width
+        panel_width = panel_size.x
 
         return Mengine.vec2f(panel_width, panel_size.y)
 
@@ -257,7 +267,7 @@ class SearchPanel(Initializer):
 
     # - Items ----------------------------------------------------------------------------------------------------------
 
-    def initItems(self):
+    def _initItems(self):
         # create items node
         self.items_node = Mengine.createNode("Interender")
         self.items_node.setName("Items")
@@ -277,6 +287,34 @@ class SearchPanel(Initializer):
         for i, item in enumerate(self.items):
             item_pos = self._calcItemLocalPosition(i, item)
             item.setLocalPositionX(item_pos.x)
+
+    def _setupItemsCorners(self):
+        corner_types = ["Left", "Right"]
+
+        for corner_type in corner_types:
+            corner = PrototypeManager.generateObjectUnique(PROTOTYPE_ITEMS_CORNER, PROTOTYPE_ITEMS_CORNER, Size=corner_type)
+            corner.setEnable(True)
+
+            corner_node = corner.getEntityNode()
+            self.root.addChild(corner_node)
+
+            va_hotspot_pos = self.va_hotspot.getLocalPosition()
+            corner_bb = corner.getCompositionBounds()
+            corner_size = Utils.getBoundingBoxSize(corner_bb)
+
+            if corner_type is "Left":
+                corner_pos = Mengine.vec2f(
+                    va_hotspot_pos.x + corner_size.x / 2,
+                    va_hotspot_pos.y + corner_size.y / 2
+                )
+            else:
+                corner_pos = Mengine.vec2f(
+                    -va_hotspot_pos.x - corner_size.x / 2,
+                    va_hotspot_pos.y + corner_size.y / 2
+                )
+            corner_node.setLocalPosition(corner_pos)
+
+            self.movie_items_corners[corner_type] = corner
 
     def _calcItemsNodeLocalPosition(self, item):
         item_size = item.getSize()
