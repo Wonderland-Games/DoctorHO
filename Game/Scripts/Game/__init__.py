@@ -44,6 +44,9 @@ def onInitialize():
         "LevelLost",
         "LevelWon",
         "Settings",
+        "Languages",
+        "Support",
+        "Credits",
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False
