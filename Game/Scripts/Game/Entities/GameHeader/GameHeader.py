@@ -21,7 +21,7 @@ class GameHeader(HeaderBase):
         if self.movie_content.hasSlot(Lives.slot_name):
             slot = self.movie_content.getMovieSlot(Lives.slot_name)
             slot.setWorldPosition(Mengine.vec2f(
-                viewport.begin.x + header_width * 0.15,
+                viewport.begin.x + header_width * 0.2,
                 viewport.begin.y + header_height * 0.5
             ))
 
