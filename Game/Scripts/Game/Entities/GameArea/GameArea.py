@@ -205,7 +205,7 @@ class GameArea(BaseEntity):
         if panel_item is not None:
             panel_item_node = panel_item.getRoot()
             panel_item_pos = Mengine.getNodeScreenAdaptPosition(panel_item_node)
-            if self.search_panel.items_range[0] <= panel_item_pos.x <= self.search_panel.items_range[1]:
+            if self.search_panel.va_range_points[0].x <= panel_item_pos.x <= self.search_panel.va_range_points[1].x:
                 return True
 
         return False
@@ -226,7 +226,7 @@ class GameArea(BaseEntity):
         if panel_item is not None:
             panel_item_node = panel_item.getRoot()
             panel_item_pos = Mengine.getNodeScreenAdaptPosition(panel_item_node)
-            if self.search_panel.items_range[0] <= panel_item_pos.x <= self.search_panel.items_range[1]:
+            if self.search_panel.va_range_points[0].x <= panel_item_pos.x <= self.search_panel.va_range_points[1].x:
                 return False
 
         # check if scene_item is removing in search panel
