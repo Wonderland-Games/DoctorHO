@@ -1,5 +1,9 @@
 from MobileKit.HeaderComponent import HeaderComponent
+from UIKit.Managers.PrototypeManager import PrototypeManager
 from UIKit.Managers.IconManager import IconManager
+
+
+PROTOTYPE_BG = "HeaderLivesBackground"
 
 
 class Lives(HeaderComponent):
@@ -8,6 +12,7 @@ class Lives(HeaderComponent):
     def __init__(self):
         super(Lives, self).__init__()
         self._root = None
+        self.background = None
         self.lives = []
 
     def _onPreparation(self):
@@ -18,6 +23,7 @@ class Lives(HeaderComponent):
             return
 
         self._setupRoot()
+        self._setupBackground()
         self._setupLives()
 
     def _onActivate(self):
@@ -32,6 +38,10 @@ class Lives(HeaderComponent):
             if life is not None:
                 life.onDestroy()
         self.lives = []
+
+        if self.background is not None:
+            self.background.onDestroy()
+            self.background = None
 
         if self._root is not None:
             self._root.removeFromParent()
@@ -54,6 +64,17 @@ class Lives(HeaderComponent):
     def setLocalPosition(self, pos):
         self._root.setLocalPosition(pos)
 
+    # - Background -----------------------------------------------------------------------------------------------------
+
+    def _setupBackground(self):
+        self.background = PrototypeManager.generateObjectUniqueOnNode(self._root, PROTOTYPE_BG, PROTOTYPE_BG)
+        self.background.setEnable(True)
+
+    def _getBackgroundSize(self):
+        background_bounds = self.background.getCompositionBounds()
+        background_size = Utils.getBoundingBoxSize(background_bounds)
+        return background_size
+
     # - Lives ----------------------------------------------------------------------------------------------------------
 
     def _setupLives(self):
@@ -61,10 +82,13 @@ class Lives(HeaderComponent):
         for i in range(hearts_count):
             life = Life()
             life.onInitialize()
-
             life.attachTo(self._root)
-            life_size = life.getSize()
-            life.setLocalPosition(Mengine.vec2f(life_size.x * i, 0))
+
+            background_size = self._getBackgroundSize()
+            life_bg_part = background_size.x / hearts_count
+
+            life_pos = Mengine.vec2f(-background_size.x / 2 + life_bg_part / 2 + life_bg_part * i, 0)
+            life.setLocalPosition(life_pos)
 
             self.lives.append(life)
 
@@ -82,12 +106,6 @@ class Lives(HeaderComponent):
         current_life.setState(False)
 
         full_lives_count = len(full_lives) - 1
-
-        # lives_count = 0
-        # for life in self.lives:
-        #     life_state = life.getState()
-        #     if life_state is True:
-        #         lives_count += 1
 
         Notification.notify(Notificator.onLevelLivesChanged, full_lives_count)
 
