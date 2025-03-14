@@ -33,7 +33,7 @@ class SearchPanel(Initializer):
         self.items = []
         self.removing_items = []
         self.items_node = None
-        self.items_range = None
+        self.va_range_points = None
         self.movie_items_corners = {}
         self.semaphore_allow_panel_items_move = None
 
@@ -108,7 +108,7 @@ class SearchPanel(Initializer):
             self.va_hotspot = None
 
         self.movie_panel = None
-        self.items_range = None
+        self.va_range_points = None
         self.removing_items = []
         self.semaphore_allow_panel_items_move = None
 
@@ -176,6 +176,25 @@ class SearchPanel(Initializer):
         virtual_area_node = self.virtual_area.get_node()
         self.root.addChild(virtual_area_node)
         virtual_area_node.setLocalPosition(hotspot_polygon_center)
+
+        self.virtual_area.on_drag += self._cbVirtualAreaDrag
+
+    def _cbVirtualAreaDrag(self, x, y):
+        range_middle_x = (self.va_range_points[1].x - self.va_range_points[0].x) / 2
+        range_middle_y = (self.va_range_points[1].y - self.va_range_points[0].y) / 2
+        middle_pos = Mengine.vec2f(range_middle_x, range_middle_y)
+
+        for item in self.items:
+            item_node = item.getRoot()
+            item_pos = Mengine.getNodeScreenAdaptPosition(item_node)
+
+            distance = Mengine.length_v2_v2(middle_pos, item_pos)
+
+            scale_perc = 1.0 - distance
+            if scale_perc < 0.0:
+                scale_perc = 0.0
+
+            item_node.setScale((scale_perc, scale_perc, 1.0))
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
@@ -334,18 +353,19 @@ class SearchPanel(Initializer):
         return item_pos
 
     def _calcItemsRange(self):
-        panel_size = self.getSize()
+        va_hotspot_bb = Mengine.getHotSpotPolygonBoundingBox(self.va_hotspot)
+        va_hotspot_size = Utils.getBoundingBoxSize(va_hotspot_bb)
 
         border_node = Mengine.createNode("Interender")
         self.virtual_area.add_node(border_node)
 
-        border_node.setLocalPosition(Mengine.vec2f(0, panel_size.y / 2))
-        range_left = Mengine.getNodeScreenAdaptPosition(border_node)
+        border_node.setLocalPosition(Mengine.vec2f(0, 0))
+        range_left_top = Mengine.getNodeScreenAdaptPosition(border_node)
 
-        border_node.setLocalPosition(Mengine.vec2f(panel_size.x, panel_size.y / 2))
-        range_right = Mengine.getNodeScreenAdaptPosition(border_node)
+        border_node.setLocalPosition(Mengine.vec2f(va_hotspot_size.x, va_hotspot_size.y))
+        range_right_bot = Mengine.getNodeScreenAdaptPosition(border_node)
 
-        self.items_range = (range_left.x, range_right.x)
+        self.va_range_points = (range_left_top, range_right_bot)
 
         border_node.removeFromParent()
         Mengine.destroyNode(border_node)
@@ -359,7 +379,7 @@ class SearchPanel(Initializer):
             item_node = item.getRoot()
             item_pos = Mengine.getNodeScreenAdaptPosition(item_node)
 
-            if self.items_range[0] <= item_pos.x <= self.items_range[1]:
+            if self.va_range_points[0].x <= item_pos.x <= self.va_range_points[1].x:
                 if item not in self.removing_items:
                     available_items.append(item)
 
