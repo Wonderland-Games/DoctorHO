@@ -91,10 +91,13 @@ class SystemGame(System):
         return False
 
     def _onLevelEnd(self, is_win):
+        popup_object = DemonManager.getDemon("PopUp")
+        popup = popup_object.entity
+
         if is_win is True:
-            Notification.notify(Notificator.onPopUpShow, "LevelWon")
+            Notification.notify(Notificator.onPopUpShow, "LevelWon", popup.BUTTONS_STATE_DISABLE)
         else:
-            Notification.notify(Notificator.onPopUpShow, "LevelLost")
+            Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE)
 
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
