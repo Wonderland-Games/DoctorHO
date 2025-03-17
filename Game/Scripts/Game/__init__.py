@@ -47,6 +47,7 @@ def onInitialize():
         "Languages",
         "Support",
         "Credits",
+        "DebugAd",
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False

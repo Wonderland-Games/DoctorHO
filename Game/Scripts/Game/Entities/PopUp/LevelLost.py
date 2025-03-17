@@ -84,7 +84,10 @@ class LevelLost(PopUpContent):
                 tc.addScope(self._scopeRestart)
 
     def _scopeAdvertisement(self, source):
-        source.addPrint("[LevelLost] Call onPopUpAdvertisement event")
+        source.addNotify(Notificator.onPopUpHide)
+
+        if _DEVELOPMENT is True:
+            source.addNotify(Notificator.onPopUpShowDebugAd)
 
     def _scopeRestart(self, source):
         # current_level_name = "01_Forest"

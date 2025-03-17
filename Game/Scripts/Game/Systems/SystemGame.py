@@ -122,6 +122,9 @@ class SystemGame(System):
         game_object = DemonManager.getDemon("GameArea")
         game = game_object.entity
 
-        source.addPrint("[HintAd] Call onAdvertisement event")
+        if _DEVELOPMENT is True:
+            source.addNotify(Notificator.onPopUpShowDebugAd)
+            source.addListener(Notificator.onPopUpHideEnd)
+
         source.addFunction(game.search_panel.hint.incHintCount)
         source.addFunction(game.search_panel.switchHints)
