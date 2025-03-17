@@ -30,7 +30,8 @@ class Lives(HeaderComponent):
     def _onActivate(self):
         super(Lives, self)._onActivate()
 
-        self.addObserver(Notificator.onLevelLivesDecrease, self._onLevelLivesDecrease)
+        self.addObserver(Notificator.onLevelLivesDecrease, self._cbLevelLivesDecrease)
+        self.addObserver(Notificator.onLevelLivesRestore, self._cbLevelLivesRestore)
 
     def _onFinalize(self):
         super(Lives, self)._onFinalize()
@@ -90,7 +91,7 @@ class Lives(HeaderComponent):
 
             self.lives.append(life)
 
-    def _onLevelLivesDecrease(self):
+    def _cbLevelLivesDecrease(self):
         if len(self.lives) is 0:
             return False
 
@@ -104,8 +105,16 @@ class Lives(HeaderComponent):
         current_life.setState(False)
 
         full_lives_count = len(full_lives) - 1
-
         Notification.notify(Notificator.onLevelLivesChanged, full_lives_count)
+
+        return False
+
+    def _cbLevelLivesRestore(self):
+        for life in self.lives:
+            life.setState(True)
+
+        lives_count = len(self.lives)
+        Notification.notify(Notificator.onLevelLivesChanged, lives_count)
 
         return False
 

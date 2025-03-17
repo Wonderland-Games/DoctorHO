@@ -85,9 +85,7 @@ class LevelLost(PopUpContent):
 
     def _scopeAdvertisement(self, source):
         source.addNotify(Notificator.onPopUpHide)
-
-        if _DEVELOPMENT is True:
-            source.addNotify(Notificator.onPopUpShowDebugAd)
+        source.addNotify(Notificator.onCallRewardedAd, "Lives")
 
     def _scopeRestart(self, source):
         # current_level_name = "01_Forest"

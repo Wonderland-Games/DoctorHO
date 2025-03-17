@@ -33,6 +33,7 @@ class SystemGame(System):
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
         self.addObserver(Notificator.onLevelLivesChanged, self._onLevelLivesChanged)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
+        self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
         return True
 
@@ -69,7 +70,7 @@ class SystemGame(System):
                 hint.addScope(self._scopeHint)
 
                 hint_ad.addTask("TaskMovie2ButtonClick", Movie2Button=game.search_panel.hint_ad.button.movie)
-                hint_ad.addScope(self._scopeHintAd)
+                hint_ad.addNotify(Notificator.onCallRewardedAd, "Hint")
 
         # lives logic
         if self.existTaskChain("SearchPanelLives") is True:
@@ -96,9 +97,13 @@ class SystemGame(System):
 
         if is_win is True:
             Notification.notify(Notificator.onPopUpShow, "LevelWon", popup.BUTTONS_STATE_DISABLE)
+            self._removeTaskChains()
         else:
             Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE)
 
+        return False
+
+    def _removeTaskChains(self):
         if self.existTaskChain("LevelItemsPick") is True:
             self.removeTaskChain("LevelItemsPick")
 
@@ -107,6 +112,25 @@ class SystemGame(System):
 
         if self.existTaskChain("SearchPanelLives") is True:
             self.removeTaskChain("SearchPanelLives")
+
+    def _onCallRewardedAd(self, reward):
+        tc_name = "GameRewardedAd"
+
+        reward_scope = {
+            "Hint": self._scopeHintAd,
+            "Lives": self._scopeLivesAd,
+        }
+
+        if reward not in reward_scope.keys():
+            return False
+
+        scope = reward_scope[reward]
+
+        if self.existTaskChain(tc_name) is True:
+            self.removeTaskChain(tc_name)
+
+        with self.createTaskChain(tc_name) as tc:
+            tc.addScope(scope)
 
         return False
 
@@ -124,7 +148,14 @@ class SystemGame(System):
 
         if _DEVELOPMENT is True:
             source.addNotify(Notificator.onPopUpShowDebugAd)
-            source.addListener(Notificator.onPopUpHideEnd)
+            source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
 
         source.addFunction(game.search_panel.hint.incHintCount)
         source.addFunction(game.search_panel.switchHints)
+
+    def _scopeLivesAd(self, source):
+        if _DEVELOPMENT is True:
+            source.addNotify(Notificator.onPopUpShowDebugAd)
+            source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
+
+        source.addNotify(Notificator.onLevelLivesRestore)
