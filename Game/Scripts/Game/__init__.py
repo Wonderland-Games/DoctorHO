@@ -11,6 +11,9 @@ def onInitialize():
         "onLevelHintClicked",
         "onLevelLivesDecrease",
         "onLevelLivesChanged",
+        "onLevelLivesRestore",
+
+        "onCallRewardedAd",
     ]
 
     Notificator.addIdentities(identities)
