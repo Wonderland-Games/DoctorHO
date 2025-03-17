@@ -4,6 +4,7 @@ from UIKit.Managers.IconManager import IconManager
 
 
 PROTOTYPE_BG = "HeaderLivesBackground"
+SLOT_LIFE = "Life_{}"
 
 
 class Lives(HeaderComponent):
@@ -82,13 +83,10 @@ class Lives(HeaderComponent):
         for i in range(hearts_count):
             life = Life()
             life.onInitialize()
-            life.attachTo(self._root)
 
-            background_size = self._getBackgroundSize()
-            life_bg_part = background_size.x / hearts_count
-
-            life_pos = Mengine.vec2f(-background_size.x / 2 + life_bg_part / 2 + life_bg_part * i, 0)
-            life.setLocalPosition(life_pos)
+            life_slot = self.background.getMovieSlot(SLOT_LIFE.format(i+1))
+            life_node = life.getRoot()
+            life_slot.addChild(life_node)
 
             self.lives.append(life)
 
@@ -155,6 +153,9 @@ class Life(object):
     def _setupRoot(self):
         self._root = Mengine.createNode("Interender")
         self._root.setName(self.__class__.__name__)
+
+    def getRoot(self):
+        return self._root
 
     def attachTo(self, node):
         self._root.removeFromParent()
