@@ -357,6 +357,7 @@ class SearchPanel(Initializer):
         border_node.removeFromParent()
         Mengine.destroyNode(border_node)
 
+    # old logic (can be deleted)
     def _handleItemsScale(self, source=None):
         range_middle_x = (self.va_range_points[1].x - self.va_range_points[0].x) / 2
         range_middle_y = (self.va_range_points[1].y - self.va_range_points[0].y) / 2
