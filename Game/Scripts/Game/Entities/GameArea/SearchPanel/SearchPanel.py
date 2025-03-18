@@ -33,6 +33,7 @@ class SearchPanel(Initializer):
         self.items = []
         self.removing_items = []
         self.items_node = None
+        self.items_scale_node = None
         self.va_range_points = None
         self.movie_items_corners = {}
         self.semaphore_allow_panel_items_move = None
@@ -63,6 +64,7 @@ class SearchPanel(Initializer):
 
         self._calcItemsRange()
         self._setupItemsCorners()
+        self._setupItemsAffector()
 
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
@@ -93,6 +95,10 @@ class SearchPanel(Initializer):
         if self.items_node is not None:
             Mengine.destroyNode(self.items_node)
             self.items_node = None
+
+        if self.items_scale_node is not None:
+            Mengine.destroyNode(self.items_scale_node)
+            self.items_scale_node = None
 
         if self.root is not None:
             Mengine.destroyNode(self.root)
@@ -176,11 +182,6 @@ class SearchPanel(Initializer):
         virtual_area_node = self.virtual_area.get_node()
         self.root.addChild(virtual_area_node)
         virtual_area_node.setLocalPosition(hotspot_polygon_center)
-
-        self.virtual_area.on_drag += self._cbVirtualAreaDrag
-
-    def _cbVirtualAreaDrag(self, x, y):
-        self._handleItemsScale()
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
@@ -373,6 +374,20 @@ class SearchPanel(Initializer):
 
             item_node.setScale((scale_perc, scale_perc, 1.0))
 
+    def _setupItemsAffector(self):
+        self.items_scale_node = Mengine.createNode("Interender")
+        self.items_scale_node.setName("TargetAffectorUIWheelOfFortune")
+
+        self.root.addChild(self.items_scale_node)
+
+        va_hotspot_pos = self.va_hotspot.getLocalPosition()
+        self.items_scale_node.setLocalPosition(Mengine.vec2f(0, va_hotspot_pos.y))
+
+        coeff = 1.0
+        for item in self.items:
+            item_node = item.getRoot()
+            Mengine.affectorUIWheelOfFortune(item_node, self.items_scale_node, coeff)
+
     def getRandomAvailableItem(self):
         if len(self.items) is 0:
             return None
@@ -440,20 +455,16 @@ class SearchPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS MOVE ANIM")
 
-        with source.addRepeatTask() as (tc_repeat, tc_until):
-            tc_repeat.addScope(self._handleItemsScale)
-            tc_repeat.addDelay(0.0)
+        # move items in parallel with condition of sides
+        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
+            item_node = item.getRoot()
+            items_node_pos = self._calcItemsNodeLocalPosition(item)
+            item_pos = self._calcItemLocalPosition(i, item)
 
-            # move items in parallel with condition of sides
-            for (i, item), tc in tc_until.addParallelTaskList(enumerate(self.items)):
-                item_node = item.getRoot()
-                items_node_pos = self._calcItemsNodeLocalPosition(item)
-                item_pos = self._calcItemLocalPosition(i, item)
-
-                with tc.addParallelTask(2) as(tc_item, tc_items_node):
-                    tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
-                    with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
-                        move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+            with tc.addParallelTask(2) as(tc_item, tc_items_node):
+                tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+                with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+                    move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
 
         # fix VA after removing 1 item and moving all items
         source.addFunction(self.virtual_area.update_target)
