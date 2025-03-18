@@ -1,5 +1,6 @@
 from Foundation.System import System
 from Foundation.DemonManager import DemonManager
+from Foundation.SystemManager import SystemManager
 
 
 class SystemGame(System):
@@ -154,7 +155,12 @@ class SystemGame(System):
         source.addFunction(game.search_panel.switchHints)
 
     def _scopeLivesAd(self, source):
+        system_popup = SystemManager.getSystem("SystemPopUp")
+
         if _DEVELOPMENT is True:
+            with source.addIfTask(lambda: system_popup.getPopUpState() == system_popup.STATE_HIDING) as (true, false):
+                true.addListener(Notificator.onPopUpHideEnd)
+
             source.addNotify(Notificator.onPopUpShowDebugAd)
             source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
 
