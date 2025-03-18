@@ -180,21 +180,7 @@ class SearchPanel(Initializer):
         self.virtual_area.on_drag += self._cbVirtualAreaDrag
 
     def _cbVirtualAreaDrag(self, x, y):
-        range_middle_x = (self.va_range_points[1].x - self.va_range_points[0].x) / 2
-        range_middle_y = (self.va_range_points[1].y - self.va_range_points[0].y) / 2
-        middle_pos = Mengine.vec2f(range_middle_x, range_middle_y)
-
-        for item in self.items:
-            item_node = item.getRoot()
-            item_pos = Mengine.getNodeScreenAdaptPosition(item_node)
-
-            distance = Mengine.length_v2_v2(middle_pos, item_pos)
-
-            scale_perc = 1.0 - distance
-            if scale_perc < 0.0:
-                scale_perc = 0.0
-
-            item_node.setScale((scale_perc, scale_perc, 1.0))
+        self._handleItemsScale()
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
@@ -370,6 +356,23 @@ class SearchPanel(Initializer):
         border_node.removeFromParent()
         Mengine.destroyNode(border_node)
 
+    def _handleItemsScale(self, source=None):
+        range_middle_x = (self.va_range_points[1].x - self.va_range_points[0].x) / 2
+        range_middle_y = (self.va_range_points[1].y - self.va_range_points[0].y) / 2
+        middle_pos = Mengine.vec2f(range_middle_x, range_middle_y)
+
+        for item in self.items:
+            item_node = item.getRoot()
+            item_pos = Mengine.getNodeScreenAdaptPosition(item_node)
+
+            distance = Mengine.length_v2_v2(middle_pos, item_pos)
+
+            scale_perc = 1.0 - distance
+            if scale_perc < 0.0:
+                scale_perc = 0.0
+
+            item_node.setScale((scale_perc, scale_perc, 1.0))
+
     def getRandomAvailableItem(self):
         if len(self.items) is 0:
             return None
@@ -437,16 +440,20 @@ class SearchPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS MOVE ANIM")
 
-        # move items in parallel with condition of sides
-        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
-            item_node = item.getRoot()
-            items_node_pos = self._calcItemsNodeLocalPosition(item)
-            item_pos = self._calcItemLocalPosition(i, item)
+        with source.addRepeatTask() as (tc_repeat, tc_until):
+            tc_repeat.addScope(self._handleItemsScale)
+            tc_repeat.addDelay(0.0)
 
-            with tc.addParallelTask(2) as(tc_item, tc_items_node):
-                tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
-                with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
-                    move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+            # move items in parallel with condition of sides
+            for (i, item), tc in tc_until.addParallelTaskList(enumerate(self.items)):
+                item_node = item.getRoot()
+                items_node_pos = self._calcItemsNodeLocalPosition(item)
+                item_pos = self._calcItemLocalPosition(i, item)
+
+                with tc.addParallelTask(2) as(tc_item, tc_items_node):
+                    tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+                    with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+                        move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
 
         # fix VA after removing 1 item and moving all items
         source.addFunction(self.virtual_area.update_target)
