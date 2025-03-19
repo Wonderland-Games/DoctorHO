@@ -1,5 +1,4 @@
 from Foundation.Initializer import Initializer
-from Foundation.GroupManager import GroupManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
 

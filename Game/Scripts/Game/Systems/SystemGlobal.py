@@ -4,6 +4,9 @@ from Foundation.SceneManager import SceneManager
 
 
 class SystemGlobal(System):
+    def __init__(self):
+        super(SystemGlobal, self).__init__()
+        self._change_scene_params = {}
 
     def _onRun(self):
         self.addObserver(Notificator.onChangeScene, self.__cbSceneTransition)
@@ -17,7 +20,8 @@ class SystemGlobal(System):
             # tc.addTask("TaskTransition", SceneName=scene_name)
             # tc.addNotify(Notificator.onTransitionEnd, SceneManager.getCurrentSceneName(), scene_name, None)
 
-            tc.addTask("AliasTransition", SceneName=scene_name)
+            tc.addTask("AliasTransition", SceneName=scene_name, **self._change_scene_params)
+            tc.addFunction(self._change_scene_params.clear)
 
         return False
 
@@ -29,3 +33,6 @@ class SystemGlobal(System):
 
     def _onLaunch(self):
         Mengine.setCursorMode(True)
+
+    def setChangeSceneParams(self, **params):
+        self._change_scene_params = params
