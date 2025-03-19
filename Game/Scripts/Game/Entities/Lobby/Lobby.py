@@ -1,5 +1,6 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Foundation.SystemManager import SystemManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.LevelCard import LevelCard
@@ -106,6 +107,14 @@ class Lobby(BaseEntity):
     def _scopePlay(self, source, level_name):
         # source.addNotify(Notificator.onChangeScene, "GameArea")
 
-        GameManager.removeGame()
-        GameManager.prepareGame("HO", level_name)
-        GameManager.runLevelStartAdvertisement()
+        # GameManager.removeGame()
+        # GameManager.prepareGame("HO", level_name)
+        # GameManager.runLevelStartAdvertisement()
+
+        zoom_target = self.cards[level_name].button
+        system_global = SystemManager.getSystem("SystemGlobal")
+        system_global.setChangeSceneParams(ZoomEffectTransitionObject=zoom_target)
+
+        source.addFunction(GameManager.removeGame)
+        source.addFunction(GameManager.prepareGame, "HO", level_name)
+        source.addFunction(GameManager.runLevelStartAdvertisement)
