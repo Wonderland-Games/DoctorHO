@@ -120,7 +120,6 @@
     "DevPlugins-PC": {
         "Name": [
             "Win32AntifreezeMonitorPlugin.dll",
-            "Win32ConsoleLoggerPlugin.dll",
             "XmlToBinPlugin.dll",
             "Win32FindPython3Plugin.dll",
             "Win32XlsExportPlugin.dll",
