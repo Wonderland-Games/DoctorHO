@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
+from Game.Managers.LevelCardManager import LevelCardManager
 
 
 PROTOTYPE_CARD = "LevelCard"
@@ -12,6 +13,7 @@ class LevelCard(Initializer):
         self.level_name = None
         self.root = None
         self.button = None
+        self.movie_level = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -21,9 +23,14 @@ class LevelCard(Initializer):
 
         self._createRoot()
         self._setupButton()
+        self._setupLevel()
 
     def _onFinalize(self):
         super(LevelCard, self)._onFinalize()
+
+        if self.movie_level is not None:
+            self.movie_level.onDestroy()
+            self.movie_level = None
 
         if self.button is not None:
             self.button.onDestroy()
@@ -62,3 +69,10 @@ class LevelCard(Initializer):
         button_bounds = self.button.getCompositionBounds()
         button_size = Utils.getBoundingBoxSize(button_bounds)
         return button_size
+
+    def _setupLevel(self):
+        self.movie_level = LevelCardManager.generateLevelCard(self.level_name)
+        self.movie_level.setEnable(True)
+
+        level_node = self.movie_level.getEntityNode()
+        self.button.addChildToSlot(level_node, SLOT_LEVEL)
