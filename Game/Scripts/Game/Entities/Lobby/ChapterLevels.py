@@ -4,6 +4,7 @@ from Game.Entities.Lobby.LevelCard import LevelCard
 
 
 GROUP_LEVEL_CARDS = "LevelCards"
+CHAPTER_SLOTS = "Card_{}"
 
 
 class ChapterLevels(Initializer):
@@ -62,7 +63,6 @@ class ChapterLevels(Initializer):
 
         # get chapter slots movie from chapter data
         chapter_slots = "Movie2_ChapterSlots_1"
-        level_slot_name = "Level_{}"
         self.level_slots_movie = GroupManager.generateObjectUnique(chapter_slots, GROUP_LEVEL_CARDS, chapter_slots)
         self.level_slots_movie.setEnable(True)
         level_slots_movie_node = self.level_slots_movie.getEntityNode()
@@ -75,5 +75,5 @@ class ChapterLevels(Initializer):
             self.level_cards[level_name] = card
 
             card_node = card.getRoot()
-            card_slot = self.level_slots_movie.getMovieSlot(level_slot_name.format(i+1))
+            card_slot = self.level_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
             card_slot.addChild(card_node)
