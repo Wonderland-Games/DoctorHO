@@ -1,14 +1,12 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.SystemManager import SystemManager
-from UIKit.Managers.PrototypeManager import PrototypeManager
 from Game.Managers.GameManager import GameManager
-from Game.Entities.Lobby.LevelCard import LevelCard
+from Game.Entities.Lobby.ChapterLevels import ChapterLevels
 
 
 MOVIE_CONTENT = "Movie2_Content"
-SLOT_PLAY = "Play"
-SLOT_CARDS = "Cards"
+SLOT_CHAPTER_LEVELS = "ChapterLevels"
 
 
 class Lobby(BaseEntity):
@@ -16,8 +14,7 @@ class Lobby(BaseEntity):
         super(Lobby, self).__init__()
         self.content = None
         self.tcs = []
-        self.buttons = {}
-        self.cards = {}
+        self.chapter_levels = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -26,8 +23,7 @@ class Lobby(BaseEntity):
         if self.content is None:
             return
 
-        # self._setupButtons()
-        self._setupCards()
+        self._setupChapterLevels()
 
     def _onActivate(self):
         self._runTaskChains()
@@ -39,50 +35,22 @@ class Lobby(BaseEntity):
             tc.cancel()
         self.tcs = []
 
-        for button in self.buttons.values():
-            button.onDestroy()
-        self.buttons = {}
-
-        for card in self.cards.values():
-            card.onFinalize()
-        self.cards = {}
+        if self.chapter_levels is not None:
+            self.chapter_levels.onFinalize()
+            self.chapter_levels = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupButtons(self):
-        prototype_name = self.__class__.__name__ + "_" + SLOT_PLAY
-        button = PrototypeManager.generateObjectContainer(prototype_name)
-        if button is None:
-            return None
+    def _setupChapterLevels(self):
+        # get current chapter data
+        chapter_name = "01_Chapter"
 
-        button.setTextAliasEnvironment(prototype_name)
-        button.setEnable(True)
+        self.chapter_levels = ChapterLevels()
+        self.chapter_levels.onInitialize(chapter_name)
 
-        button_node = button.getEntityNode()
-        button_slot = self.content.getMovieSlot(SLOT_PLAY)
-        button_slot.addChild(button_node)
-
-        self.buttons[SLOT_PLAY] = button
-
-    # - Cards ----------------------------------------------------------------------------------------------------------
-
-    def _setupCards(self):
-        levels = ["01_Forest", "02_Atlantis"]
-
-        for i, level_name in enumerate(levels):
-            card = LevelCard()
-            card.onInitialize(level_name)
-            self.cards[level_name] = card
-
-            card_node = card.getRoot()
-            card_slot = self.content.getMovieSlot(SLOT_CARDS)
-            card_slot.addChild(card_node)
-
-            card_size = card.getSize()
-            offset_x = 0
-            if i > 0:
-                offset_x = 50
-            card.setLocalPosition(Mengine.vec2f(card_size.x * i - card_size.x / len(levels) + offset_x, 0))
+        chapter_levels_node = self.chapter_levels.getRoot()
+        card_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
+        card_slot.addChild(chapter_levels_node)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -93,15 +61,9 @@ class Lobby(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        button_play = self.buttons.get(SLOT_PLAY)
-        if button_play is not None:
-            with self._createTaskChain(SLOT_PLAY) as tc:
-                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_play.movie)
-                tc.addScope(self._scopePlay, "01_Forest")
-
-        with self._createTaskChain(SLOT_CARDS) as tc:
-            for (level_name, card), race in tc.addRaceTaskList(self.cards.items()):
-                race.addTask("TaskMovie2ButtonClick", Movie2Button=card.button)
+        with self._createTaskChain(SLOT_CHAPTER_LEVELS) as tc:
+            for (level_name, card), race in tc.addRaceTaskList(self.chapter_levels.level_cards.items()):
+                race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
                 race.addScope(self._scopePlay, level_name)
 
     def _scopePlay(self, source, level_name):
@@ -111,7 +73,7 @@ class Lobby(BaseEntity):
         # GameManager.prepareGame("HO", level_name)
         # GameManager.runLevelStartAdvertisement()
 
-        zoom_target = self.cards[level_name].button
+        zoom_target = self.chapter_levels.level_cards[level_name].movie
         system_global = SystemManager.getSystem("SystemGlobal")
         system_global.setChangeSceneParams(ZoomEffectTransitionObject=zoom_target)
 

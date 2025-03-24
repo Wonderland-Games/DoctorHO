@@ -1,19 +1,28 @@
 from Foundation.Manager import Manager
 from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
+from Foundation.DatabaseManager import DatabaseManager
+
+from Game.Managers.GameData import PlayerGameData
 
 
 class GameManager(Manager):
+    s_db_module = "Database"
+    s_db_name_chapters = "Chapters"
+    s_db_name_levels = "Levels"
+
+    _player_data = {}
     _current_game_params = None
 
     # - Manager --------------------------------------------------------------------------------------------------------
 
     @classmethod
     def _onInitialize(cls, *args):
-        pass
+        cls.resetPlayerData()
 
     @classmethod
     def _onFinalize(cls):
+        GameManager._player_data = {}
         GameManager._current_game_params = None
 
     @classmethod
@@ -24,6 +33,14 @@ class GameManager(Manager):
     @classmethod
     def _onLoad(cls, saved_data):
         pass
+
+    @staticmethod
+    def resetPlayerData():
+        new_player_data = {
+            "GameData": PlayerGameData(),
+            "Revision": 0,
+        }
+        GameManager._player_data = new_player_data
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
@@ -65,6 +82,15 @@ class GameManager(Manager):
         game = DemonManager.getDemon("GameArea")
         game_param = game.getParam(param)
         return game_param
+
+    @staticmethod
+    def getChapterLevels(chapter_name):
+        pass
+
+    @staticmethod
+    def getChapterLevelParams(chapter_name, level_name):
+        # chapter =
+        pass
 
     # - Advertising ----------------------------------------------------------------------------------------------------
 
