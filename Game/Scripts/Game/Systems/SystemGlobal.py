@@ -29,7 +29,7 @@ class SystemGlobal(System):
         with TaskManager.createTaskChain(Name="GlobalMain") as tc:
             tc.addListener(Notificator.onRun)
             tc.addFunction(self._onLaunch)
-            tc.addNotify(Notificator.onChangeScene, "Lobby")
+            tc.addNotify(Notificator.onChangeScene, "Loading")
 
     def _onLaunch(self):
         Mengine.setCursorMode(True)

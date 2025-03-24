@@ -29,6 +29,7 @@ def onInitialize():
     from Foundation.ObjectManager import ObjectManager
 
     types = [
+        "Loading",
         "Lobby",
         "GameArea",
         {"name": "AdvertisingScene", "override": True},
