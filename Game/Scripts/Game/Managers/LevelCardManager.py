@@ -2,6 +2,7 @@ from Foundation.DatabaseManager import DatabaseManager
 from Foundation.ObjectManager import ObjectManager
 
 
+# old logic (can be deleted)
 class LevelCardManager(object):
     s_db_module = "Database"
     s_db_name = "LevelCards"

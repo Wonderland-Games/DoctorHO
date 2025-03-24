@@ -1,9 +1,7 @@
 from Foundation.Initializer import Initializer
-from UIKit.Managers.PrototypeManager import PrototypeManager
-from Game.Managers.LevelCardManager import LevelCardManager
+from Foundation.GroupManager import GroupManager
 
-
-PROTOTYPE_CARD = "LevelCard"
+GROUP_LEVEL_CARDS = "LevelCards"
 SLOT_LEVEL = "Level"
 ALIAS_TITLE = "$LevelCardTitle"
 TEXT_TITLE = "ID_LevelCardTitle"
@@ -14,7 +12,7 @@ class LevelCard(Initializer):
         super(LevelCard, self).__init__()
         self.level_name = None
         self.root = None
-        self.button = None
+        self.movie = None
         self.level = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -25,9 +23,8 @@ class LevelCard(Initializer):
 
         self._createRoot()
 
-        self._setupButton()
+        self._setupMovie()
         self._setupLevel()
-        self._setupTitle()
 
     def _onFinalize(self):
         super(LevelCard, self)._onFinalize()
@@ -36,9 +33,9 @@ class LevelCard(Initializer):
             self.level.onDestroy()
             self.level = None
 
-        if self.button is not None:
-            self.button.onDestroy()
-            self.button = None
+        if self.movie is not None:
+            self.movie.onDestroy()
+            self.movie = None
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -65,30 +62,37 @@ class LevelCard(Initializer):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupButton(self):
-        self.button = PrototypeManager.generateObjectUniqueOnNode(self.root, PROTOTYPE_CARD, PROTOTYPE_CARD)
-        self.button.setEnable(True)
+    def _setupMovie(self):
+        # get movie card from chapter data
+        movie_card_name = "Movie2_Card_1"
+        self.movie = GroupManager.generateObjectUnique(movie_card_name, GROUP_LEVEL_CARDS, movie_card_name)
+        self.movie.setEnable(True)
 
-    def _setupLevel(self):
-        self.level = LevelCardManager.generateLevelCard(self.level_name)
-        self.level.setEnable(True)
+        movie_node = self.movie.getEntityNode()
+        self.root.addChild(movie_node)
 
-        level_node = self.level.getEntityNode()
-        self.button.addChildToSlot(level_node, SLOT_LEVEL)
-
-    def _setupTitle(self):
-        env = PROTOTYPE_CARD + "_" + self.level_name
+        env = movie_card_name + "_" + self.level_name
         title_id = TEXT_TITLE + "_" + self.level_name
         title_text = Mengine.getTextFromId(title_id)
 
-        self.button.setTextAliasEnvironment(env)
+        self.movie.setTextAliasEnvironment(env)
 
         Mengine.setTextAlias(env, ALIAS_TITLE, TEXT_TITLE)
         Mengine.setTextAliasArguments(env, ALIAS_TITLE, title_text)
 
+    def _setupLevel(self):
+        # get level from chapter data
+        movie_level_name = "Movie2_{}".format(self.level_name)
+        self.level = GroupManager.generateObjectUnique(movie_level_name, GROUP_LEVEL_CARDS, movie_level_name)
+        self.level.setEnable(True)
+
+        level_node = self.level.getEntityNode()
+        level_slot = self.movie.getMovieSlot(SLOT_LEVEL)
+        level_slot.addChild(level_node)
+
     # - Utils ----------------------------------------------------------------------------------------------------------
 
     def getSize(self):
-        button_bounds = self.button.getCompositionBounds()
+        button_bounds = self.movie.getCompositionBounds()
         button_size = Utils.getBoundingBoxSize(button_bounds)
         return button_size
