@@ -3,6 +3,10 @@ def onInitialize():
 
     from Foundation.Notificator import Notificator
     identities = [
+        "onGameDataLoaded",
+        "onLoadDataFromCacheBegin",
+        "onLoadDataFromCacheEnd",
+
         "onChangeScene",
 
         "onLevelStart",
