@@ -14,10 +14,15 @@ class GameManager(Manager):
     _player_data = {}
     _current_game_params = None
 
+    semaphore_offline_mode = Semaphore(False, "OfflineMode")
+
     # - Manager --------------------------------------------------------------------------------------------------------
 
     @classmethod
     def _onInitialize(cls, *args):
+        if Mengine.hasOption("offline") is True:
+            GameManager.setInternetConnection(False)
+
         cls.resetPlayerData()
 
     @classmethod
@@ -34,6 +39,8 @@ class GameManager(Manager):
     def _onLoad(cls, saved_data):
         pass
 
+    # - PlayerData -----------------------------------------------------------------------------------------------------
+
     @staticmethod
     def resetPlayerData():
         new_player_data = {
@@ -41,6 +48,10 @@ class GameManager(Manager):
             "Revision": 0,
         }
         GameManager._player_data = new_player_data
+
+    @staticmethod
+    def setDummyPlayerData():
+        pass
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
@@ -100,3 +111,23 @@ class GameManager(Manager):
         system_advertising = SystemManager.getSystem("SystemAdvertising")
         game_type = GameManager.getCurrentGameParam("GameType")
         system_advertising.tryInterstitial("GameArea", "{}_level_start".format(game_type.lower()))
+
+        # INTERNET HANDLING
+
+    # - Internet Connection --------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def hasInternetConnection():
+        return GameManager.semaphore_offline_mode.getValue() is False
+
+    @staticmethod
+    def setInternetConnection(value):
+        if value is True:  # has internet - off offline mode
+            if GameManager.semaphore_offline_mode.getValue() is True:
+                Trace.msg_dev("* Internet connection restored")
+            GameManager.semaphore_offline_mode.setValue(False)
+        else:
+            if GameManager.semaphore_offline_mode.getValue() is False:
+                Trace.msg_dev("* Internet connection lost")
+            Notification.notify(Notificator.onInternetConnectionLost)
+            GameManager.semaphore_offline_mode.setValue(True)
