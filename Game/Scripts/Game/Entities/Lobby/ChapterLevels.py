@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
+from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.LevelCard import LevelCard
 
 
@@ -59,17 +60,17 @@ class ChapterLevels(Initializer):
 
     def _setupLevelCards(self):
         # get levels from chapter data
-        levels = ["01_Forest", "02_Atlantis"]
+        chapter_params = GameManager.getChapterParams(self.chapter_name)
+        chapter_levels = chapter_params.Levels
+        chapter_slots = chapter_params.Slots
 
-        # get chapter slots movie from chapter data
-        chapter_slots = "Movie2_ChapterSlots_1"
         self.level_slots_movie = GroupManager.generateObjectUnique(chapter_slots, GROUP_LEVEL_CARDS, chapter_slots)
         self.level_slots_movie.setEnable(True)
         level_slots_movie_node = self.level_slots_movie.getEntityNode()
         self.root.addChild(level_slots_movie_node)
 
         # init and attach level cards to slots movie
-        for i, level_name in enumerate(levels):
+        for i, level_name in enumerate(chapter_levels):
             card = LevelCard()
             card.onInitialize(level_name)
             self.level_cards[level_name] = card

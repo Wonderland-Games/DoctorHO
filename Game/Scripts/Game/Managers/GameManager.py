@@ -53,17 +53,29 @@ class GameManager(Manager):
     def setDummyPlayerData():
         pass
 
+    # - Game params ----------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def getChapterParams(chapter_name):
+        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
+        params = DatabaseManager.findDB(db, ChapterName=chapter_name)
+        return params
+
+    @staticmethod
+    def getLevelParams(level_name):
+        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
+        params = DatabaseManager.findDB(db, LevelName=level_name)
+        return params
+
     # - Game -----------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def prepareGame(game_type, level_name):
+    def prepareGame(level_name):
         game = DemonManager.getDemon("GameArea")
+        game.setParam("LevelName", level_name)
 
-        game.setGameType(game_type)
-        game.setLevelName(level_name)
-
-        # params_orm = GameManager.getGameLevelParams(game_type, level_name)
-        # GameManager._current_game_params = params_orm
+        params_orm = GameManager.getLevelParams(level_name)
+        GameManager._current_game_params = params_orm
 
     @staticmethod
     def endGame():
@@ -72,12 +84,15 @@ class GameManager(Manager):
     @staticmethod
     def removeGame():
         """ Finally removes current game """
-        # GameManager._current_game_params = None
+        GameManager._current_game_params = None
 
         game = DemonManager.getDemon("GameArea")
-        game.setGameType(None)
-        game.setLevelName(None)
-        game.setFoundItems([])
+        game.setParam("LevelName", None)
+        game.setParam("FoundItems", [])
+
+    @staticmethod
+    def getCurrentGameParams():
+        return GameManager._current_game_params
 
     @staticmethod
     def getCurrentGame():
@@ -85,23 +100,10 @@ class GameManager(Manager):
         return game
 
     @staticmethod
-    def getCurrentGameParams():
-        return GameManager._current_game_params
-
-    @staticmethod
     def getCurrentGameParam(param):
         game = DemonManager.getDemon("GameArea")
         game_param = game.getParam(param)
         return game_param
-
-    @staticmethod
-    def getChapterLevels(chapter_name):
-        pass
-
-    @staticmethod
-    def getChapterLevelParams(chapter_name, level_name):
-        # chapter =
-        pass
 
     # - Advertising ----------------------------------------------------------------------------------------------------
 
@@ -109,8 +111,8 @@ class GameManager(Manager):
     def runLevelStartAdvertisement():
         """ Do not forget to call setupLevelStartAdvertisement() before. """
         system_advertising = SystemManager.getSystem("SystemAdvertising")
-        game_type = GameManager.getCurrentGameParam("GameType")
-        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(game_type.lower()))
+        level_name = GameManager.getCurrentGameParam("LevelName")
+        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(level_name.lower()))
 
         # INTERNET HANDLING
 
