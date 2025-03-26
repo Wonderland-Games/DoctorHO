@@ -1,5 +1,6 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Game.Managers.GameManager import GameManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
@@ -21,6 +22,8 @@ class GameArea(BaseEntity):
 
     def __init__(self):
         super(GameArea, self).__init__()
+        self.content = None
+        self.params = None
         self.tcs = []
         self.miss_click = None
         self.search_level = None
@@ -31,7 +34,6 @@ class GameArea(BaseEntity):
     @staticmethod
     def declareORM(Type):
         BaseEntity.declareORM(Type)
-        Type.addAction(Type, "GameType")
         Type.addAction(Type, "LevelName")
         Type.addActionActivate(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
         Type.addAction(Type, "HintCount")
@@ -65,6 +67,10 @@ class GameArea(BaseEntity):
         if self.content is None:
             return
 
+        self.params = GameManager.getCurrentGameParams()
+        if self.params is None:
+            Trace.log("Entity", 0, "Level {} is None or not found game params!".format(self.LevelName))
+
         self._initSearchPanel()
         self._initMissClick()
         self._initSearchLevel()
@@ -79,6 +85,8 @@ class GameArea(BaseEntity):
 
     def _onDeactivate(self):
         super(GameArea, self)._onDeactivate()
+        self.content = None
+        self.params = None
 
         for tc in self.tcs:
             tc.cancel()
@@ -134,7 +142,7 @@ class GameArea(BaseEntity):
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
         self.search_level = SearchLevel()
-        self.search_level.onInitialize(self, self.LevelName, frame_points)
+        self.search_level.onInitialize(self, frame_points)
 
     def _attachSearchLevel(self):
         _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()

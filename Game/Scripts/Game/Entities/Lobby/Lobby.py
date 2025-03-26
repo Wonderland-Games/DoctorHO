@@ -67,16 +67,10 @@ class Lobby(BaseEntity):
                 race.addScope(self._scopePlay, level_name)
 
     def _scopePlay(self, source, level_name):
-        # source.addNotify(Notificator.onChangeScene, "GameArea")
-
-        # GameManager.removeGame()
-        # GameManager.prepareGame("HO", level_name)
-        # GameManager.runLevelStartAdvertisement()
-
         zoom_target = self.chapter_levels.level_cards[level_name].movie
         system_global = SystemManager.getSystem("SystemGlobal")
-        system_global.setChangeSceneParams(ZoomEffectTransitionObject=zoom_target)
+        system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
 
         source.addFunction(GameManager.removeGame)
-        source.addFunction(GameManager.prepareGame, "HO", level_name)
+        source.addFunction(GameManager.prepareGame, level_name)
         source.addFunction(GameManager.runLevelStartAdvertisement)

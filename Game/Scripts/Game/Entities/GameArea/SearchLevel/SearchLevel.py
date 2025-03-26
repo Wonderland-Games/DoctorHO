@@ -3,6 +3,7 @@ from Foundation.GroupManager import GroupManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+from Game.Managers.GameManager import GameManager
 
 
 class SearchLevel(Initializer):
@@ -12,15 +13,13 @@ class SearchLevel(Initializer):
         self.virtual_area = None
         self.va_hotspot = None
         self.game = None
-        self.level_name = None
         self.box_points = None
         self.items = []
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, level_name, box_points):
+    def _onInitialize(self, game, box_points):
         self.game = game
-        self.level_name = level_name
         self.box_points = box_points
 
         self._initVirtualArea()
@@ -33,7 +32,6 @@ class SearchLevel(Initializer):
 
     def _onFinalize(self):
         self.game = None
-        self.level_name = None
         self.box_points = None
         self.items = []
 
@@ -121,7 +119,9 @@ class SearchLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
-        scene_group = GroupManager.getGroup(self.level_name)
+        current_level_params = GameManager.getCurrentGameParams()
+        scene_group_name = current_level_params.GroupName
+        scene_group = GroupManager.getGroup(scene_group_name)
 
         scene = scene_group.getScene()
         scene_node = scene.getParent()
@@ -150,7 +150,9 @@ class SearchLevel(Initializer):
     # - Items ----------------------------------------------------------------------------------------------------------
 
     def _fillItems(self):
-        scene_group = GroupManager.getGroup(self.level_name)
+        current_level_params = GameManager.getCurrentGameParams()
+        scene_group_name = current_level_params.GroupName
+        scene_group = GroupManager.getGroup(scene_group_name)
         scene_objects = scene_group.getObjects()
 
         for obj in scene_objects:
