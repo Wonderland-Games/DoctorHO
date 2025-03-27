@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
+from Game.Managers.GameManager import GameManager
 
 GROUP_LEVEL_CARDS = "LevelCards"
 SLOT_LEVEL = "Level"
@@ -63,8 +64,9 @@ class LevelCard(Initializer):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupMovie(self):
-        # get movie card from chapter data
-        movie_card_name = "Movie2_Card_1"
+        level_params = GameManager.getLevelParams(self.level_name)
+        movie_card_name = level_params.LevelCard
+
         self.movie = GroupManager.generateObjectUnique(movie_card_name, GROUP_LEVEL_CARDS, movie_card_name)
         self.movie.setEnable(True)
 
