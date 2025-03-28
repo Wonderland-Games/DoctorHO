@@ -5,6 +5,7 @@
             "HOPA",
 			"MobileKit",
 			"UIKit",
+			"PlayFab",
             "Game"
         ],
 
@@ -39,6 +40,11 @@
 	"UIKit": {
         "Name": "UIKit",
         "Path": "../UIKit/",
+        "Description": "Package.bin"
+    },
+	"PlayFab": {
+        "Name": "PlayFab",
+        "Path": "../PlayFab/",
         "Description": "Package.bin"
     },
     "Game": {
