@@ -12,9 +12,9 @@
     "Game": {
         "Localized": true,
         "ContentResolution": [2736, 2736],
-        "FixedContentResolution": 1,
-        "FixedDisplayResolution": 0,
-        "FixedViewportResolution": 1,
+        "FixedContentResolution": true,
+        "FixedDisplayResolution": false,
+        "FixedViewportResolution": true,
         "PersonalityModule": "Personality",
         "AlreadyRunning": true,
         "WindowModeCheck": true
@@ -109,11 +109,11 @@
 
     "Params": {
 		"AutoLanguage": false,
-        "ShowBuildVersion": 1,
-		"ShowPlayFabId": 1,
+        "ShowBuildVersion": true,
+		"ShowPlayFabId": true,
 		"PrivacyPolicyLink": "https://www.wonderland-games.com/privacy/",
 		"DeveloperWebsiteLink": "https://www.wonderland-games.com/",
-		"TechnicalSupportEnable": 1,
+		"TechnicalSupportEnable": true,
 		"TechnicalSupportEmail": "support@wonderland-games.com"
     },
 	
@@ -150,13 +150,13 @@
     },
 	
     "Engine-IOS": {
-        "VideoPluginAvailable": 0,
-        "ThreadServiceAvailable": 1
+        "VideoPluginAvailable": false,
+        "ThreadServiceAvailable": true
     },
 
     "Engine-ANDROID": {
-        "VideoPluginAvailable": 0,
-        "ThreadServiceAvailable": 1
+        "VideoPluginAvailable": false,
+        "ThreadServiceAvailable": true
     },
 
     "HTTP": {
