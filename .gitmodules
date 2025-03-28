@@ -18,3 +18,7 @@
 	path = UIKit
 	url = https://github.com/irov/Mengine-Python-UIKit.git
 	branch = master
+[submodule "PlayFab"]
+	path = PlayFab
+	url = https://github.com/irov/Mengine-Python-PlayFab.git
+	branch = master
