@@ -98,3 +98,18 @@ class LevelCard(Initializer):
         button_bounds = self.movie.getCompositionBounds()
         button_size = Utils.getBoundingBoxSize(button_bounds)
         return button_size
+
+    def setBlock(self, value):
+        """
+        set desaturate material on self.level
+        """
+
+        # TODO: find out how this works
+        # surface = self.shape.getSurface()
+        # surface.setMaterialName("Texture_Desaturate")
+
+        # TODO: remove this after finding out
+        if value is True:
+            self.level.setRGB((0.1, 0.1, 0.1))
+        else:
+            self.level.setRGB((1.0, 1.0, 1.0))
