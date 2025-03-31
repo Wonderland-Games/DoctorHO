@@ -7,6 +7,7 @@ from Game.Entities.Lobby.ChapterLevels import ChapterLevels
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_LEVELS = "ChapterLevels"
+MOVIE_SATURATION = "Movie2_SaturationTest"
 
 
 class Lobby(BaseEntity):
@@ -66,6 +67,10 @@ class Lobby(BaseEntity):
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
                 race.addScope(self._scopePlay, level_name)
 
+        # remove after testing
+        with self._createTaskChain(MOVIE_SATURATION, Repeat=True) as tc:
+            tc.addScope(self._scopeShaderTest)
+
     def _scopePlay(self, source, level_name):
         zoom_target = self.chapter_levels.level_cards[level_name].movie
         system_global = SystemManager.getSystem("SystemGlobal")
@@ -74,3 +79,11 @@ class Lobby(BaseEntity):
         source.addFunction(GameManager.removeGame)
         source.addFunction(GameManager.prepareGame, level_name)
         source.addFunction(GameManager.runLevelStartAdvertisement)
+
+    def _scopeShaderTest(self, source):
+        movie_saturation = self.object.getObject(MOVIE_SATURATION)
+
+        source.addTask("TaskKeyPress", Keys=[Keys.getVirtualKeyCode("VK_Q")])
+        source.addEnable(movie_saturation)
+        source.addPlay(movie_saturation)
+        source.addDisable(movie_saturation)
