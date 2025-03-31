@@ -3,6 +3,27 @@ def onInitialize():
 
     from Foundation.Notificator import Notificator
     identities = [
+        "onInternetConnectionLost",
+        "onInternetConnectionFail",
+
+        "onUserAuthBegin",
+        "onUserAuthNeedRegister",
+        "onUserRegistrationSuccess",
+        "onUserRegistrationFail",
+        "onUserAuthSuccess",
+        "onUserAuthFail",
+
+        "onLoadFromServerSuccess",
+        "onLoadFromServerFail",
+        "onLoadFromServerBegin",
+
+        "onUserLinkAccount",
+        "onServerMaintenance",
+        "onServerUpdating",
+        "onServerFail",
+        "onUpdateSoft",
+        "onUpdateHard",
+
         "onGameDataLoaded",
         "onLoadDataFromCacheBegin",
         "onLoadDataFromCacheEnd",
@@ -18,6 +39,8 @@ def onInitialize():
         "onLevelLivesRestore",
 
         "onCallRewardedAd",
+
+        "onDisplayNameChanged",
     ]
 
     Notificator.addIdentities(identities)
