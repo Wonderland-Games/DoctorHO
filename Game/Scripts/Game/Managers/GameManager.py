@@ -99,6 +99,10 @@ class GameManager(Manager):
     # - Player data ----------------------------------------------------------------------------------------------------
 
     @staticmethod
+    def getPlayerData():
+        return GameManager._player_data
+
+    @staticmethod
     def resetPlayerData():
         new_player_data = {
             "Game": PlayerGameData(),
@@ -109,11 +113,17 @@ class GameManager(Manager):
 
     @staticmethod
     def setDummyPlayerData():
-        pass
+        randomizer = GameManager.getRandomizer()
 
-    @staticmethod
-    def getPlayerData():
-        return GameManager._player_data
+        chapter_params = GameManager.getRandomChapterParams()
+
+        chapter = None
+        level = None
+
+        game_data = GameManager.getPlayerData()
+        # game_data.loadData({chapter: level})
+
+        GameManager.initRandomizer()  # reset randomizer
 
     @staticmethod
     def getPlayerRevision():
@@ -197,6 +207,11 @@ class GameManager(Manager):
         db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
         params = DatabaseManager.findDB(db, ChapterName=chapter_name)
         return params
+
+    @staticmethod
+    def getRandomChapterParams():
+        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
+        return db
 
     @staticmethod
     def getLevelParams(level_name):
