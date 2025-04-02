@@ -75,7 +75,11 @@ class LevelCard(Initializer):
 
         env = movie_card_name + "_" + self.level_name
         title_id = TEXT_TITLE + "_" + self.level_name
-        title_text = Mengine.getTextFromId(title_id)
+        if Mengine.existText(title_id) is True:
+            title_text = Mengine.getTextFromId(title_id)
+        else:
+            Trace.msg_err("[{}] For card {!r} not found text {!r}".format(self.__class__.__name__, self.level_name, title_id))
+            title_text = ""
 
         self.movie.setTextAliasEnvironment(env)
 
