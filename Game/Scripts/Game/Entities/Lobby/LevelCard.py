@@ -7,20 +7,33 @@ SLOT_LEVEL = "Level"
 ALIAS_TITLE = "$LevelCardTitle"
 TEXT_TITLE = "ID_LevelCardTitle"
 
+MOVIE_STATE_BLOCKED = "Blocked"
+MOVIE_STATE_UNLOCKING = "Unlocking"
+MOVIE_STATE_ACTIVE = "Active"
+
 
 class LevelCard(Initializer):
+    STATE_BLOCKED = 0
+    STATE_UNLOCKING = 1
+    STATE_ACTIVE = 2
+
     def __init__(self):
         super(LevelCard, self).__init__()
         self.level_name = None
         self.root = None
+        self.state = None
         self.movie = None
         self.level = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, level_name):
+    def _onInitialize(self, level_name, state=None):
         super(LevelCard, self)._onInitialize()
         self.level_name = level_name
+
+        self.state = self.STATE_BLOCKED
+        if state is not None:
+            self.state = state
 
         self._createRoot()
 
@@ -44,6 +57,7 @@ class LevelCard(Initializer):
             self.root = None
 
         self.level_name = None
+        self.state = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -60,6 +74,24 @@ class LevelCard(Initializer):
 
     def getRoot(self):
         return self.root
+
+    # - State ----------------------------------------------------------------------------------------------------------
+
+    def changeState(self, state):
+        self.state = state
+        self._updateLevelState()
+
+    def getCurrentStateMovieName(self):
+        state_movie = {
+            self.STATE_BLOCKED: MOVIE_STATE_BLOCKED,
+            self.STATE_UNLOCKING: MOVIE_STATE_UNLOCKING,
+            self.STATE_ACTIVE: MOVIE_STATE_ACTIVE,
+        }
+        current_state_movie = state_movie.get(self.state)
+        return current_state_movie
+
+    def _updateLevelState(self):
+        pass
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -89,7 +121,19 @@ class LevelCard(Initializer):
     def _setupLevel(self):
         # get level from chapter data
         movie_level_name = "Movie2_{}".format(self.level_name)
-        self.level = GroupManager.generateObjectUnique(movie_level_name, GROUP_LEVEL_CARDS, movie_level_name)
+        current_state_movie = self.getCurrentStateMovieName()
+        movie_level_state_name = movie_level_name + "_{}".format(current_state_movie)
+
+        if GroupManager.hasPrototype(GROUP_LEVEL_CARDS, movie_level_state_name) is False:
+            Trace.msg_err("Not found prototype {!r} in group {!r}".format(movie_level_state_name, GROUP_LEVEL_CARDS))
+            if GroupManager.hasPrototype(GROUP_LEVEL_CARDS, movie_level_name) is False:
+                Trace.msg_err("Also not found prototype {!r} in group {!r}".format(movie_level_name, GROUP_LEVEL_CARDS))
+                return
+            else:
+                self.level = GroupManager.generateObjectUnique(movie_level_name, GROUP_LEVEL_CARDS, movie_level_name)
+        else:
+            self.level = GroupManager.generateObjectUnique(movie_level_state_name, GROUP_LEVEL_CARDS, movie_level_state_name)
+
         self.level.setEnable(True)
 
         level_node = self.level.getEntityNode()
@@ -102,18 +146,3 @@ class LevelCard(Initializer):
         button_bounds = self.movie.getCompositionBounds()
         button_size = Utils.getBoundingBoxSize(button_bounds)
         return button_size
-
-    def setBlock(self, value):
-        """
-        set desaturate material on self.level
-        """
-
-        # TODO: find out how this works
-        # surface = self.shape.getSurface()
-        # surface.setMaterialName("Texture_Desaturate")
-
-        # TODO: remove this after finding out
-        if value is True:
-            self.level.setRGB((0.1, 0.1, 0.1))
-        else:
-            self.level.setRGB((1.0, 1.0, 1.0))
