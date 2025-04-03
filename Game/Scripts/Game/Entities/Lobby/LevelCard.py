@@ -43,9 +43,7 @@ class LevelCard(Initializer):
     def _onFinalize(self):
         super(LevelCard, self)._onFinalize()
 
-        if self.level is not None:
-            self.level.onDestroy()
-            self.level = None
+        self._destroyCurrentStateMovie()
 
         if self.movie is not None:
             self.movie.onDestroy()
@@ -77,21 +75,34 @@ class LevelCard(Initializer):
 
     # - State ----------------------------------------------------------------------------------------------------------
 
-    def changeState(self, state):
+    def setState(self, state):
         self.state = state
-        self._updateLevelState()
 
-    def getCurrentStateMovieName(self):
+    def getState(self):
+        return self.state
+
+    def _createNewStateMovie(self):
         state_movie = {
             self.STATE_BLOCKED: MOVIE_STATE_BLOCKED,
             self.STATE_UNLOCKING: MOVIE_STATE_UNLOCKING,
             self.STATE_ACTIVE: MOVIE_STATE_ACTIVE,
         }
-        current_state_movie = state_movie.get(self.state)
-        return current_state_movie
 
-    def _updateLevelState(self):
-        pass
+        movie_level_name = "Movie2_{}".format(self.level_name)
+        current_state_movie = state_movie.get(self.state)
+        movie_level_state_name = movie_level_name + "_{}".format(current_state_movie)
+
+        self.level = GroupManager.generateObjectUnique(movie_level_state_name, GROUP_LEVEL_CARDS, movie_level_state_name)
+        self.level.setEnable(True)
+
+        level_node = self.level.getEntityNode()
+        level_slot = self.movie.getMovieSlot(SLOT_LEVEL)
+        level_slot.addChild(level_node)
+
+    def _destroyCurrentStateMovie(self):
+        if self.level is not None:
+            self.level.onDestroy()
+            self.level = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -120,25 +131,7 @@ class LevelCard(Initializer):
 
     def _setupLevel(self):
         # get level from chapter data
-        movie_level_name = "Movie2_{}".format(self.level_name)
-        current_state_movie = self.getCurrentStateMovieName()
-        movie_level_state_name = movie_level_name + "_{}".format(current_state_movie)
-
-        if GroupManager.hasPrototype(GROUP_LEVEL_CARDS, movie_level_state_name) is False:
-            Trace.msg_err("Not found prototype {!r} in group {!r}".format(movie_level_state_name, GROUP_LEVEL_CARDS))
-            if GroupManager.hasPrototype(GROUP_LEVEL_CARDS, movie_level_name) is False:
-                Trace.msg_err("Also not found prototype {!r} in group {!r}".format(movie_level_name, GROUP_LEVEL_CARDS))
-                return
-            else:
-                self.level = GroupManager.generateObjectUnique(movie_level_name, GROUP_LEVEL_CARDS, movie_level_name)
-        else:
-            self.level = GroupManager.generateObjectUnique(movie_level_state_name, GROUP_LEVEL_CARDS, movie_level_state_name)
-
-        self.level.setEnable(True)
-
-        level_node = self.level.getEntityNode()
-        level_slot = self.movie.getMovieSlot(SLOT_LEVEL)
-        level_slot.addChild(level_node)
+        self._createNewStateMovie()
 
     # - Utils ----------------------------------------------------------------------------------------------------------
 
@@ -146,3 +139,16 @@ class LevelCard(Initializer):
         button_bounds = self.movie.getCompositionBounds()
         button_size = Utils.getBoundingBoxSize(button_bounds)
         return button_size
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def scopeChangeLevelState(self, source, state):
+        self._destroyCurrentStateMovie()
+        self.setState(state)
+        self._createNewStateMovie()
+
+        if self.state == self.STATE_UNLOCKING:
+            source.addPlay(self.level)
+            source.addFunction(self._destroyCurrentStateMovie)
+            source.addFunction(self.setState, self.STATE_ACTIVE)
+            source.addFunction(self._createNewStateMovie)
