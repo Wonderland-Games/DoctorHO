@@ -63,8 +63,14 @@ class Lobby(BaseEntity):
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_CHAPTER_LEVELS) as tc:
             for (level_name, card), race in tc.addRaceTaskList(self.chapter_levels.level_cards.items()):
+                # with race.addIfTask(lambda: card.state == card.STATE_ACTIVE) as (active, _):
+                #     active.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
+                #     active.addScope(self._scopePlay, level_name)
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
                 race.addScope(self._scopePlay, level_name)
+
+        with self._createTaskChain("CardsStatesTester", Repeat=True) as tc:
+            tc.addScope(self._scopeLevelCardsStateTest)
 
     def _scopePlay(self, source, level_name):
         zoom_target = self.chapter_levels.level_cards[level_name].movie
@@ -74,3 +80,8 @@ class Lobby(BaseEntity):
         source.addFunction(GameManager.removeGame)
         source.addFunction(GameManager.prepareGame, level_name)
         source.addFunction(GameManager.runLevelStartAdvertisement)
+
+    def _scopeLevelCardsStateTest(self, source):
+        source.addTask("TaskKeyPress", Keys=[Keys.getVirtualKeyCode("VK_Q")])
+        for card, parallel in source.addParallelTaskList(self.chapter_levels.level_cards.values()):
+            parallel.addScope(card.scopeChangeLevelState, card.STATE_UNLOCKING)
