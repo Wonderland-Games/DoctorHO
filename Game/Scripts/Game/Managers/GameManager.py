@@ -115,7 +115,8 @@ class GameManager(Manager):
     def setDummyPlayerData():
         randomizer = GameManager.getRandomizer()
 
-        chapter_params = GameManager.getRandomChapterParams()
+        active_chapter_params, active_levels_params = GameManager.getRandomChapterLevelsParams()
+        # print active_chapter_params, active_level_params
 
         chapter = None
         level = None
@@ -209,9 +210,26 @@ class GameManager(Manager):
         return params
 
     @staticmethod
-    def getRandomChapterParams():
-        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
-        return db
+    def getRandomChapterLevelsParams():
+        db_chapters = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
+        db_chapters_params = db_chapters.getORMs()
+        db_chapters_len = len(db_chapters_params)
+        chapter_params_index = Mengine.rand(db_chapters_len)
+        chapter_params = db_chapters_params[chapter_params_index]
+        # print "Random chapter name:", chapter_params.ChapterName
+
+        db_levels = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
+        chapter_levels = chapter_params.Levels
+        chapter_levels_len = len(chapter_levels)
+        active_levels_count = Mengine.rand(chapter_levels_len) + 1
+        levels_params = []
+        for index in range(active_levels_count):
+            chapter_level = chapter_levels[index]
+            # print "Level names:", chapter_level
+            level_params = DatabaseManager.findDB(db_levels, LevelName=chapter_level)
+            levels_params.append(level_params)
+
+        return chapter_params, levels_params
 
     @staticmethod
     def getLevelParams(level_name):
