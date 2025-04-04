@@ -69,10 +69,19 @@ class ChapterLevels(Initializer):
         level_slots_movie_node = self.level_slots_movie.getEntityNode()
         self.root.addChild(level_slots_movie_node)
 
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        active_levels = current_chapter_data.getCurrentLevels()
+
         # init and attach level cards to slots movie
         for i, level_name in enumerate(chapter_levels):
             card = LevelCard()
-            card.onInitialize(level_name)
+
+            if level_name in active_levels:
+                card.onInitialize(level_name, card.STATE_ACTIVE)
+            else:
+                card.onInitialize(level_name)
+
             self.level_cards[level_name] = card
 
             card_node = card.getRoot()

@@ -43,7 +43,10 @@ class Lobby(BaseEntity):
 
     def _setupChapterLevels(self):
         # get current chapter data
-        chapter_name = "MediterraneanAncientCivilizations"  # MediterraneanAncientCivilizations, SolarSystemAdventure
+        # chapter_name = "MediterraneanAncientCivilizations"  # MediterraneanAncientCivilizations, SolarSystemAdventure
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_name = current_chapter_data.getChapterName()
 
         self.chapter_levels = ChapterLevels()
         self.chapter_levels.onInitialize(chapter_name)
