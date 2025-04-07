@@ -1,6 +1,7 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.SystemManager import SystemManager
+from Foundation.DemonManager import DemonManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.ChapterLevels import ChapterLevels
 
@@ -85,6 +86,10 @@ class Lobby(BaseEntity):
         source.addFunction(GameManager.runLevelStartAdvertisement)
 
     def _scopeLevelCardsStateTest(self, source):
+        popup_object = DemonManager.getDemon("PopUp")
+        popup = popup_object.entity
+
         source.addTask("TaskKeyPress", Keys=[Keys.getVirtualKeyCode("VK_Q")])
-        for card, parallel in source.addParallelTaskList(self.chapter_levels.level_cards.values()):
-            parallel.addScope(card.scopeChangeLevelState, card.STATE_UNLOCKING)
+        source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE, LevelName="01_AncientEgypt", ItemName="Item_Armor")
+        # for card, parallel in source.addParallelTaskList(self.chapter_levels.level_cards.values()):
+        #     parallel.addScope(card.scopeChangeLevelState, card.STATE_UNLOCKING)

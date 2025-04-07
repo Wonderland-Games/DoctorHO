@@ -3,6 +3,7 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
+from Foundation.GroupManager import GroupManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
 from Game.Managers.GameData import PlayerGameData
@@ -234,6 +235,14 @@ class GameManager(Manager):
         db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
         params = DatabaseManager.findDB(db, LevelName=level_name)
         return params
+
+    @staticmethod
+    def getLevelItem(level_name, item_name):
+        level_params = GameManager.getLevelParams(level_name)
+        level_group_name = level_params.GroupName
+        level_group = GroupManager.getGroup(level_group_name)
+        level_item = level_group.getObject(item_name)
+        return level_item
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
