@@ -6,8 +6,6 @@ AD_TIME = 3000.0
 
 class DebugAd(PopUpContent):
     content_id = "DebugAd"
-    title_text_id = "ID_PopUpTitle_" + content_id
-    content_movie_name = "Movie2_Content_" + content_id
 
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
