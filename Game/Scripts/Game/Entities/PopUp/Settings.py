@@ -13,8 +13,6 @@ SLOT_LOBBY = "Lobby"
 
 class Settings(PopUpContent):
     content_id = "Settings"
-    title_text_id = "ID_PopUpTitle_Settings"
-    content_movie_name = "Movie2_Content_" + content_id
 
     def __init__(self):
         super(Settings, self).__init__()

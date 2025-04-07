@@ -3,8 +3,6 @@ from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 
 class Credits(PopUpContent):
     content_id = "Credits"
-    title_text_id = "ID_PopUpTitle_" + content_id
-    content_movie_name = "Movie2_Content_" + content_id
 
     def __init__(self):
         super(Credits, self).__init__()
