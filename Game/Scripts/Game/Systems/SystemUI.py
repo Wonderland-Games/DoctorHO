@@ -14,6 +14,8 @@ class SystemUI(BaseSystem):
 
             "LevelWon_Lobby",
 
+            "QuestItemReceived_Button",
+
             "Lobby_Play",
         ]
         

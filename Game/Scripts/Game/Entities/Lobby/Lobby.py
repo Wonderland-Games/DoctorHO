@@ -89,7 +89,15 @@ class Lobby(BaseEntity):
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
 
+        level_name = "01_AncientEgypt"
+        level_params = GameManager.getLevelParams(level_name)
+        level_group_name = level_params.GroupName
+        item_name = "Item_Armor"
+
         source.addTask("TaskKeyPress", Keys=[Keys.getVirtualKeyCode("VK_Q")])
-        source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE, LevelName="01_AncientEgypt", ItemName="Item_Armor")
+
         # for card, parallel in source.addParallelTaskList(self.chapter_levels.level_cards.values()):
         #     parallel.addScope(card.scopeChangeLevelState, card.STATE_UNLOCKING)
+
+        source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
+                         GroupName=level_group_name, ItemName=item_name)
