@@ -82,6 +82,7 @@ class GameArea(BaseEntity):
         self._attachSearchPanel()
 
         self._runTaskChains()
+        self._handleCheats()
 
     def _onDeactivate(self):
         super(GameArea, self)._onDeactivate()
@@ -194,6 +195,22 @@ class GameArea(BaseEntity):
         color = SETTINGS.Test.color
         sprite = item.getEntity().getSprite()
         sprite.colorTo(500.0, color, "easyLinear", cb)
+
+    def _handleCheats(self):
+        if Mengine.hasOption("cheats") is False:
+            return
+
+        Trace.msg(" Game cheats ".center(50, "-"))
+        Trace.msg(" W - win game")
+        Trace.msg(" Q - lose game")
+        Trace.msg("".center(50, "-"))
+
+        with self._createTaskChain("CheatLevelEnd") as tc:
+            with tc.addRaceTask(2) as (win, lose):
+                win.addTask("TaskKeyPress", Keys=[Mengine.KC_W])
+                win.addNotify(Notificator.onLevelEnd, True)
+                lose.addTask("TaskKeyPress", Keys=[Mengine.KC_Q])
+                lose.addNotify(Notificator.onLevelEnd, False)
 
     def filterItemClick(self, scene_item):
         # check if hint activated and scene_item is hint_item
