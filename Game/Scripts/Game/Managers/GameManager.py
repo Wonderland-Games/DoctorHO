@@ -255,8 +255,9 @@ class GameManager(Manager):
         GameManager._current_game_params = params_orm
 
     @staticmethod
-    def endGame():
-        pass
+    def endGame(is_win):
+        player_data = GameManager.getPlayerGameData()
+        player_data.setLastResult(is_win)
 
     @staticmethod
     def removeGame():

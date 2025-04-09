@@ -16,6 +16,7 @@ class QuestItemReceived(PopUpContent):
 
         self.item_sprite = None
         self.button = None
+        self.isHoldingItem = False
 
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
@@ -26,12 +27,14 @@ class QuestItemReceived(PopUpContent):
         self._setupButton()
 
         self._adjustSlotsPositions()
+        self._runTaskChains()
 
     def _onFinalizeContent(self):
         super(QuestItemReceived, self)._onFinalizeContent()
 
         if self.item_sprite is not None:
-            Mengine.destroyNode(self.item_sprite)
+            if self.isHoldingItem is True:
+                Mengine.destroyNode(self.item_sprite)
             self.item_sprite = None
 
         if self.button is not None:
@@ -54,6 +57,7 @@ class QuestItemReceived(PopUpContent):
     def _setupItem(self, group_name, item_name):
         item = self._getItemFromGroup(group_name, item_name)
         self.item_sprite = self._generateItemSprite(item)
+        self.isHoldingItem = True
 
         item_size = self.item_sprite.getSurfaceSize()
         scale_perc_x = ITEM_BOX_SIZE / item_size.x
@@ -98,3 +102,16 @@ class QuestItemReceived(PopUpContent):
             slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
 
             current_pos_y += obj_half_size
+
+    # - TaskChain ------------------------------------------------------------------------------------------------------
+
+    def _runTaskChains(self):
+        if self.button is not None:
+            with self._createTaskChain(SLOT_BUTTON) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button.movie)
+                tc.addScope(self._scopeButton)
+
+    def _scopeButton(self, source):
+        self.isHoldingItem = False
+
+        source.addNotify(Notificator.onPopUpHide)
