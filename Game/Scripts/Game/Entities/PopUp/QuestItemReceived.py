@@ -114,4 +114,4 @@ class QuestItemReceived(PopUpContent):
     def _scopeButton(self, source):
         self.isHoldingItem = False
 
-        source.addNotify(Notificator.onPopUpHide)
+        source.addNotify(Notificator.onPopUpQuestItemReceived)
