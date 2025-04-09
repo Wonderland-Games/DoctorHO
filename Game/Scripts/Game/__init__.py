@@ -41,6 +41,8 @@ def onInitialize():
         "onCallRewardedAd",
 
         "onDisplayNameChanged",
+
+        "onPopUpQuestItemReceived",
     ]
 
     Notificator.addIdentities(identities)

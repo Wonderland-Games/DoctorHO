@@ -2,12 +2,24 @@ from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DemonManager import DemonManager
+from Foundation.SceneManager import SceneManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.ChapterLevels import ChapterLevels
 
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_LEVELS = "ChapterLevels"
+
+POPUP_ITEM_MOVE_EASING = "easyCubicIn"
+POPUP_ITEM_MOVE_TIME = 500.0
+POPUP_ITEM_SCALE_1_EASING = "easyLinear"
+POPUP_ITEM_SCALE_1_TIME = 250.0
+POPUP_ITEM_SCALE_1_TO = (1.25, 1.25, 1.0)
+POPUP_ITEM_SCALE_2_EASING = "easyBackOut"
+POPUP_ITEM_SCALE_2_TIME = 1000.0
+POPUP_ITEM_SCALE_2_TO = (0.5, 0.5, 1.0)
+POPUP_ITEM_ALPHA_EASING = "easyCubicIn"
+POPUP_ITEM_ALPHA_TIME = 1000.0
 
 
 class Lobby(BaseEntity):
@@ -111,45 +123,57 @@ class Lobby(BaseEntity):
         source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
                          GroupName=level_group_name, ItemName=item_name)
 
-        source.addListener(Notificator.onPopUpHide)
-        source.addScope(self._moveItemToLevelCard)
+        source.addListener(Notificator.onPopUpQuestItemReceived)
+        with source.addParallelTask(2) as (item, popup):
+            item.addScope(self._moveItemToLevelCard)
+            popup.addDelay(250.0)
+            popup.addNotify(Notificator.onPopUpHide)
 
     def _moveItemToLevelCard(self, source):
+        # get current popup content (QuestItemReceived)
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
-        print popup
         popup_content = popup.pop_up_content
-        print popup_content
+
+        # get item sprite and item wp
         item = popup_content.item_sprite
-        item_wp = item.getParent().getWorldPosition()
+        item_slot = item.getParent()
+        item_wp = item_slot.getWorldPosition()
 
         # create moving node
         moving_node = Mengine.createNode("Interender")
         moving_node.setName("Temp")
-
         moving_node.addChild(item)
-        self.addChild(moving_node)
+
+        # attach moving node to current scene main layer
+        current_scene = SceneManager.getCurrentScene()
+        current_scene_main_layer = current_scene.getMainLayer()
+        scene_parent = current_scene_main_layer.getParent()
+        scene_parent.addChild(moving_node)
+
+        # set item wp for moving node
         moving_node.setWorldPosition(item_wp)
 
-        # blocked_level_cards = [card for card in self.chapter_levels.level_cards.values() if card.getState() == card.STATE_BLOCKED]
-        blocked_level_cards = [card for card in self.chapter_levels.level_cards.values()]
-        # if len(blocked_level_cards) == 0:
-        #     return
-
-        level_card = blocked_level_cards[0]
+        # get level card wp
+        level_cards = [card for card in self.chapter_levels.level_cards.values()]
+        level_card = level_cards[0]
         level_card_node = level_card.getRoot()
         level_card_wp = level_card_node.getWorldPosition()
-        print level_card_wp
 
-        with source.addParallelTask(2) as (scale, move):
-            # scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
-            #               Time=SCENE_ITEM_SCALE_TIME)
-            # move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=level_card_node,
-            #              Time=SCENE_ITEM_MOVE_TIME)
-            move.addTask("TaskNodeMoveTo", Node=moving_node, To=level_card_wp, Time=1000.0)
-            move.addPrint("{}".format(level_card_node.getWorldPosition()))
+        # animation taskchain
+        with source.addParallelTask(2) as (scale, popup):
+            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=POPUP_ITEM_SCALE_1_EASING, To=POPUP_ITEM_SCALE_1_TO,
+                          Time=POPUP_ITEM_SCALE_1_TIME)
+            popup.addListener(Notificator.onPopUpHideEnd)
+        with source.addParallelTask(3) as (scale, move, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=POPUP_ITEM_SCALE_2_EASING, To=POPUP_ITEM_SCALE_2_TO,
+                          Time=POPUP_ITEM_SCALE_2_TIME)
+            move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=POPUP_ITEM_MOVE_EASING, From=item_wp, To=level_card_wp,
+                         Time=POPUP_ITEM_MOVE_TIME)
+            alpha.addTask("TaskNodeAlphaTo", Node=moving_node, Easing=POPUP_ITEM_ALPHA_EASING, To=0.0,
+                          Time=POPUP_ITEM_ALPHA_TIME)
 
-        # source.addTask("TaskNodeRemoveFromParent", Node=item)
-        # source.addTask("TaskNodeDestroy", Node=item)
-        # source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
-        # source.addTask("TaskNodeDestroy", Node=moving_node)
+        source.addTask("TaskNodeRemoveFromParent", Node=item)
+        source.addTask("TaskNodeDestroy", Node=item)
+        source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
+        source.addTask("TaskNodeDestroy", Node=moving_node)
