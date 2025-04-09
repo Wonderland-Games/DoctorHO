@@ -13,6 +13,7 @@ class ChapterData(object):
 class PlayerGameData(object):
     def __init__(self):
         self.current_chapter = None
+        self._last_result = None
 
     def getCurrentChapterData(self):
         return self.current_chapter
@@ -20,3 +21,9 @@ class PlayerGameData(object):
     def loadData(self, active_chapter_name, active_levels_names):
         self.current_chapter = ChapterData(active_chapter_name)
         self.current_chapter.current_levels = active_levels_names
+
+    def setLastResult(self, value):
+        self._last_result = bool(value)
+
+    def getLastResult(self):
+        return self._last_result

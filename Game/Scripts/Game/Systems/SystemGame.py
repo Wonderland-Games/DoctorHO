@@ -1,6 +1,7 @@
 from Foundation.System import System
 from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
+from Game.Managers.GameManager import GameManager
 
 
 class SystemGame(System):
@@ -101,6 +102,8 @@ class SystemGame(System):
             self._removeTaskChains()
         else:
             Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE)
+
+        GameManager.endGame(is_win)
 
         return False
 
