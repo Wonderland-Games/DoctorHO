@@ -126,10 +126,20 @@ class Lobby(BaseEntity):
         source.addListener(Notificator.onPopUpQuestItemReceived)
         with source.addParallelTask(2) as (item, popup):
             item.addScope(self._moveItemToLevelCard)
-            popup.addDelay(250.0)
+            popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
             popup.addNotify(Notificator.onPopUpHide)
 
     def _moveItemToLevelCard(self, source):
+        # get level card wp
+        # level_cards = [card for card in self.chapter_levels.level_cards.values()]
+        level_cards = [card for card in self.chapter_levels.level_cards.values() if card.state == card.STATE_BLOCKED]
+        if len(level_cards) == 0:
+            return
+
+        level_card = level_cards[0]
+        level_card_node = level_card.getRoot()
+        level_card_wp = level_card_node.getWorldPosition()
+
         # get current popup content (QuestItemReceived)
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
@@ -154,12 +164,6 @@ class Lobby(BaseEntity):
         # set item wp for moving node
         moving_node.setWorldPosition(item_wp)
 
-        # get level card wp
-        level_cards = [card for card in self.chapter_levels.level_cards.values()]
-        level_card = level_cards[0]
-        level_card_node = level_card.getRoot()
-        level_card_wp = level_card_node.getWorldPosition()
-
         # animation taskchain
         with source.addParallelTask(2) as (scale, popup):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=POPUP_ITEM_SCALE_1_EASING, To=POPUP_ITEM_SCALE_1_TO,
@@ -177,3 +181,5 @@ class Lobby(BaseEntity):
         source.addTask("TaskNodeDestroy", Node=item)
         source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
         source.addTask("TaskNodeDestroy", Node=moving_node)
+
+        source.addScope(level_card.scopeChangeLevelState, level_card.STATE_UNLOCKING)
