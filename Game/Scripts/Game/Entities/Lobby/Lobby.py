@@ -108,20 +108,22 @@ class Lobby(BaseEntity):
 
     def _scopeQuestItemReceived(self, source):
         player_data = GameManager.getPlayerGameData()
-        last_game_result = player_data.getLastResult()
+        last_level_data = player_data.getLastLevelData()
+
+        last_game_result = last_level_data.get("Result", None)
         if last_game_result in [False, None]:
             return
+
+        level_name = last_level_data.get("LevelName", None)
+        level_params = GameManager.getLevelParams(level_name)
+        level_group_name = level_params.GroupName
+        quest_item_name = level_params.QuestItem
 
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
 
-        level_name = "01_AncientEgypt"
-        level_params = GameManager.getLevelParams(level_name)
-        level_group_name = level_params.GroupName
-        item_name = "Item_Armor"
-
         source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
-                         GroupName=level_group_name, ItemName=item_name)
+                         GroupName=level_group_name, ItemName=quest_item_name)
 
         source.addListener(Notificator.onPopUpQuestItemReceived)
         with source.addParallelTask(2) as (item, popup):
