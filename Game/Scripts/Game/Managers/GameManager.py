@@ -254,10 +254,19 @@ class GameManager(Manager):
         params_orm = GameManager.getLevelParams(level_name)
         GameManager._current_game_params = params_orm
 
+        player_data = GameManager.getPlayerGameData()
+        player_data.setLastLevelData({})
+
     @staticmethod
     def endGame(is_win):
         player_data = GameManager.getPlayerGameData()
-        player_data.setLastResult(is_win)
+        level_name = GameManager.getCurrentGameParam("LevelName")
+        level_params = GameManager.getLevelParams(level_name)
+        player_data.setLastLevelData({
+            "LevelName": level_name,
+            "Result": is_win,
+            "QuestItemName": level_params.QuestItem,
+        })
 
     @staticmethod
     def removeGame():
