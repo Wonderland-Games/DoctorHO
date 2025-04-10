@@ -150,17 +150,26 @@ class SearchLevel(Initializer):
     # - Items ----------------------------------------------------------------------------------------------------------
 
     def _fillItems(self):
+        randomizer = GameManager.getRandomizer()
         current_level_params = GameManager.getCurrentGameParams()
-        scene_group_name = current_level_params.GroupName
-        scene_group = GroupManager.getGroup(scene_group_name)
-        scene_objects = scene_group.getObjects()
+        level_group_name = current_level_params.GroupName
+        level_items_count = current_level_params.ItemsCount
 
-        for obj in scene_objects:
-            if obj.getEntityType() is not "Item":
-                continue
+        level_group = GroupManager.getGroup(level_group_name)
+        level_group_objects = level_group.getObjects()
+        level_items = [obj for obj in level_group_objects if
+                       obj.getEntityType() == "Item" and
+                       obj not in self.game.FoundItems]
 
-            if obj in self.game.FoundItems:
-                continue
+        for i in range(level_items_count):
+            level_items_len = len(level_items)
+            level_item_index = randomizer.getRandom(level_items_len)
+            level_item = level_items[level_item_index]
 
-            self.items.append(obj)
-            obj.setEnable(True)
+            level_items.remove(level_item)
+            self.items.append(level_item)
+
+            level_item.setEnable(True)
+
+        for item in level_items:
+            item.setEnable(False)
