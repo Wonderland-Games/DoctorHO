@@ -56,13 +56,12 @@ class Lobby(BaseEntity):
 
     def _setupChapterLevels(self):
         # get current chapter data
-        # chapter_name = "MediterraneanAncientCivilizations"  # MediterraneanAncientCivilizations, SolarSystemAdventure
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
-        chapter_name = current_chapter_data.getChapterName()
+        chapter_id = current_chapter_data.getChapterId()
 
         self.chapter_levels = ChapterLevels()
-        self.chapter_levels.onInitialize(chapter_name)
+        self.chapter_levels.onInitialize(chapter_id)
 
         chapter_levels_node = self.chapter_levels.getRoot()
         card_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
@@ -78,12 +77,12 @@ class Lobby(BaseEntity):
 
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_CHAPTER_LEVELS) as tc:
-            for (level_name, card), race in tc.addRaceTaskList(self.chapter_levels.level_cards.items()):
+            for (level_id, card), race in tc.addRaceTaskList(self.chapter_levels.level_cards.items()):
                 # with race.addIfTask(lambda: card.state == card.STATE_ACTIVE) as (active, _):
                 #     active.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
-                #     active.addScope(self._scopePlay, level_name)
+                #     active.addScope(self._scopePlay, level_id)
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
-                race.addScope(self._scopePlay, level_name)
+                race.addScope(self._scopePlay, level_id)
 
         with self._createTaskChain("CardsStatesTester", Repeat=True) as tc:
             tc.addScope(self._scopeLevelCardsStateTest)
@@ -91,13 +90,13 @@ class Lobby(BaseEntity):
         with self._createTaskChain("QuestItemReceived") as tc:
             tc.addScope(self._scopeQuestItemReceived)
 
-    def _scopePlay(self, source, level_name):
-        zoom_target = self.chapter_levels.level_cards[level_name].movie
+    def _scopePlay(self, source, level_id):
+        zoom_target = self.chapter_levels.level_cards[level_id].movie
         system_global = SystemManager.getSystem("SystemGlobal")
         system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
 
         source.addFunction(GameManager.removeGame)
-        source.addFunction(GameManager.prepareGame, level_name)
+        source.addFunction(GameManager.prepareGame, level_id)
         source.addFunction(GameManager.runLevelStartAdvertisement)
 
     def _scopeLevelCardsStateTest(self, source):
@@ -114,8 +113,8 @@ class Lobby(BaseEntity):
         if last_game_result in [False, None]:
             return
 
-        level_name = last_level_data.get("LevelName", None)
-        level_params = GameManager.getLevelParams(level_name)
+        level_id = last_level_data.get("LevelId", None)
+        level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
         quest_item_name = level_params.QuestItem
 

@@ -82,8 +82,8 @@ class Settings(PopUpContent):
     def _setupButtons(self):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
-        current_level_name = GameManager.getCurrentGameParam("LevelName")
-        if current_level_name is not None and _DEVELOPMENT is True:
+        current_level_id = GameManager.getCurrentGameParam("LevelId")
+        if current_level_id is not None and _DEVELOPMENT is True:
             buttons.append(SLOT_LOBBY)
 
         for name in buttons:
