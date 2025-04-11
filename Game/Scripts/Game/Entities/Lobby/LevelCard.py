@@ -19,7 +19,7 @@ class LevelCard(Initializer):
 
     def __init__(self):
         super(LevelCard, self).__init__()
-        self.level_name = None
+        self.level_id = None
         self.root = None
         self.state = None
         self.movie = None
@@ -27,9 +27,9 @@ class LevelCard(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, level_name, state=None):
+    def _onInitialize(self, level_id, state=None):
         super(LevelCard, self)._onInitialize()
-        self.level_name = level_name
+        self.level_id = level_id
 
         self.state = self.STATE_BLOCKED
         if state is not None:
@@ -54,14 +54,14 @@ class LevelCard(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-        self.level_name = None
+        self.level_id = None
         self.state = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__ + "_" + self.level_name)
+        self.root.setName(self.__class__.__name__ + "_" + str(self.level_id))
 
     def attachTo(self, node):
         self.root.removeFromParent()
@@ -88,9 +88,10 @@ class LevelCard(Initializer):
             self.STATE_ACTIVE: MOVIE_STATE_ACTIVE,
         }
 
-        movie_level_name = "Movie2_{}".format(self.level_name)
+        level_params = GameManager.getLevelParams(self.level_id)
+        level_movie_name = level_params.LevelMovie
         current_state_movie = state_movie.get(self.state)
-        movie_level_state_name = movie_level_name + "_{}".format(current_state_movie)
+        movie_level_state_name = level_movie_name + "_{}".format(current_state_movie)
 
         self.level = GroupManager.generateObjectUnique(movie_level_state_name, GROUP_LEVEL_CARDS, movie_level_state_name)
         self.level.setEnable(True)
@@ -107,21 +108,21 @@ class LevelCard(Initializer):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupMovie(self):
-        level_params = GameManager.getLevelParams(self.level_name)
-        movie_card_name = level_params.LevelCard
+        level_params = GameManager.getLevelParams(self.level_id)
+        card_movie_name = level_params.CardMovie
 
-        self.movie = GroupManager.generateObjectUnique(movie_card_name, GROUP_LEVEL_CARDS, movie_card_name)
+        self.movie = GroupManager.generateObjectUnique(card_movie_name, GROUP_LEVEL_CARDS, card_movie_name)
         self.movie.setEnable(True)
 
         movie_node = self.movie.getEntityNode()
         self.root.addChild(movie_node)
 
-        env = movie_card_name + "_" + self.level_name
-        title_id = TEXT_TITLE + "_" + self.level_name
-        if Mengine.existText(title_id) is True:
-            title_text = Mengine.getTextFromId(title_id)
+        env = card_movie_name + "_" + str(self.level_id)
+        card_text_id = level_params.LevelCardTextId
+        if Mengine.existText(card_text_id) is True:
+            title_text = Mengine.getTextFromId(card_text_id)
         else:
-            Trace.msg_err("[{}] For card {!r} not found text {!r}".format(self.__class__.__name__, self.level_name, title_id))
+            Trace.msg_err("[{}] For card {!r} not found text {!r}".format(self.__class__.__name__, self.level_id, card_text_id))
             title_text = ""
 
         self.movie.setTextAliasEnvironment(env)

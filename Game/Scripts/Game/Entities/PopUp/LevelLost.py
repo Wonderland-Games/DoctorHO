@@ -86,9 +86,9 @@ class LevelLost(PopUpContent):
         source.addNotify(Notificator.onCallRewardedAd, "Lives")
 
     def _scopeRestart(self, source):
-        current_level_name = GameManager.getCurrentGameParam("LevelName")
+        current_level_id = GameManager.getCurrentGameParam("LevelId")
 
         source.addNotify(Notificator.onPopUpHide)
         source.addFunction(GameManager.removeGame)
-        source.addFunction(GameManager.prepareGame, current_level_name)
+        source.addFunction(GameManager.prepareGame, current_level_id)
         source.addFunction(Mengine.restartCurrentScene, True, None)

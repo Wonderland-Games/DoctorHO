@@ -12,15 +12,15 @@ class ChapterLevels(Initializer):
     def __init__(self):
         super(ChapterLevels, self).__init__()
         self.root = None
-        self.chapter_name = None
+        self.chapter_id = None
         self.level_slots_movie = None
         self.level_cards = {}
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, chapter_name):
+    def _onInitialize(self, chapter_id):
         super(ChapterLevels, self)._onInitialize()
-        self.chapter_name = chapter_name
+        self.chapter_id = chapter_id
 
         self._createRoot()
         self._setupLevelCards()
@@ -41,13 +41,13 @@ class ChapterLevels(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-        self.chapter_name = None
+        self.chapter_id = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__ + "_" + self.chapter_name)
+        self.root.setName(self.__class__.__name__ + "_" + str(self.chapter_id))
 
     def attachTo(self, node):
         self.root.removeFromParent()
@@ -60,8 +60,8 @@ class ChapterLevels(Initializer):
 
     def _setupLevelCards(self):
         # get levels from chapter data
-        chapter_params = GameManager.getChapterParams(self.chapter_name)
-        chapter_levels = chapter_params.Levels
+        chapter_params = GameManager.getChapterParams(self.chapter_id)
+        chapter_levels_id = chapter_params.LevelsId
         chapter_slots = chapter_params.Slots
 
         self.level_slots_movie = GroupManager.generateObjectUnique(chapter_slots, GROUP_LEVEL_CARDS, chapter_slots)
@@ -71,18 +71,18 @@ class ChapterLevels(Initializer):
 
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
-        active_levels = current_chapter_data.getCurrentLevels()
+        active_levels_id = current_chapter_data.getCurrentLevelsId()
 
         # init and attach level cards to slots movie
-        for i, level_name in enumerate(chapter_levels):
+        for i, level_id in enumerate(chapter_levels_id):
             card = LevelCard()
 
-            if level_name in active_levels:
-                card.onInitialize(level_name, card.STATE_ACTIVE)
+            if level_id in active_levels_id:
+                card.onInitialize(level_id, card.STATE_ACTIVE)
             else:
-                card.onInitialize(level_name)
+                card.onInitialize(level_id)
 
-            self.level_cards[level_name] = card
+            self.level_cards[level_id] = card
 
             card_node = card.getRoot()
             card_slot = self.level_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))

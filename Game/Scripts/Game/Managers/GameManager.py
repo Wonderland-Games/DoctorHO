@@ -21,6 +21,7 @@ class GameManager(Manager):
     s_db_module = "Database"
     s_db_name_chapters = "Chapters"
     s_db_name_levels = "Levels"
+    s_db_name_quests = "Quests"
 
     _loading_cache = {}  # clears after loading screen
     _cache_data = {}  # always available
@@ -118,11 +119,11 @@ class GameManager(Manager):
 
     @staticmethod
     def setDummyPlayerData():
-        active_chapter_name, active_levels_names = GameManager.getRandomChapterLevels()
-        Trace.msg_dev("[GameManager] set dummy player data: {!r}:{}".format(active_chapter_name, active_levels_names))
+        active_chapter_id, active_levels_id = GameManager.getRandomChapterLevels()
+        Trace.msg_dev("[GameManager] set dummy player data: {!r}:{}".format(active_chapter_id, active_levels_id))
 
         player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_name, active_levels_names)
+        player_game_data.loadData(active_chapter_id, active_levels_id)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -204,9 +205,9 @@ class GameManager(Manager):
     # - Game params ----------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def getChapterParams(chapter_name):
+    def getChapterParams(chapter_id):
         db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
-        params = DatabaseManager.findDB(db, ChapterName=chapter_name)
+        params = DatabaseManager.findDB(db, ChapterId=chapter_id)
         return params
 
     @staticmethod
@@ -218,40 +219,32 @@ class GameManager(Manager):
         db_chapters_len = len(db_chapters_params)
         chapter_params_index = randomizer.getRandom(db_chapters_len)
         chapter_params = db_chapters_params[chapter_params_index]
-        chapter_name = chapter_params.ChapterName
+        chapter_id = chapter_params.ChapterId
 
-        chapter_levels = chapter_params.Levels
-        chapter_levels_len = len(chapter_levels)
-        active_levels_count = randomizer.getRandom(chapter_levels_len) + 1
-        levels_names = []
+        chapter_levels_id = chapter_params.LevelsId
+        chapter_levels_id_len = len(chapter_levels_id)
+        active_levels_count = randomizer.getRandom(chapter_levels_id_len) + 1
+        levels_id = []
         for index in range(active_levels_count):
-            chapter_level = chapter_levels[index]
-            levels_names.append(chapter_level)
+            chapter_level = chapter_levels_id[index]
+            levels_id.append(chapter_level)
 
-        return chapter_name, levels_names
+        return chapter_id, levels_id
 
     @staticmethod
-    def getLevelParams(level_name):
+    def getLevelParams(level_id):
         db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
-        params = DatabaseManager.findDB(db, LevelName=level_name)
+        params = DatabaseManager.findDB(db, LevelId=level_id)
         return params
-
-    @staticmethod
-    def getLevelItem(level_name, item_name):
-        level_params = GameManager.getLevelParams(level_name)
-        level_group_name = level_params.GroupName
-        level_group = GroupManager.getGroup(level_group_name)
-        level_item = level_group.getObject(item_name)
-        return level_item
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def prepareGame(level_name):
+    def prepareGame(level_id):
         game = DemonManager.getDemon("GameArea")
-        game.setParam("LevelName", level_name)
+        game.setParam("LevelId", level_id)
 
-        params_orm = GameManager.getLevelParams(level_name)
+        params_orm = GameManager.getLevelParams(level_id)
         GameManager._current_game_params = params_orm
 
         player_data = GameManager.getPlayerGameData()
@@ -260,10 +253,10 @@ class GameManager(Manager):
     @staticmethod
     def endGame(is_win):
         player_data = GameManager.getPlayerGameData()
-        level_name = GameManager.getCurrentGameParam("LevelName")
-        level_params = GameManager.getLevelParams(level_name)
+        level_id = GameManager.getCurrentGameParam("LevelId")
+        level_params = GameManager.getLevelParams(level_id)
         player_data.setLastLevelData({
-            "LevelName": level_name,
+            "LevelId": level_id,
             "Result": is_win,
             "QuestItemName": level_params.QuestItem,
         })
@@ -274,7 +267,7 @@ class GameManager(Manager):
         GameManager._current_game_params = None
 
         game = DemonManager.getDemon("GameArea")
-        game.setParam("LevelName", None)
+        game.setParam("LevelId", None)
         game.setParam("FoundItems", [])
 
     @staticmethod
@@ -298,8 +291,8 @@ class GameManager(Manager):
     def runLevelStartAdvertisement():
         """ Do not forget to call setupLevelStartAdvertisement() before. """
         system_advertising = SystemManager.getSystem("SystemAdvertising")
-        level_name = GameManager.getCurrentGameParam("LevelName")
-        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(level_name.lower()))
+        level_id = GameManager.getCurrentGameParam("LevelId")
+        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(level_id))
 
     # - Authentication / Register --------------------------------------------------------------------------------------
 

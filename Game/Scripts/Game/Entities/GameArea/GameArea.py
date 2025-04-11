@@ -34,7 +34,7 @@ class GameArea(BaseEntity):
     @staticmethod
     def declareORM(Type):
         BaseEntity.declareORM(Type)
-        Type.addAction(Type, "LevelName")
+        Type.addAction(Type, "LevelId")
         Type.addActionActivate(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
         Type.addAction(Type, "HintCount")
 
@@ -69,7 +69,7 @@ class GameArea(BaseEntity):
 
         self.params = GameManager.getCurrentGameParams()
         if self.params is None:
-            Trace.log("Entity", 0, "Level {} is None or not found game params!".format(self.LevelName))
+            Trace.log("Entity", 0, "Level {!r} is None or not found game params!".format(self.LevelId))
 
         self._initSearchPanel()
         self._initMissClick()
