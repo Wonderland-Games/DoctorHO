@@ -23,7 +23,6 @@ class GameArea(BaseEntity):
     def __init__(self):
         super(GameArea, self).__init__()
         self.content = None
-        self.params = None
         self.tcs = []
         self.miss_click = None
         self.search_level = None
@@ -35,6 +34,7 @@ class GameArea(BaseEntity):
     def declareORM(Type):
         BaseEntity.declareORM(Type)
         Type.addAction(Type, "LevelId")
+        Type.addAction(Type, "QuestId")
         Type.addActionActivate(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
         Type.addAction(Type, "HintCount")
 
@@ -67,10 +67,6 @@ class GameArea(BaseEntity):
         if self.content is None:
             return
 
-        self.params = GameManager.getCurrentGameParams()
-        if self.params is None:
-            Trace.log("Entity", 0, "Level {!r} is None or not found game params!".format(self.LevelId))
-
         self._initSearchPanel()
         self._initMissClick()
         self._initSearchLevel()
@@ -87,7 +83,6 @@ class GameArea(BaseEntity):
     def _onDeactivate(self):
         super(GameArea, self)._onDeactivate()
         self.content = None
-        self.params = None
 
         for tc in self.tcs:
             tc.cancel()

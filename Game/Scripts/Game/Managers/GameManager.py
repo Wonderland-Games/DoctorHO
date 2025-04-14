@@ -3,7 +3,6 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
-from Foundation.GroupManager import GroupManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
 from Game.Managers.GameData import PlayerGameData
@@ -25,7 +24,6 @@ class GameManager(Manager):
 
     _loading_cache = {}  # clears after loading screen
     _cache_data = {}  # always available
-    _current_game_params = None
 
     __update_stats_ready = None
 
@@ -53,7 +51,6 @@ class GameManager(Manager):
         GameManager._loading_cache = {}
         GameManager._player_data = {}
         GameManager.s_randomizer = None
-        GameManager._current_game_params = None
 
     @classmethod
     def _onSave(cls):
@@ -211,6 +208,36 @@ class GameManager(Manager):
         return params
 
     @staticmethod
+    def getLevelParams(level_id):
+        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
+        params = DatabaseManager.findDB(db, LevelId=level_id)
+        return params
+
+    @staticmethod
+    def getLevelParamsByChapter(chapter_id):
+        params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_levels,
+                                                   filter=lambda param: param.ChapterId == chapter_id)
+        return params
+
+    @staticmethod
+    def getQuestParams(quest_id):
+        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_quests)
+        params = DatabaseManager.findDB(db, QuestId=quest_id)
+        return params
+
+    @staticmethod
+    def getQuestParamsByChapter(chapter_id):
+        params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
+                                                   filter=lambda param: param.ChapterId == chapter_id)
+        return params
+
+    @staticmethod
+    def getQuestParamsByLevel(level_id):
+        params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
+                                                   filter=lambda param: param.LevelId == level_id)
+        return params
+
+    @staticmethod
     def getRandomChapterLevels():
         randomizer = GameManager.getRandomizer()
 
@@ -220,6 +247,11 @@ class GameManager(Manager):
         chapter_params_index = randomizer.getRandom(db_chapters_len)
         chapter_params = db_chapters_params[chapter_params_index]
         chapter_id = chapter_params.ChapterId
+
+        # test_params = GameManager.getQuestParamsByChapter(chapter_id)
+        # print chapter_id
+        # print test_params, dir(test_params)
+        # print test_params.QuestId
 
         chapter_levels_id = chapter_params.LevelsId
         chapter_levels_id_len = len(chapter_levels_id)
@@ -231,21 +263,13 @@ class GameManager(Manager):
 
         return chapter_id, levels_id
 
-    @staticmethod
-    def getLevelParams(level_id):
-        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_levels)
-        params = DatabaseManager.findDB(db, LevelId=level_id)
-        return params
-
     # - Game -----------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def prepareGame(level_id):
+    def prepareGame(level_id, quest_id):
         game = DemonManager.getDemon("GameArea")
         game.setParam("LevelId", level_id)
-
-        params_orm = GameManager.getLevelParams(level_id)
-        GameManager._current_game_params = params_orm
+        game.setParam("QuestId", quest_id)
 
         player_data = GameManager.getPlayerGameData()
         player_data.setLastLevelData({})
@@ -254,25 +278,22 @@ class GameManager(Manager):
     def endGame(is_win):
         player_data = GameManager.getPlayerGameData()
         level_id = GameManager.getCurrentGameParam("LevelId")
-        level_params = GameManager.getLevelParams(level_id)
+        quest_id = GameManager.getCurrentGameParam("QuestId")
+
         player_data.setLastLevelData({
             "LevelId": level_id,
+            "QuestId": quest_id,
             "Result": is_win,
-            "QuestItemName": level_params.QuestItem,
         })
 
     @staticmethod
     def removeGame():
         """ Finally removes current game """
-        GameManager._current_game_params = None
 
-        game = DemonManager.getDemon("GameArea")
+        game = GameManager.getCurrentGame()
         game.setParam("LevelId", None)
+        game.setParam("QuestId", None)
         game.setParam("FoundItems", [])
-
-    @staticmethod
-    def getCurrentGameParams():
-        return GameManager._current_game_params
 
     @staticmethod
     def getCurrentGame():
@@ -281,7 +302,7 @@ class GameManager(Manager):
 
     @staticmethod
     def getCurrentGameParam(param):
-        game = DemonManager.getDemon("GameArea")
+        game = GameManager.getCurrentGame()
         game_param = game.getParam(param)
         return game_param
 

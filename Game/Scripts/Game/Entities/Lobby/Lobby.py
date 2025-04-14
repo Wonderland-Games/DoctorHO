@@ -84,9 +84,6 @@ class Lobby(BaseEntity):
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
                 race.addScope(self._scopePlay, level_id)
 
-        with self._createTaskChain("CardsStatesTester", Repeat=True) as tc:
-            tc.addScope(self._scopeLevelCardsStateTest)
-
         with self._createTaskChain("QuestItemReceived") as tc:
             tc.addScope(self._scopeQuestItemReceived)
 
@@ -95,15 +92,13 @@ class Lobby(BaseEntity):
         system_global = SystemManager.getSystem("SystemGlobal")
         system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
 
+        # temporary solution
+        quest_params = GameManager.getQuestParamsByLevel(level_id)[0]
+        quest_id = quest_params.QuestId
+
         source.addFunction(GameManager.removeGame)
-        source.addFunction(GameManager.prepareGame, level_id)
+        source.addFunction(GameManager.prepareGame, level_id, quest_id)
         source.addFunction(GameManager.runLevelStartAdvertisement)
-
-    def _scopeLevelCardsStateTest(self, source):
-        source.addTask("TaskKeyPress", Keys=[Keys.getVirtualKeyCode("VK_Q")])
-
-        for card, parallel in source.addParallelTaskList(self.chapter_levels.level_cards.values()):
-            parallel.addScope(card.scopeChangeLevelState, card.STATE_UNLOCKING)
 
     def _scopeQuestItemReceived(self, source):
         player_data = GameManager.getPlayerGameData()
@@ -116,7 +111,10 @@ class Lobby(BaseEntity):
         level_id = last_level_data.get("LevelId", None)
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
-        quest_item_name = level_params.QuestItem
+
+        quest_id = last_level_data.get("QuestId", None)
+        quest_params = GameManager.getQuestParams(quest_id)
+        quest_item_name = quest_params.QuestItem
 
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
