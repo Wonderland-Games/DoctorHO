@@ -119,18 +119,19 @@ class SearchLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
-        current_level_params = GameManager.getCurrentGameParams()
-        scene_group_name = current_level_params.GroupName
-        scene_group = GroupManager.getGroup(scene_group_name)
+        level_id = GameManager.getCurrentGameParam("LevelId")
+        level_params = GameManager.getLevelParams(level_id)
+        level_group_name = level_params.GroupName
+        level_group = GroupManager.getGroup(level_group_name)
 
-        scene = scene_group.getScene()
+        scene = level_group.getScene()
         scene_node = scene.getParent()
         self.virtual_area.add_node(scene_node)
         self.virtual_area.update_target()
 
         scene.enable()
 
-        scene_layer = scene_group.getMainLayer()
+        scene_layer = level_group.getMainLayer()
         scene_size = scene_layer.getSize()
         box_size = self.getSize()
 
@@ -152,10 +153,14 @@ class SearchLevel(Initializer):
     def _fillItems(self):
         randomizer = GameManager.getRandomizer()
 
-        current_level_params = GameManager.getCurrentGameParams()
-        level_group_name = current_level_params.GroupName
-        level_items_count = current_level_params.ItemsCount
-        level_quest_item_name = current_level_params.QuestItem
+        level_id = GameManager.getCurrentGameParam("LevelId")
+        level_params = GameManager.getLevelParams(level_id)
+        level_group_name = level_params.GroupName
+
+        quest_id = GameManager.getCurrentGameParam("QuestId")
+        quest_params = GameManager.getQuestParams(quest_id)
+        quest_items_count = quest_params.ItemsCount
+        quest_item_name = quest_params.QuestItem
 
         level_group = GroupManager.getGroup(level_group_name)
         level_group_objects = level_group.getObjects()
@@ -163,17 +168,17 @@ class SearchLevel(Initializer):
                        obj.getEntityType() == "Item" and
                        obj not in self.game.FoundItems]
 
-        random_index = randomizer.getRandom(level_items_count)
-        for i in range(level_items_count):
+        random_index = randomizer.getRandom(quest_items_count)
+        for i in range(quest_items_count):
             level_items_len = len(level_items)
             level_item_index = randomizer.getRandom(level_items_len)
             level_item = level_items[level_item_index]
 
-            if level_quest_item_name is not None:
-                quest_item = level_group.getObject(level_quest_item_name)
+            if quest_item_name is not None:
+                quest_item = level_group.getObject(quest_item_name)
                 if quest_item not in self.items and i == random_index:
                     level_item = quest_item
-                    level_quest_item_name = None
+                    quest_item_name = None
 
             level_items.remove(level_item)
             self.items.append(level_item)
