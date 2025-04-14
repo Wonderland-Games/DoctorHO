@@ -52,5 +52,5 @@ class SystemGlobal(System):
 
     def __cbAndroidGameDataLoaded(self):
         playfab_id = str(Mengine.getCurrentAccountSetting("PlayFabId"))
-        Mengine.androidMethod("Application", "setSessionId", playfab_id)
+        Mengine.androidMethod("Application", "setUserId", playfab_id)
         return False
