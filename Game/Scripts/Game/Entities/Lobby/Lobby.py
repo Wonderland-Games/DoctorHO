@@ -92,12 +92,12 @@ class Lobby(BaseEntity):
         system_global = SystemManager.getSystem("SystemGlobal")
         system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
 
-        # temporary solution
-        quest_params = GameManager.getQuestParamsByLevel(level_id)[0]
-        quest_id = quest_params.QuestId
+        # player_data = GameManager.getPlayerGameData()
+        # current_chapter_data = player_data.getCurrentChapterData()
+        # quest_index = current_chapter_data.getCurrentQuestIndex()
 
         source.addFunction(GameManager.removeGame)
-        source.addFunction(GameManager.prepareGame, level_id, quest_id)
+        source.addFunction(GameManager.prepareGame, level_id)
         source.addFunction(GameManager.runLevelStartAdvertisement)
 
     def _scopeQuestItemReceived(self, source):
@@ -108,12 +108,14 @@ class Lobby(BaseEntity):
         if last_game_result in [False, None]:
             return
 
+        chapter_id = last_level_data.get("ChapterId", None)
+
         level_id = last_level_data.get("LevelId", None)
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
 
-        quest_id = last_level_data.get("QuestId", None)
-        quest_params = GameManager.getQuestParams(quest_id)
+        quest_index = last_level_data.get("QuestIndex", None)
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
         quest_item_name = quest_params.QuestItem
 
         popup_object = DemonManager.getDemon("PopUp")

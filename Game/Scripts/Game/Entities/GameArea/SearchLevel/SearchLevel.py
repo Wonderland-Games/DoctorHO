@@ -153,12 +153,14 @@ class SearchLevel(Initializer):
     def _fillItems(self):
         randomizer = GameManager.getRandomizer()
 
+        chapter_id = GameManager.getCurrentGameParam("ChapterId")
+
         level_id = GameManager.getCurrentGameParam("LevelId")
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
 
-        quest_id = GameManager.getCurrentGameParam("QuestId")
-        quest_params = GameManager.getQuestParams(quest_id)
+        quest_index = GameManager.getCurrentGameParam("QuestIndex")
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
         quest_items_count = quest_params.ItemsCount
         quest_item_name = quest_params.QuestItem
 
