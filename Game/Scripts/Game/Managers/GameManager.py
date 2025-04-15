@@ -116,11 +116,14 @@ class GameManager(Manager):
 
     @staticmethod
     def setDummyPlayerData():
-        active_chapter_id, active_levels_id = GameManager.getRandomChapterLevels()
-        Trace.msg_dev("[GameManager] set dummy player data: {!r}:{}".format(active_chapter_id, active_levels_id))
+        active_chapter_id, active_levels_id, quest_index = GameManager.getRandomChapterLevels()
+        Trace.msg_dev("[GameManager] set dummy player data" + "\n" +
+                      " ChapterId: {}".format(active_chapter_id) + "\n" +
+                      " LevelsId: {}".format(active_levels_id) + "\n" +
+                      " QuestIndex: {}".format(quest_index))
 
         player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_id, active_levels_id)
+        player_game_data.loadData(active_chapter_id, active_levels_id, quest_index)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -220,16 +223,17 @@ class GameManager(Manager):
         return params
 
     @staticmethod
-    def getQuestParams(quest_id):
-        db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_quests)
-        params = DatabaseManager.findDB(db, QuestId=quest_id)
-        return params
-
-    @staticmethod
     def getQuestParamsByChapter(chapter_id):
         params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
                                                    filter=lambda param: param.ChapterId == chapter_id)
         return params
+
+    @staticmethod
+    def getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index):
+        params_list = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
+                                                        filter=lambda param: param.ChapterId == chapter_id)
+        quest_params = params_list[quest_index]
+        return quest_params
 
     @staticmethod
     def getQuestParamsByLevel(level_id):
@@ -248,10 +252,9 @@ class GameManager(Manager):
         chapter_params = db_chapters_params[chapter_params_index]
         chapter_id = chapter_params.ChapterId
 
-        # test_params = GameManager.getQuestParamsByChapter(chapter_id)
-        # print chapter_id
-        # print test_params, dir(test_params)
-        # print test_params.QuestId
+        quest_params_list = GameManager.getQuestParamsByChapter(chapter_id)
+        quest_params_len = len(quest_params_list)
+        quest_params_index = randomizer.getRandom(quest_params_len)
 
         chapter_levels_id = chapter_params.LevelsId
         chapter_levels_id_len = len(chapter_levels_id)
@@ -261,15 +264,22 @@ class GameManager(Manager):
             chapter_level = chapter_levels_id[index]
             levels_id.append(chapter_level)
 
-        return chapter_id, levels_id
+        return chapter_id, levels_id, quest_params_index
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def prepareGame(level_id, quest_id):
+    def prepareGame(level_id):
+        player_data = GameManager.getPlayerGameData()
+        chapter_data = player_data.getCurrentChapterData()
+        chapter_id = chapter_data.getChapterId()
+        # level_id = chapter_data.getCurrentLevelsId()
+        quest_index = chapter_data.getCurrentQuestIndex()
+
         game = DemonManager.getDemon("GameArea")
+        game.setParam("ChapterId", chapter_id)
         game.setParam("LevelId", level_id)
-        game.setParam("QuestId", quest_id)
+        game.setParam("QuestIndex", quest_index)
 
         player_data = GameManager.getPlayerGameData()
         player_data.setLastLevelData({})
@@ -277,12 +287,14 @@ class GameManager(Manager):
     @staticmethod
     def endGame(is_win):
         player_data = GameManager.getPlayerGameData()
+        chapter_id = GameManager.getCurrentGameParam("ChapterId")
         level_id = GameManager.getCurrentGameParam("LevelId")
-        quest_id = GameManager.getCurrentGameParam("QuestId")
+        quest_index = GameManager.getCurrentGameParam("QuestIndex")
 
         player_data.setLastLevelData({
+            "ChapterId": chapter_id,
             "LevelId": level_id,
-            "QuestId": quest_id,
+            "QuestIndex": quest_index,
             "Result": is_win,
         })
 
@@ -291,8 +303,9 @@ class GameManager(Manager):
         """ Finally removes current game """
 
         game = GameManager.getCurrentGame()
+        game.setParam("ChapterId", None)
         game.setParam("LevelId", None)
-        game.setParam("QuestId", None)
+        game.setParam("QuestIndex", None)
         game.setParam("FoundItems", [])
 
     @staticmethod

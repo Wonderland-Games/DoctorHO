@@ -71,13 +71,18 @@ class ChapterLevels(Initializer):
 
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
-        active_levels_id = current_chapter_data.getCurrentLevelsId()
+        # active_levels_id = current_chapter_data.getCurrentLevelsId()
+
+        current_chapter_id = current_chapter_data.getChapterId()
+        current_quest_index = current_chapter_data.getCurrentQuestIndex()
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(current_chapter_id, current_quest_index)
+        quest_level_id = quest_params.LevelId
 
         # init and attach level cards to slots movie
         for i, level_id in enumerate(chapter_levels_id):
             card = LevelCard()
 
-            if level_id in active_levels_id:
+            if level_id == quest_level_id:
                 card.onInitialize(level_id, card.STATE_ACTIVE)
             else:
                 card.onInitialize(level_id)
