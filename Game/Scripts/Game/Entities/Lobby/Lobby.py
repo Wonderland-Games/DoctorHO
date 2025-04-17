@@ -77,12 +77,9 @@ class Lobby(BaseEntity):
 
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_CHAPTER_LEVELS) as tc:
-            for (level_id, card), race in tc.addRaceTaskList(self.chapter_levels.level_cards.items()):
-                # with race.addIfTask(lambda: card.state == card.STATE_ACTIVE) as (active, _):
-                #     active.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
-                #     active.addScope(self._scopePlay, level_id)
+            for card, race in tc.addRaceTaskList(self.chapter_levels.level_cards.values()):
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
-                race.addScope(self._scopePlay, level_id)
+                race.addScope(self._scopePlay, card.level_id)
 
         with self._createTaskChain("QuestItemReceived") as tc:
             tc.addScope(self._scopeQuestItemReceived)
@@ -105,7 +102,8 @@ class Lobby(BaseEntity):
         last_level_data = player_data.getLastLevelData()
 
         last_game_result = last_level_data.get("Result", None)
-        if last_game_result in [False, None]:
+        last_game_quest_index = last_level_data.get("QuestIndex", None)
+        if last_game_result in [False, None] or last_game_quest_index is None:
             return
 
         chapter_id = last_level_data.get("ChapterId", None)
