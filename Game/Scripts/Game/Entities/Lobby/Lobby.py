@@ -78,7 +78,8 @@ class Lobby(BaseEntity):
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_CHAPTER_LEVELS) as tc:
             for card, race in tc.addRaceTaskList(self.chapter_levels.level_cards.values()):
-                race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True)
+                race.addPrint(" card = {}; is active = {}".format(card.level_id, card.isActive()))
+                race.addTask("TaskMovie2SocketClick", Movie2=card.movie, Any=True, Filter=card.isActive)
                 race.addScope(self._scopePlay, card.level_id)
 
         with self._createTaskChain("QuestItemReceived") as tc:
