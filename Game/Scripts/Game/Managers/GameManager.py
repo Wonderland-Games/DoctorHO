@@ -276,10 +276,15 @@ class GameManager(Manager):
         # level_id = chapter_data.getCurrentLevelsId()
         quest_index = chapter_data.getCurrentQuestIndex()
 
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
+
         game = DemonManager.getDemon("GameArea")
         game.setParam("ChapterId", chapter_id)
         game.setParam("LevelId", level_id)
-        game.setParam("QuestIndex", quest_index)
+        if quest_params.LevelId == level_id:
+            game.setParam("QuestIndex", quest_index)
+        else:
+            game.setParam("QuestIndex", None)
 
         player_data = GameManager.getPlayerGameData()
         player_data.setLastLevelData({})

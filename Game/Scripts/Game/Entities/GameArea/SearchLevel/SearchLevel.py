@@ -160,32 +160,52 @@ class SearchLevel(Initializer):
         level_group_name = level_params.GroupName
 
         quest_index = GameManager.getCurrentGameParam("QuestIndex")
-        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
-        quest_items_count = quest_params.ItemsCount
-        quest_item_name = quest_params.QuestItem
+        if quest_index is not None:
+            quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
+            items_count = quest_params.ItemsCount
+            quest_item_name = quest_params.QuestItem
+        else:
+            items_count = None
+            quest_item_name = None
 
         level_group = GroupManager.getGroup(level_group_name)
         level_group_objects = level_group.getObjects()
-        level_items = [obj for obj in level_group_objects if
-                       obj.getEntityType() == "Item" and
-                       obj not in self.game.FoundItems]
 
-        random_index = randomizer.getRandom(quest_items_count)
-        for i in range(quest_items_count):
+        if quest_item_name is not None:
+            level_items = [obj for obj in level_group_objects if
+                           obj.getEntityType() == "Item" and
+                           obj not in self.game.FoundItems]
+        else:
+            level_items = [obj for obj in level_group_objects if
+                           obj.getEntityType() == "Item" and
+                           obj not in self.game.FoundItems and
+                           "Quest" not in obj.getName()]
+
+            quest_items = [obj for obj in level_group_objects if
+                           "Quest" in obj.getName()]
+            for item in quest_items:
+                item.setEnable(False)
+
+        for item in level_items:
+            item.setEnable(False)
+
+        if items_count is None:
+            level_items_len = len(level_items)
+            items_count = randomizer.getRandomRange(5, level_items_len)
+
+        quest_item_random_index = randomizer.getRandom(items_count)
+        for i in range(items_count):
             level_items_len = len(level_items)
             level_item_index = randomizer.getRandom(level_items_len)
             level_item = level_items[level_item_index]
 
             if quest_item_name is not None:
                 quest_item = level_group.getObject(quest_item_name)
-                if quest_item not in self.items and i == random_index:
+                if quest_item not in self.items and i == quest_item_random_index:
                     level_item = quest_item
                     quest_item_name = None
 
-            level_items.remove(level_item)
-            self.items.append(level_item)
-
             level_item.setEnable(True)
 
-        for item in level_items:
-            item.setEnable(False)
+            level_items.remove(level_item)
+            self.items.append(level_item)
