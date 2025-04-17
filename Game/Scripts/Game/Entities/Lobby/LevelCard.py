@@ -81,6 +81,9 @@ class LevelCard(Initializer):
     def getState(self):
         return self.state
 
+    def isActive(self):
+        return self.state == self.STATE_ACTIVE
+
     def _createNewStateMovie(self):
         state_movie = {
             self.STATE_BLOCKED: MOVIE_STATE_BLOCKED,
