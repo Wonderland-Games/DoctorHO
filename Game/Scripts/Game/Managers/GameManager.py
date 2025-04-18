@@ -116,14 +116,15 @@ class GameManager(Manager):
 
     @staticmethod
     def setDummyPlayerData():
-        active_chapter_id, active_levels_id, quest_index = GameManager.getRandomChapterLevels()
+        active_chapter_id, active_levels_id, quest_index, quest_points = GameManager.getRandomPlayerData()
         Trace.msg_dev("[GameManager] set dummy player data" + "\n" +
                       " ChapterId: {}".format(active_chapter_id) + "\n" +
-                      " LevelsId: {}".format(active_levels_id) + "\n" +
-                      " QuestIndex: {}".format(quest_index))
+                      " QuestIndex: {}".format(quest_index) + "\n" +
+                      " ActiveLevelsId: {}".format(active_levels_id) + "\n" +
+                      " QuestPoints: {}".format(quest_points))
 
         player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_id, active_levels_id, quest_index)
+        player_game_data.loadData(active_chapter_id, active_levels_id, quest_index, quest_points)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -242,7 +243,7 @@ class GameManager(Manager):
         return params
 
     @staticmethod
-    def getRandomChapterLevels():
+    def getRandomPlayerData():
         randomizer = GameManager.getRandomizer()
 
         db_chapters = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
@@ -256,15 +257,17 @@ class GameManager(Manager):
         quest_params_len = len(quest_params_list)
         quest_params_index = randomizer.getRandom(quest_params_len)
 
-        chapter_levels_id = chapter_params.LevelsId
-        chapter_levels_id_len = len(chapter_levels_id)
-        active_levels_count = randomizer.getRandom(chapter_levels_id_len) + 1
-        levels_id = []
-        for index in range(active_levels_count):
-            chapter_level = chapter_levels_id[index]
-            levels_id.append(chapter_level)
+        active_levels_id = []
+        chapter_quests = GameManager.getQuestParamsByChapter(chapter_id)
+        for i, quest_params in enumerate(chapter_quests):
+            if i <= quest_params_index:
+                active_levels_id.append(quest_params.LevelId)
+            else:
+                break
 
-        return chapter_id, levels_id, quest_params_index
+        quest_points = randomizer.getRandom(100)
+
+        return chapter_id, active_levels_id, quest_params_index, quest_points
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
