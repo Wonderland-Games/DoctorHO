@@ -11,6 +11,9 @@ MOVIE_STATE_BLOCKED = "Blocked"
 MOVIE_STATE_UNLOCKING = "Unlocking"
 MOVIE_STATE_ACTIVE = "Active"
 
+PROTOTYPE_QUEST_INDICATOR = "Movie2_QuestIndicator"
+SLOT_QUEST_INDICATOR = "QuestIndicator"
+
 
 class LevelCard(Initializer):
     STATE_BLOCKED = 0
@@ -24,6 +27,7 @@ class LevelCard(Initializer):
         self.state = None
         self.movie = None
         self.level = None
+        self.quest_indicator = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -39,6 +43,7 @@ class LevelCard(Initializer):
 
         self._setupMovie()
         self._setupLevel()
+        self._setupQuestIndicator()
 
     def _onFinalize(self):
         super(LevelCard, self)._onFinalize()
@@ -48,6 +53,10 @@ class LevelCard(Initializer):
         if self.movie is not None:
             self.movie.onDestroy()
             self.movie = None
+
+        if self.quest_indicator is not None:
+            self.quest_indicator.onDestroy()
+            self.quest_indicator = None
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -136,6 +145,23 @@ class LevelCard(Initializer):
     def _setupLevel(self):
         # get level from chapter data
         self._createNewStateMovie()
+
+    def _setupQuestIndicator(self):
+        player_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        current_quest_index = current_chapter_data.getCurrentQuestIndex()
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, current_quest_index)
+
+        if quest_params.LevelId != self.level_id:
+            return
+
+        self.quest_indicator = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_INDICATOR, GROUP_LEVEL_CARDS, PROTOTYPE_QUEST_INDICATOR)
+        self.quest_indicator.setEnable(True)
+
+        quest_indicator_node = self.quest_indicator.getEntityNode()
+        quest_indicator_slot = self.movie.getMovieSlot(SLOT_QUEST_INDICATOR)
+        quest_indicator_slot.addChild(quest_indicator_node)
 
     # - Utils ----------------------------------------------------------------------------------------------------------
 
