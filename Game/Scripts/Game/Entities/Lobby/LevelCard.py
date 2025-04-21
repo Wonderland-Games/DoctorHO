@@ -14,6 +14,11 @@ MOVIE_STATE_ACTIVE = "Active"
 PROTOTYPE_QUEST_INDICATOR = "Movie2_QuestIndicator"
 SLOT_QUEST_INDICATOR = "QuestIndicator"
 
+PROTOTYPE_QUEST_PROGRESS_BAR = "Movie2ProgressBar_Quest"
+TEXT_QUEST_PROGRESS_BAR = "ID_LevelCard_QuestProgress"
+SLOT_QUEST_PROGRESS_BAR = "QuestProgressBar"
+QUEST_PROGRESS_BAR_FOLLOW_SPEED = 0.1
+
 
 class LevelCard(Initializer):
     STATE_BLOCKED = 0
@@ -28,6 +33,8 @@ class LevelCard(Initializer):
         self.movie = None
         self.level = None
         self.quest_indicator = None
+        self.quest_progress_bar = None
+        self.quest_progress_value_follower = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -44,6 +51,7 @@ class LevelCard(Initializer):
         self._setupMovie()
         self._setupLevel()
         self._setupQuestIndicator()
+        self._setupQuestProgressBar()
 
     def _onFinalize(self):
         super(LevelCard, self)._onFinalize()
@@ -57,6 +65,14 @@ class LevelCard(Initializer):
         if self.quest_indicator is not None:
             self.quest_indicator.onDestroy()
             self.quest_indicator = None
+
+        if self.quest_progress_bar is not None:
+            self.quest_progress_bar.onDestroy()
+            self.quest_progress_bar = None
+
+        if self.quest_progress_value_follower is not None:
+            Mengine.destroyValueFollower(self.quest_progress_value_follower)
+            self.quest_progress_value_follower = None
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -162,6 +178,51 @@ class LevelCard(Initializer):
         quest_indicator_node = self.quest_indicator.getEntityNode()
         quest_indicator_slot = self.movie.getMovieSlot(SLOT_QUEST_INDICATOR)
         quest_indicator_slot.addChild(quest_indicator_node)
+
+    # - Quest Progress Bar ---------------------------------------------------------------------------------------------
+
+    def _setupQuestProgressBar(self):
+        player_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_data.getCurrentChapterData()
+        blocked_levels_data = current_chapter_data.getBlockedLevelsData()
+
+        if self.level_id not in blocked_levels_data.keys():
+            return
+
+        # chapter_quest_params = GameManager.getQuestParamsByChapter(chapter_id)
+        # items_count = quest_params.ItemsCount
+        # level_qp_to_unlock = quest_params.QuestPointsToUnlock
+
+        self.quest_progress_bar = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_PROGRESS_BAR, GROUP_LEVEL_CARDS, PROTOTYPE_QUEST_PROGRESS_BAR)
+        self.quest_progress_bar.setEnable(True)
+        self.quest_progress_bar.setValue(50)
+        self.quest_progress_bar.setText_ID(TEXT_QUEST_PROGRESS_BAR)
+
+        quest_progress_bar_node = self.quest_progress_bar.getEntityNode()
+        quest_progress_bar_slot = self.movie.getMovieSlot(SLOT_QUEST_PROGRESS_BAR)
+        quest_progress_bar_slot.addChild(quest_progress_bar_node)
+
+        self._setupQuestProgressBarFollower()
+
+    def updateQuestProgressBar(self, value):
+        if self.quest_progress_bar is not None:
+            self.quest_progress_bar.setValue(value)
+
+    def _setupQuestProgressBarFollower(self):
+        self.quest_progress_value_follower = Mengine.createValueFollowerLinear(
+            0.0,
+            QUEST_PROGRESS_BAR_FOLLOW_SPEED,
+            self.updateQuestProgressBar
+        )
+
+    def addQuestProgress(self, progress):
+        current_value = self.quest_progress_value_follower.getFollow()
+        new_value = current_value + progress
+
+        self.setQuestProgress(new_value)
+
+    def setQuestProgress(self, progress):
+        self.quest_progress_value_follower.setFollow(progress)
 
     # - Utils ----------------------------------------------------------------------------------------------------------
 
