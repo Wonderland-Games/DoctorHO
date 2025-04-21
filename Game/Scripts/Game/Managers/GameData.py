@@ -1,7 +1,24 @@
+class LevelData(object):
+    def __init__(self, level_id):
+        self.level_id = level_id
+        self.active = False
+        self.quest_points = 0
+
+    def getLevelId(self):
+        return self.level_id
+
+    def getActive(self):
+        return self.active
+
+    def getQuestPoints(self):
+        return self.quest_points
+
+
 class ChapterData(object):
     def __init__(self, chapter_id):
         self.chapter_id = chapter_id
         self.active_levels_id = []
+        self.levels_data = {}
         self.current_quest_index = 0
 
     def getChapterId(self):
@@ -19,6 +36,17 @@ class ChapterData(object):
 
     def clearActiveLevelsId(self):
         self.active_levels_id = []
+
+    def getLevelData(self, level_id):
+        return self.levels_data[level_id]
+
+    def getBlockedLevelsData(self):
+        levels_data = {}
+        for level_id, level_data in self.levels_data.values():
+            if level_data.getActive() is False:
+                levels_data[level_id] = level_data
+
+        return levels_data
 
 
 class PlayerGameData(object):
