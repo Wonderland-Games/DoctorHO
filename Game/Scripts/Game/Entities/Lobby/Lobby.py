@@ -119,14 +119,23 @@ class Lobby(BaseEntity):
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
 
+        blocked_level_cards = [card for card in self.chapter_levels.level_cards.values() if card.state == card.STATE_BLOCKED]
+
+        def _calcLevelRewardQuestPoints(_level_id):
+            return 50
+
         source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
                          GroupName=level_group_name, ItemName=quest_item_name)
 
         source.addListener(Notificator.onPopUpQuestItemReceived)
         with source.addParallelTask(2) as (item, popup):
-            item.addScope(self._moveItemToLevelCard)
-            popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
+            # item.addScope(self._moveItemToLevelCard)
+            # popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
             popup.addNotify(Notificator.onPopUpHide)
+
+        source.addListener(Notificator.onPopUpHideEnd)
+        for level_card, tc in source.addParallelTaskList(blocked_level_cards):
+            source.addScope(level_card.scopeProgressOnQuestBar, _calcLevelRewardQuestPoints(level_card.level_id))
 
     def _moveItemToLevelCard(self, source):
         # get level card wp

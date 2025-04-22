@@ -17,7 +17,7 @@ SLOT_QUEST_INDICATOR = "QuestIndicator"
 PROTOTYPE_QUEST_PROGRESS_BAR = "Movie2ProgressBar_Quest"
 TEXT_QUEST_PROGRESS_BAR = "ID_LevelCard_QuestProgress"
 SLOT_QUEST_PROGRESS_BAR = "QuestProgressBar"
-QUEST_PROGRESS_BAR_FOLLOW_SPEED = 0.1
+QUEST_PROGRESS_BAR_FOLLOW_SPEED = 0.05
 
 
 class LevelCard(Initializer):
@@ -66,13 +66,7 @@ class LevelCard(Initializer):
             self.quest_indicator.onDestroy()
             self.quest_indicator = None
 
-        if self.quest_progress_bar is not None:
-            self.quest_progress_bar.onDestroy()
-            self.quest_progress_bar = None
-
-        if self.quest_progress_value_follower is not None:
-            Mengine.destroyValueFollower(self.quest_progress_value_follower)
-            self.quest_progress_value_follower = None
+        self.destroyQuestProgressBar()
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -231,6 +225,15 @@ class LevelCard(Initializer):
     def setQuestProgress(self, progress):
         self.quest_progress_value_follower.setFollow(progress)
 
+    def destroyQuestProgressBar(self):
+        if self.quest_progress_bar is not None:
+            self.quest_progress_bar.onDestroy()
+            self.quest_progress_bar = None
+
+        if self.quest_progress_value_follower is not None:
+            Mengine.destroyValueFollower(self.quest_progress_value_follower)
+            self.quest_progress_value_follower = None
+
     # - Utils ----------------------------------------------------------------------------------------------------------
 
     def getSize(self):
@@ -250,3 +253,28 @@ class LevelCard(Initializer):
             source.addFunction(self._destroyCurrentStateMovie)
             source.addFunction(self.setState, self.STATE_ACTIVE)
             source.addFunction(self._createNewStateMovie)
+
+    def scopeProgressOnQuestBar(self, source, new_qp):
+        level_params = GameManager.getLevelParams(self.level_id)
+        level_qp_to_unlock = level_params.QuestPointsToUnlock
+
+        progress_value = float(new_qp) / float(level_qp_to_unlock) * 100.0
+
+        current_value = self.quest_progress_value_follower.getFollow()
+        future_value = current_value + progress_value
+
+        source.addFunction(self.addQuestProgress, progress_value)
+
+        with source.addIfTask(lambda: future_value >= 100.0) as (unlock, _):
+            unlock.addScope(self.scopeUnlockLevelCardAnim)
+
+    def scopeUnlockLevelCardAnim(self, source):
+        quest_indicator_node = self.quest_progress_bar.getEntityNode()
+
+        with source.addParallelTask(2) as (scale, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=quest_indicator_node, To=(0.0, 0.0, 0.0), Time=500.0)
+            alpha.addTask("TaskNodeAlphaTo", Node=quest_indicator_node, To=0.0, Time=500.0)
+
+        source.addFunction(self.destroyQuestProgressBar)
+
+        source.addScope(self.scopeChangeLevelState, self.STATE_UNLOCKING)
