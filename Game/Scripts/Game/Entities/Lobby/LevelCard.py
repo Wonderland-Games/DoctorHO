@@ -189,28 +189,35 @@ class LevelCard(Initializer):
         if self.level_id not in blocked_levels_data.keys():
             return
 
-        # chapter_quest_params = GameManager.getQuestParamsByChapter(chapter_id)
-        # items_count = quest_params.ItemsCount
-        # level_qp_to_unlock = quest_params.QuestPointsToUnlock
+        level_params = GameManager.getLevelParams(self.level_id)
+        level_qp_to_unlock = level_params.QuestPointsToUnlock
+
+        current_level_data = current_chapter_data.getLevelData(self.level_id)
+        current_level_qp = current_level_data.getQuestPoints()
+
+        if current_level_qp >= level_qp_to_unlock:
+            return
+
+        quest_progress_percent = float(current_level_qp) / float(level_qp_to_unlock) * 100.0
 
         self.quest_progress_bar = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_PROGRESS_BAR, GROUP_LEVEL_CARDS, PROTOTYPE_QUEST_PROGRESS_BAR)
         self.quest_progress_bar.setEnable(True)
-        self.quest_progress_bar.setValue(50)
+        self.quest_progress_bar.setValue(quest_progress_percent)
         self.quest_progress_bar.setText_ID(TEXT_QUEST_PROGRESS_BAR)
 
         quest_progress_bar_node = self.quest_progress_bar.getEntityNode()
         quest_progress_bar_slot = self.movie.getMovieSlot(SLOT_QUEST_PROGRESS_BAR)
         quest_progress_bar_slot.addChild(quest_progress_bar_node)
 
-        self._setupQuestProgressBarFollower()
+        self._setupQuestProgressBarFollower(quest_progress_percent)
 
     def updateQuestProgressBar(self, value):
         if self.quest_progress_bar is not None:
             self.quest_progress_bar.setValue(value)
 
-    def _setupQuestProgressBarFollower(self):
+    def _setupQuestProgressBarFollower(self, current_progress_value=0.0):
         self.quest_progress_value_follower = Mengine.createValueFollowerLinear(
-            0.0,
+            current_progress_value,
             QUEST_PROGRESS_BAR_FOLLOW_SPEED,
             self.updateQuestProgressBar
         )
