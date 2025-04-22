@@ -116,15 +116,14 @@ class GameManager(Manager):
 
     @staticmethod
     def setDummyPlayerData():
-        active_chapter_id, active_levels_id, quest_index, quest_points = GameManager.getRandomPlayerData()
+        active_chapter_id, quest_index, levels_data = GameManager.getRandomPlayerData()
         Trace.msg_dev("[GameManager] set dummy player data" + "\n" +
                       " ChapterId: {}".format(active_chapter_id) + "\n" +
                       " QuestIndex: {}".format(quest_index) + "\n" +
-                      " ActiveLevelsId: {}".format(active_levels_id) + "\n" +
-                      " QuestPoints: {}".format(quest_points))
+                      " LevelsData: {}".format(levels_data))
 
         player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_id, active_levels_id, quest_index, quest_points)
+        player_game_data.loadData(active_chapter_id, quest_index, levels_data)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -257,17 +256,29 @@ class GameManager(Manager):
         quest_params_len = len(quest_params_list)
         quest_params_index = randomizer.getRandom(quest_params_len)
 
-        active_levels_id = []
+        # new
+        levels_data = {}
         chapter_quests = GameManager.getQuestParamsByChapter(chapter_id)
         for i, quest_params in enumerate(chapter_quests):
+            level_params = GameManager.getLevelParams(quest_params.LevelId)
+
             if i <= quest_params_index:
-                active_levels_id.append(quest_params.LevelId)
+                if quest_params.LevelId in levels_data:
+                    continue
+
+                levels_data[quest_params.LevelId] = {
+                    "Active": True,
+                    "QuestPoints": level_params.QuestPointsToUnlock,
+                }
             else:
-                break
+                random_qp = randomizer.getRandom(level_params.QuestPointsToUnlock)
 
-        quest_points = randomizer.getRandom(100)
+                levels_data[quest_params.LevelId] = {
+                    "Active": False,
+                    "QuestPoints": random_qp,
+                }
 
-        return chapter_id, active_levels_id, quest_params_index, quest_points
+        return chapter_id, quest_params_index, levels_data
 
     # - Game -----------------------------------------------------------------------------------------------------------
 

@@ -71,7 +71,9 @@ class ChapterLevels(Initializer):
 
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
-        active_levels_id = current_chapter_data.getActiveLevelsId()
+
+        active_levels_data = current_chapter_data.getActiveLevelsData()
+        active_levels_id = active_levels_data.keys()
 
         # current_chapter_id = current_chapter_data.getChapterId()
         # current_quest_index = current_chapter_data.getCurrentQuestIndex()
