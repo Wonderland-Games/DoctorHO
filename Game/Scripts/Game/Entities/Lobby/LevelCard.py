@@ -159,9 +159,16 @@ class LevelCard(Initializer):
     def _setupQuestIndicator(self):
         player_data = GameManager.getPlayerGameData()
         current_chapter_data = player_data.getCurrentChapterData()
+        level_data = current_chapter_data.getLevelData(self.level_id)
+        if level_data.getActive() is False:
+            return
+
         chapter_id = current_chapter_data.getChapterId()
         current_quest_index = current_chapter_data.getCurrentQuestIndex()
         quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, current_quest_index)
+
+        if quest_params is None:
+            return
 
         if quest_params.LevelId != self.level_id:
             return
@@ -263,9 +270,15 @@ class LevelCard(Initializer):
         current_value = self.quest_progress_value_follower.getFollow()
         future_value = current_value + progress_value
 
+        player_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_data.getCurrentChapterData()
+        current_level_data = current_chapter_data.getLevelData(self.level_id)
+
+        source.addFunction(current_level_data.addQuestPoints, new_qp)
         source.addFunction(self.addQuestProgress, progress_value)
 
         with source.addIfTask(lambda: future_value >= 100.0) as (unlock, _):
+            unlock.addFunction(current_level_data.setActive, True)
             unlock.addScope(self.scopeUnlockLevelCardAnim)
 
     def scopeUnlockLevelCardAnim(self, source):
@@ -278,3 +291,5 @@ class LevelCard(Initializer):
         source.addFunction(self.destroyQuestProgressBar)
 
         source.addScope(self.scopeChangeLevelState, self.STATE_UNLOCKING)
+
+        source.addFunction(self._setupQuestIndicator)

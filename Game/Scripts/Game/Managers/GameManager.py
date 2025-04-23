@@ -232,8 +232,12 @@ class GameManager(Manager):
     def getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index):
         params_list = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
                                                         filter=lambda param: param.ChapterId == chapter_id)
-        quest_params = params_list[quest_index]
-        return quest_params
+
+        if 0 <= quest_index < len(params_list):
+            quest_params = params_list[quest_index]
+            return quest_params
+        else:
+            return None
 
     @staticmethod
     def getQuestParamsByLevel(level_id):
@@ -295,10 +299,11 @@ class GameManager(Manager):
         game = DemonManager.getDemon("GameArea")
         game.setParam("ChapterId", chapter_id)
         game.setParam("LevelId", level_id)
-        if quest_params.LevelId == level_id:
-            game.setParam("QuestIndex", quest_index)
-        else:
-            game.setParam("QuestIndex", None)
+
+        game.setParam("QuestIndex", None)
+        if quest_params is not None:
+            if quest_params.LevelId == level_id:
+                game.setParam("QuestIndex", quest_index)
 
         player_data = GameManager.getPlayerGameData()
         player_data.setLastLevelData({})
@@ -316,6 +321,10 @@ class GameManager(Manager):
             "QuestIndex": quest_index,
             "Result": is_win,
         })
+
+        if is_win is True and quest_index is not None:
+            current_chapter_data = player_data.getCurrentChapterData()
+            current_chapter_data.setCurrentQuestIndex(quest_index + 1)
 
     @staticmethod
     def removeGame():
