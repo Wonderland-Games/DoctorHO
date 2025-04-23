@@ -19,6 +19,9 @@ class LevelData(object):
     def setQuestPoints(self, quest_points):
         self.quest_points = quest_points
 
+    def addQuestPoints(self, quest_points):
+        self.quest_points += quest_points
+
 
 class ChapterData(object):
     def __init__(self, chapter_id):
@@ -31,6 +34,9 @@ class ChapterData(object):
 
     def getCurrentQuestIndex(self):
         return self.current_quest_index
+
+    def setCurrentQuestIndex(self, quest_index):
+        self.current_quest_index = quest_index
 
     def getLevelData(self, level_id):
         return self.levels_data[level_id]

@@ -81,8 +81,8 @@ class Lobby(BaseEntity):
                 race.addTask("TaskMovie2SocketClick", Movie2=card.movie, SocketName="socket", Filter=card.isActive)
                 race.addScope(self._scopePlay, card.level_id)
 
-        with self._createTaskChain("QuestItemReceived") as tc:
-            tc.addScope(self._scopeQuestItemReceived)
+        with self._createTaskChain("LevelEnd") as tc:
+            tc.addScope(self._scopeLevelEnd)
 
     def _scopePlay(self, source, level_id):
         zoom_target = self.chapter_levels.level_cards[level_id].movie
@@ -97,13 +97,12 @@ class Lobby(BaseEntity):
         source.addFunction(GameManager.prepareGame, level_id)
         source.addFunction(GameManager.runLevelStartAdvertisement)
 
-    def _scopeQuestItemReceived(self, source):
+    def _scopeLevelEnd(self, source):
         player_data = GameManager.getPlayerGameData()
         last_level_data = player_data.getLastLevelData()
 
         last_game_result = last_level_data.get("Result", None)
-        last_game_quest_index = last_level_data.get("QuestIndex", None)
-        if last_game_result in [False, None] or last_game_quest_index is None:
+        if last_game_result in [False, None]:
             return
 
         chapter_id = last_level_data.get("ChapterId", None)
@@ -113,8 +112,9 @@ class Lobby(BaseEntity):
         level_group_name = level_params.GroupName
 
         quest_index = last_level_data.get("QuestIndex", None)
-        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
-        quest_item_name = quest_params.QuestItem
+        if quest_index is not None:
+            quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
+            quest_item_name = quest_params.QuestItem
 
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
@@ -124,16 +124,18 @@ class Lobby(BaseEntity):
         def _calcLevelRewardQuestPoints(_level_id):
             return 50
 
-        source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
-                         GroupName=level_group_name, ItemName=quest_item_name)
+        if quest_index is not None:
+            source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
+                             GroupName=level_group_name, ItemName=quest_item_name)
 
-        source.addListener(Notificator.onPopUpQuestItemReceived)
-        with source.addParallelTask(2) as (item, popup):
-            # item.addScope(self._moveItemToLevelCard)
-            # popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
-            popup.addNotify(Notificator.onPopUpHide)
+            source.addListener(Notificator.onPopUpQuestItemReceived)
+            with source.addParallelTask(2) as (item, popup):
+                # item.addScope(self._moveItemToLevelCard)
+                # popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
+                popup.addNotify(Notificator.onPopUpHide)
 
-        source.addListener(Notificator.onPopUpHideEnd)
+            source.addListener(Notificator.onPopUpHideEnd)
+
         for level_card, tc in source.addParallelTaskList(blocked_level_cards):
             source.addScope(level_card.scopeProgressOnQuestBar, _calcLevelRewardQuestPoints(level_card.level_id))
 
