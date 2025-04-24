@@ -705,6 +705,14 @@ class GameManager(Manager):
         Mengine.changeCurrentAccountSetting("DisplayName", unicode(display_name))
         Notification.notify(Notificator.onDisplayNameChanged, display_name)
 
+    @staticmethod
+    def getCurrentHeader():
+        for name in ["Header", "GameHeader"]:
+            demon = DemonManager.getDemon(name)
+            if demon.isActive():
+                return demon
+        return None
+
     # - Randomizer -----------------------------------------------------------------------------------------------------
 
     @staticmethod

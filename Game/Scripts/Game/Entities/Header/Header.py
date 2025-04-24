@@ -1,6 +1,7 @@
 from MobileKit.Entities.Header.Header import Header as HeaderBase
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Entities.HeaderComponents.Settings import Settings
+from Game.Entities.HeaderComponents.QuestBackpack import QuestBackpack
 
 
 class Header(HeaderBase):
@@ -18,7 +19,17 @@ class Header(HeaderBase):
                 viewport.begin.y + header_height * 0.5
             ))
 
+        if self.movie_content.hasSlot(QuestBackpack.slot_name):
+            slot = self.movie_content.getMovieSlot(QuestBackpack.slot_name)
+            slot.setWorldPosition(Mengine.vec2f(
+                viewport.begin.x + header_width * 0.15,
+                viewport.begin.y + header_height * 0.5
+            ))
+
     def _setup(self):
-        settings = Settings()
-        settings.onInitialize(self)
-        self.content[Settings.slot_name] = settings
+        header_components = [Settings, QuestBackpack]
+
+        for component in header_components:
+            component_instance = component()
+            component_instance.onInitialize(self)
+            self.content[component.slot_name] = component_instance
