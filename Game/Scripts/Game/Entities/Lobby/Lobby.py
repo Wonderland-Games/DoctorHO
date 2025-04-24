@@ -132,6 +132,7 @@ class Lobby(BaseEntity):
             with source.addParallelTask(2) as (item, popup):
                 # item.addScope(self._moveItemToLevelCard)
                 # popup.addDelay(POPUP_ITEM_SCALE_1_TIME)
+                item.addScope(self._moveItemToQuestBackpack)
                 popup.addNotify(Notificator.onPopUpHide)
 
             source.addListener(Notificator.onPopUpHideEnd)
@@ -150,6 +151,20 @@ class Lobby(BaseEntity):
         level_card_node = level_card.getRoot()
         level_card_wp = level_card_node.getWorldPosition()
 
+        source.addScope(self._moveItemToWP, level_card_wp)
+        source.addScope(level_card.scopeChangeLevelState, level_card.STATE_UNLOCKING)
+
+    def _moveItemToQuestBackpack(self, source):
+        # get quest backpack wp
+        header = GameManager.getCurrentHeader()
+        quest_backpack = header.getComponentByName("quest_backpack")
+        quest_backpack_container = quest_backpack.container
+        quest_backpack_node = quest_backpack_container.getEntityNode()
+        quest_backpack_wp = quest_backpack_node.getWorldPosition()
+
+        source.addScope(self._moveItemToWP, quest_backpack_wp)
+
+    def _moveItemToWP(self, source, destination_wp):
         # get current popup content (QuestItemReceived)
         popup_object = DemonManager.getDemon("PopUp")
         popup = popup_object.entity
@@ -182,7 +197,7 @@ class Lobby(BaseEntity):
         with source.addParallelTask(3) as (scale, move, alpha):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=POPUP_ITEM_SCALE_2_EASING, To=POPUP_ITEM_SCALE_2_TO,
                           Time=POPUP_ITEM_SCALE_2_TIME)
-            move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=POPUP_ITEM_MOVE_EASING, From=item_wp, To=level_card_wp,
+            move.addTask("TaskNodeBezier2To", Node=moving_node, Easing=POPUP_ITEM_MOVE_EASING, From=item_wp, To=destination_wp,
                          Time=POPUP_ITEM_MOVE_TIME)
             alpha.addTask("TaskNodeAlphaTo", Node=moving_node, Easing=POPUP_ITEM_ALPHA_EASING, To=0.0,
                           Time=POPUP_ITEM_ALPHA_TIME)
@@ -191,5 +206,3 @@ class Lobby(BaseEntity):
         source.addTask("TaskNodeDestroy", Node=item)
         source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
         source.addTask("TaskNodeDestroy", Node=moving_node)
-
-        source.addScope(level_card.scopeChangeLevelState, level_card.STATE_UNLOCKING)

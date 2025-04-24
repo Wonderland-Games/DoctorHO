@@ -26,10 +26,9 @@ class GameHeader(HeaderBase):
             ))
 
     def _setup(self):
-        settings = Settings()
-        settings.onInitialize(self)
-        self.content[Settings.slot_name] = settings
+        header_components = [Settings, Lives]
 
-        lives = Lives()
-        lives.onInitialize(self)
-        self.content[Lives.slot_name] = lives
+        for component in header_components:
+            component_instance = component()
+            component_instance.onInitialize(self)
+            self.content[component.slot_name] = component_instance
