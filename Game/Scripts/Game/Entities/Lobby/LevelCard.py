@@ -293,3 +293,13 @@ class LevelCard(Initializer):
         source.addScope(self.scopeChangeLevelState, self.STATE_UNLOCKING)
 
         source.addFunction(self._setupQuestIndicator)
+        source.addScope(self.scopeQuestIndicatorAnim)
+
+    def scopeQuestIndicatorAnim(self, source):
+        if self.quest_indicator is None:
+            return
+        quest_indicator_node = self.quest_indicator.getEntityNode()
+
+        with source.addParallelTask(2) as (scale, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=quest_indicator_node, From=(0.0, 0.0, 0.0), To=(1.0, 1.0, 1.0), Time=250.0)
+            alpha.addTask("TaskNodeAlphaTo", Node=quest_indicator_node, From=0.0, To=1.0, Time=250.0)
