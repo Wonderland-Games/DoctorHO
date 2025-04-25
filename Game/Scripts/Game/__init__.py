@@ -62,6 +62,7 @@ def onInitialize():
         "Lobby",
         "GameArea",
         {"name": "AdvertisingScene", "override": True},
+        "QuestBackpack",
         {"name": "Header", "override": True},
         "GameHeader",
     ]

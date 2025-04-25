@@ -114,6 +114,10 @@ class Lobby(BaseEntity):
         with self._createTaskChain("LevelEnd") as tc:
             tc.addScope(self._scopeLevelEnd)
 
+        with self._createTaskChain("QuestBackpack") as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
+            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
+
     def _scopePlay(self, source, level_id):
         zoom_target = self.chapter_levels.level_cards[level_id].movie
         system_global = SystemManager.getSystem("SystemGlobal")
