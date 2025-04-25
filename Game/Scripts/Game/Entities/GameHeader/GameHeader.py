@@ -27,8 +27,11 @@ class GameHeader(HeaderBase):
 
     def _setup(self):
         header_components = [Settings, Lives]
-
         for component in header_components:
+            if self.movie_content.hasSlot(component.slot_name) is False:
+                Trace.log("HeaderComponent", 0, "Not found slot {!r} in {!r}!".format(component.slot_name, self.__class__.__name__))
+                continue
+
             component_instance = component()
             component_instance.onInitialize(self)
             self.content[component.slot_name] = component_instance
