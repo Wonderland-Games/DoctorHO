@@ -5,10 +5,15 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SceneManager import SceneManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.ChapterLevels import ChapterLevels
+from UIKit.Managers.PrototypeManager import PrototypeManager
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_LEVELS = "ChapterLevels"
+
+PROTOTYPE_QUEST_BACKPACK = "QuestBackpack"
+SLOT_QUEST_BACKPACK = "QuestBackpack"
 
 POPUP_ITEM_MOVE_EASING = "easyCubicIn"
 POPUP_ITEM_MOVE_TIME = 500.0
@@ -28,6 +33,7 @@ class Lobby(BaseEntity):
         self.content = None
         self.tcs = []
         self.chapter_levels = None
+        self.quest_backpack = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -36,6 +42,7 @@ class Lobby(BaseEntity):
         if self.content is None:
             return
 
+        self._setupQuestBackpack()
         self._setupChapterLevels()
 
     def _onActivate(self):
@@ -52,7 +59,24 @@ class Lobby(BaseEntity):
             self.chapter_levels.onFinalize()
             self.chapter_levels = None
 
+        if self.quest_backpack is not None:
+            self.quest_backpack.onDestroy()
+            self.quest_backpack = None
+
     # - Setup ----------------------------------------------------------------------------------------------------------
+
+    def _setupQuestBackpack(self):
+        self.quest_backpack = PrototypeManager.generateObjectContainer(PROTOTYPE_QUEST_BACKPACK, PROTOTYPE_QUEST_BACKPACK)
+        self.quest_backpack.setEnable(True)
+
+        quest_backpack_node = self.quest_backpack.getEntityNode()
+        quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
+        quest_backpack_slot.addChild(quest_backpack_node)
+
+        _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        quest_backpack_size = self.quest_backpack.getSize()
+        pos_y = game_height - banner_height - quest_backpack_size.y / 2
+        quest_backpack_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
 
     def _setupChapterLevels(self):
         # get current chapter data
@@ -64,8 +88,14 @@ class Lobby(BaseEntity):
         self.chapter_levels.onInitialize(chapter_id)
 
         chapter_levels_node = self.chapter_levels.getRoot()
-        card_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
-        card_slot.addChild(chapter_levels_node)
+        chapter_levels_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
+        chapter_levels_slot.addChild(chapter_levels_node)
+
+        _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        quest_backpack_size = self.quest_backpack.getSize()
+        available_space_y = game_height - banner_height - top_offset - quest_backpack_size.y
+        pos_y = banner_height + available_space_y / 2
+        chapter_levels_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -156,10 +186,7 @@ class Lobby(BaseEntity):
 
     def _moveItemToQuestBackpack(self, source):
         # get quest backpack wp
-        header = GameManager.getCurrentHeader()
-        quest_backpack = header.getComponentByName("quest_backpack")
-        quest_backpack_container = quest_backpack.container
-        quest_backpack_node = quest_backpack_container.getEntityNode()
+        quest_backpack_node = self.quest_backpack.getEntityNode()
         quest_backpack_wp = quest_backpack_node.getWorldPosition()
 
         source.addScope(self._moveItemToWP, quest_backpack_wp)
