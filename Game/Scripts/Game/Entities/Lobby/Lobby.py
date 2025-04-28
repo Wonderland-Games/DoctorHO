@@ -26,6 +26,9 @@ POPUP_ITEM_SCALE_2_TO = (0.5, 0.5, 1.0)
 POPUP_ITEM_ALPHA_EASING = "easyCubicIn"
 POPUP_ITEM_ALPHA_TIME = 1000.0
 
+CHAPTER_LEVELS_SPACE_PERCENT = 0.7
+QUEST_BACKPACK_SPACE_PERCENT = 0.3
+
 
 class Lobby(BaseEntity):
     def __init__(self):
@@ -44,6 +47,7 @@ class Lobby(BaseEntity):
 
         self._setupQuestBackpack()
         self._setupChapterLevels()
+        self._setupSlotsPositions()
 
     def _onActivate(self):
         self._runTaskChains()
@@ -73,11 +77,6 @@ class Lobby(BaseEntity):
         quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
         quest_backpack_slot.addChild(quest_backpack_node)
 
-        _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-        quest_backpack_size = self.quest_backpack.getSize()
-        pos_y = game_height - banner_height - quest_backpack_size.y / 2
-        quest_backpack_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
-
     def _setupChapterLevels(self):
         # get current chapter data
         player_game_data = GameManager.getPlayerGameData()
@@ -91,11 +90,21 @@ class Lobby(BaseEntity):
         chapter_levels_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
         chapter_levels_slot.addChild(chapter_levels_node)
 
+    def _setupSlotsPositions(self):
         _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-        quest_backpack_size = self.quest_backpack.getSize()
-        available_space_y = game_height - banner_height - top_offset - quest_backpack_size.y
-        pos_y = banner_height + available_space_y / 2
-        chapter_levels_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
+        available_space_y = game_height - banner_height - top_offset
+
+        chapter_levels_space_y = available_space_y * CHAPTER_LEVELS_SPACE_PERCENT
+        quest_backpack_space_y = available_space_y * QUEST_BACKPACK_SPACE_PERCENT
+
+        chapter_levels_pos_y = top_offset + chapter_levels_space_y / 2
+        quest_backpack_pos_y = top_offset + chapter_levels_space_y + quest_backpack_space_y / 2
+
+        chapter_levels_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
+        chapter_levels_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_levels_pos_y))
+
+        quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
+        quest_backpack_slot.setWorldPosition(Mengine.vec2f(x_center, quest_backpack_pos_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
