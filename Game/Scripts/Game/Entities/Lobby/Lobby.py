@@ -45,8 +45,8 @@ class Lobby(BaseEntity):
         if self.content is None:
             return
 
-        self._setupQuestBackpack()
         self._setupChapterLevels()
+        self._setupQuestBackpack()
         self._setupSlotsPositions()
 
     def _onActivate(self):
@@ -69,14 +69,6 @@ class Lobby(BaseEntity):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupQuestBackpack(self):
-        self.quest_backpack = PrototypeManager.generateObjectContainer(PROTOTYPE_QUEST_BACKPACK, PROTOTYPE_QUEST_BACKPACK)
-        self.quest_backpack.setEnable(True)
-
-        quest_backpack_node = self.quest_backpack.getEntityNode()
-        quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
-        quest_backpack_slot.addChild(quest_backpack_node)
-
     def _setupChapterLevels(self):
         # get current chapter data
         player_game_data = GameManager.getPlayerGameData()
@@ -89,6 +81,14 @@ class Lobby(BaseEntity):
         chapter_levels_node = self.chapter_levels.getRoot()
         chapter_levels_slot = self.content.getMovieSlot(SLOT_CHAPTER_LEVELS)
         chapter_levels_slot.addChild(chapter_levels_node)
+
+    def _setupQuestBackpack(self):
+        self.quest_backpack = PrototypeManager.generateObjectContainer(PROTOTYPE_QUEST_BACKPACK, PROTOTYPE_QUEST_BACKPACK)
+        self.quest_backpack.setEnable(True)
+
+        quest_backpack_node = self.quest_backpack.getEntityNode()
+        quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
+        quest_backpack_slot.addChild(quest_backpack_node)
 
     def _setupSlotsPositions(self):
         _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -123,7 +123,7 @@ class Lobby(BaseEntity):
         with self._createTaskChain("LevelEnd") as tc:
             tc.addScope(self._scopeLevelEnd)
 
-        with self._createTaskChain("QuestBackpack") as tc:
+        with self._createTaskChain(SLOT_QUEST_BACKPACK) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
             tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
