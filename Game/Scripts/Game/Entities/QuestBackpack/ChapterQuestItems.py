@@ -56,10 +56,18 @@ class ChapterQuestItems(Initializer):
     def setupQuestItems(self):
         # get levels from chapter data
         chapter_params = GameManager.getChapterParams(self.chapter_id)
-        chapter_levels_id = chapter_params.LevelsId
         chapter_quest_items_slots = chapter_params.Slots
 
         self.items_slots_movie = self.parent_entity.object.generateObjectUnique(chapter_quest_items_slots, chapter_quest_items_slots)
         self.items_slots_movie.setEnable(True)
         items_slots_movie_node = self.items_slots_movie.getEntityNode()
         self.root.addChild(items_slots_movie_node)
+
+        chapter_quests_params = GameManager.getQuestParamsByChapter(self.chapter_id)
+        for i, quest_param in enumerate(chapter_quests_params):
+            quest_item_name = quest_param.QuestItem
+            print quest_item_name
+
+            # item_node = item.getRoot()
+            # item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
+            # item_slot.addChild(item_node)
