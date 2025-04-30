@@ -61,7 +61,7 @@ class QuestBackpack(BaseEntity):
         chapter_id = current_chapter_data.getChapterId()
 
         self.chapter_quest_items = ChapterQuestItems()
-        self.chapter_quest_items.onInitialize(chapter_id)
+        self.chapter_quest_items.onInitialize(self, chapter_id)
 
         chapter_quest_items_node = self.chapter_quest_items.getRoot()
         chapter_quest_items_slot = self.content.getMovieSlot(SLOT_CHAPTER_QUEST_ITEMS)
