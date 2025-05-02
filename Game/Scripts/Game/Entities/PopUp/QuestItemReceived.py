@@ -7,6 +7,9 @@ SLOT_BUTTON = "Button"
 
 ITEM_BOX_SIZE = 500.0
 
+QUEST_ITEM_STORE_GROUP = "QuestItemStore"
+QUEST_ITEM_NAME = "Item_{}_{}"
+
 
 class QuestItemReceived(PopUpContent):
     content_id = "QuestItemReceived"
@@ -23,7 +26,7 @@ class QuestItemReceived(PopUpContent):
     def _onInitializeContent(self, **content_args):
         super(QuestItemReceived, self)._onInitializeContent()
 
-        self._setupItem(content_args["GroupName"], content_args["ItemName"])
+        self._setupItem(content_args["ChapterId"], content_args["ItemName"])
         self._setupButton()
 
         self._adjustSlotsPositions()
@@ -43,20 +46,16 @@ class QuestItemReceived(PopUpContent):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _getItemFromGroup(self, group_name, item_name):
-        group = GroupManager.getGroup(group_name)
-        item = group.getObject(item_name)
-        return item
+    def _setupItem(self, chapter_id, item_name):
+        item_name_raw = item_name.replace("Item_", "")
+        item_name_store = QUEST_ITEM_NAME.format(chapter_id, item_name_raw)
 
-    def _generateItemSprite(self, item):
-        item_entity = item.getEntity()
-        item_sprite = item_entity.generatePure()
-        item_sprite.enable()
-        return item_sprite
+        item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
+        item_object = item_store_group.getObject(item_name_store)
+        item_entity = item_object.getEntity()
+        self.item_sprite = item_entity.generatePure()
+        self.item_sprite.enable()
 
-    def _setupItem(self, group_name, item_name):
-        item = self._getItemFromGroup(group_name, item_name)
-        self.item_sprite = self._generateItemSprite(item)
         self.isHoldingItem = True
 
         item_size = self.item_sprite.getSurfaceSize()
