@@ -150,10 +150,6 @@ class Lobby(BaseEntity):
 
         chapter_id = last_level_data.get("ChapterId", None)
 
-        level_id = last_level_data.get("LevelId", None)
-        level_params = GameManager.getLevelParams(level_id)
-        level_group_name = level_params.GroupName
-
         quest_index = last_level_data.get("QuestIndex", None)
         if quest_index is not None:
             quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
@@ -169,7 +165,7 @@ class Lobby(BaseEntity):
 
         if quest_index is not None:
             source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
-                             GroupName=level_group_name, ItemName=quest_item_name)
+                             ChapterId=chapter_id, ItemName=quest_item_name)
 
             source.addListener(Notificator.onPopUpQuestItemReceived)
             with source.addParallelTask(2) as (item, popup):
