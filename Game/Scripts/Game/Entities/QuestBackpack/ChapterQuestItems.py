@@ -1,12 +1,12 @@
 from Foundation.Initializer import Initializer
-from Game.Managers.GameManager import GameManager
 from Foundation.GroupManager import GroupManager
+from Game.Managers.GameManager import GameManager
+from Game.Entities.QuestBackpack.QuestItem import QuestItem
 
 
 CHAPTER_SLOTS = "QuestItem_{}"
 QUEST_ITEM_STORE_GROUP = "QuestItemStore"
 QUEST_ITEM_NAME = "Item_{}_{}"
-QUEST_ITEM_SCALE_MODIFIER = 0.75
 
 
 class ChapterQuestItems(Initializer):
@@ -16,7 +16,7 @@ class ChapterQuestItems(Initializer):
         self.root = None
         self.chapter_id = None
         self.items_slots_movie = None
-        self.quest_item_sprites = {}
+        self.quest_items = {}
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -31,9 +31,9 @@ class ChapterQuestItems(Initializer):
     def _onFinalize(self):
         super(ChapterQuestItems, self)._onFinalize()
 
-        for item_sprite in self.quest_item_sprites.values():
-            Mengine.destroyNode(item_sprite)
-        self.quest_item_sprites = {}
+        for quest_item in self.quest_items.values():
+            quest_item.onFinalize()
+        self.quest_items = {}
 
         if self.items_slots_movie is not None:
             self.items_slots_movie.onDestroy()
@@ -79,15 +79,12 @@ class ChapterQuestItems(Initializer):
 
             quest_item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
             quest_item = quest_item_store_group.getObject(quest_item_name)
-
             quest_item_entity = quest_item.getEntity()
-            quest_item_sprite = quest_item_entity.generatePure()
-            quest_item_sprite.enable()
-            self.quest_item_sprites[quest_item_name] = quest_item_sprite
+
+            quest_item = QuestItem()
+            quest_item.onInitialize(quest_item_entity)
 
             quest_item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
-            quest_item_slot.addChild(quest_item_sprite)
+            quest_item.attachTo(quest_item_slot)
 
-            quest_item_sprite_center = quest_item_entity.getSpriteCenter()
-            quest_item_sprite.setScale((QUEST_ITEM_SCALE_MODIFIER, QUEST_ITEM_SCALE_MODIFIER, 1.0))
-            quest_item_sprite.setLocalPosition(Mengine.vec2f(-quest_item_sprite_center[0] * QUEST_ITEM_SCALE_MODIFIER, -quest_item_sprite_center[1] * QUEST_ITEM_SCALE_MODIFIER))
+            self.quest_items[quest_item_name] = quest_item
