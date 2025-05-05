@@ -72,6 +72,12 @@ class ChapterQuestItems(Initializer):
         items_slots_movie_node = self.items_slots_movie.getEntityNode()
         self.root.addChild(items_slots_movie_node)
 
+        player_data = GameManager.getPlayerGameData()
+        chapter_data = player_data.getCurrentChapterData()
+        quest_index = chapter_data.getCurrentQuestIndex()
+        if quest_index == 0:
+            return
+
         chapter_quests_params = GameManager.getQuestParamsByChapter(self.chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
             quest_param_item_name = quest_param.QuestItem.replace("Item_", "")
@@ -82,11 +88,12 @@ class ChapterQuestItems(Initializer):
             quest_item_entity = quest_item_object.getEntity()
 
             quest_item = QuestItem()
-            quest_item_state = quest_item.STATE_ACTIVE
-            quest_item.onInitialize(quest_item_entity, quest_item_state)
+            if i < quest_index:
+                quest_item_state = quest_item.STATE_ACTIVE
+            else:
+                break
 
-            if quest_item.state == quest_item.STATE_BLOCKED:
-                continue
+            quest_item.onInitialize(quest_item_entity, quest_item_state)
 
             quest_item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
             quest_item.attachTo(quest_item_slot)
