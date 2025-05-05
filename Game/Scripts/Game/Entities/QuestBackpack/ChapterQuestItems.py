@@ -78,11 +78,15 @@ class ChapterQuestItems(Initializer):
             quest_item_name = QUEST_ITEM_NAME.format(self.chapter_id, quest_param_item_name)
 
             quest_item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
-            quest_item = quest_item_store_group.getObject(quest_item_name)
-            quest_item_entity = quest_item.getEntity()
+            quest_item_object = quest_item_store_group.getObject(quest_item_name)
+            quest_item_entity = quest_item_object.getEntity()
 
             quest_item = QuestItem()
-            quest_item.onInitialize(quest_item_entity)
+            quest_item_state = quest_item.STATE_ACTIVE
+            quest_item.onInitialize(quest_item_entity, quest_item_state)
+
+            if quest_item.state == quest_item.STATE_BLOCKED:
+                continue
 
             quest_item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
             quest_item.attachTo(quest_item_slot)
