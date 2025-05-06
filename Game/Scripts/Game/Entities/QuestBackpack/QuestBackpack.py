@@ -1,5 +1,6 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Foundation.DemonManager import DemonManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Managers.GameManager import GameManager
@@ -104,6 +105,16 @@ class QuestBackpack(BaseEntity):
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
             tc.addNotify(Notificator.onChangeScene, "Lobby")
 
+        if len(self.chapter_quest_items.quest_items.items()) > 0:
+            self._runChapterQuestItemsTaskChains()
+
+    def _runChapterQuestItemsTaskChains(self):
+        popup_object = DemonManager.getDemon("PopUp")
+        popup = popup_object.entity
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+
         with self._createTaskChain(SLOT_CHAPTER_QUEST_ITEMS, Repeat=True) as tc:
             for (quest_item_name, quest_item_entity), tc_race in tc.addRaceTaskList(self.chapter_quest_items.quest_items.items()):
                 def _filter(item_name, lookup_item_name=quest_item_name):
@@ -112,3 +123,5 @@ class QuestBackpack(BaseEntity):
 
                 tc_race.addListener(Notificator.onQuestItemClicked, Filter=_filter)
                 tc_race.addPrint("Quest item {!r} clicked".format(quest_item_name))
+                tc_race.addNotify(Notificator.onPopUpShow, "QuestItemDescription", popup.BUTTONS_STATE_CLOSE,
+                                  ChapterId=chapter_id, ItemName=quest_item_name, ConvertToStoreItemName=False)

@@ -85,7 +85,7 @@ def onInitialize():
         "Credits",
         "DebugAd",
         "QuestItemReceived",
-        # "QuestItemDescription",
+        "QuestItemDescription",
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False
