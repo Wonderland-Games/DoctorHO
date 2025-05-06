@@ -103,3 +103,12 @@ class QuestBackpack(BaseEntity):
         with self._createTaskChain(SLOT_LOBBY) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
             tc.addNotify(Notificator.onChangeScene, "Lobby")
+
+        with self._createTaskChain(SLOT_CHAPTER_QUEST_ITEMS, Repeat=True) as tc:
+            for (quest_item_name, quest_item_entity), tc_race in tc.addRaceTaskList(self.chapter_quest_items.quest_items.items()):
+                def _filter(item_name, lookup_item_name=quest_item_name):
+                    """ copy-paste logic from Marjorie/GameArea/ImageCell click logic """
+                    return lookup_item_name == item_name
+
+                tc_race.addListener(Notificator.onQuestItemClicked, Filter=_filter)
+                tc_race.addPrint("Quest item {!r} clicked".format(quest_item_name))

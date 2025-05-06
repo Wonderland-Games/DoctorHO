@@ -43,6 +43,8 @@ def onInitialize():
         "onDisplayNameChanged",
 
         "onPopUpQuestItemReceived",
+
+        "onQuestItemClicked",
     ]
 
     Notificator.addIdentities(identities)
@@ -82,7 +84,8 @@ def onInitialize():
         "Support",
         "Credits",
         "DebugAd",
-        "QuestItemReceived"
+        "QuestItemReceived",
+        # "QuestItemDescription",
     ]
     if PopUpManager.importPopUpContents("Game.Entities.PopUp", pop_ups) is False:
         return False
