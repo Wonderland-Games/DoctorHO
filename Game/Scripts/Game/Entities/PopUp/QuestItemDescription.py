@@ -12,13 +12,13 @@ QUEST_ITEM_NAME = "Item_{}_{}"
 
 
 class QuestItemDescription(PopUpContent):
-    content_id = "QuestItemReceived"
+    content_id = "QuestItemDescription"
 
     def __init__(self):
         super(QuestItemDescription, self).__init__()
 
         self.item_sprite = None
-        self.button = None
+        # self.button = None
         self.isHoldingItem = False
 
     # - PopUpContent ---------------------------------------------------------------------------------------------------
@@ -26,8 +26,8 @@ class QuestItemDescription(PopUpContent):
     def _onInitializeContent(self, **content_args):
         super(QuestItemDescription, self)._onInitializeContent()
 
-        self._setupItem(content_args["ChapterId"], content_args["ItemName"])
-        self._setupButton()
+        self._setupItem(content_args)
+        # self._setupButton()
 
         self._adjustSlotsPositions()
         self._runTaskChains()
@@ -40,15 +40,22 @@ class QuestItemDescription(PopUpContent):
                 Mengine.destroyNode(self.item_sprite)
             self.item_sprite = None
 
-        if self.button is not None:
-            self.button.onDestroy()
-            self.button = None
+        # if self.button is not None:
+        #     self.button.onDestroy()
+        #     self.button = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupItem(self, chapter_id, item_name):
-        item_name_raw = item_name.replace("Item_", "")
-        item_name_store = QUEST_ITEM_NAME.format(chapter_id, item_name_raw)
+    def _setupItem(self, content_args):
+        chapter_id = content_args["ChapterId"]
+        item_name = content_args["ItemName"]
+        convert_to_store_item_name = content_args.get("ConvertToStoreItemName", True)
+
+        if convert_to_store_item_name is True:
+            item_name_raw = item_name.replace("Item_", "")
+            item_name_store = QUEST_ITEM_NAME.format(chapter_id, item_name_raw)
+        else:
+            item_name_store = item_name
 
         item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
         item_object = item_store_group.getObject(item_name_store)
@@ -82,12 +89,12 @@ class QuestItemDescription(PopUpContent):
         item_size_raw = self.item_sprite.getSurfaceSize()
         item_scale = self.item_sprite.getScale()
         item_size = Mengine.vec2f(item_size_raw.x * item_scale.x, item_size_raw.y * item_scale.y)
-        button_size = self.button.getSize()
-        available_size_y = content_size.y - item_size.y - button_size.y
+        # button_size = self.button.getSize()
+        available_size_y = content_size.y - item_size.y
 
         slots_data = {
             SLOT_ITEM: item_size.y / 2,
-            SLOT_BUTTON: button_size.y / 2,
+            # SLOT_BUTTON: button_size.y / 2,
         }
         offset_between_slots = available_size_y / (len(slots_data) + 1)
         current_pos_y = -content_size.y / 2
@@ -105,10 +112,11 @@ class QuestItemDescription(PopUpContent):
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def _runTaskChains(self):
-        if self.button is not None:
-            with self._createTaskChain(SLOT_BUTTON) as tc:
-                tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button.movie)
-                tc.addScope(self._scopeButton)
+        # if self.button is not None:
+        #     with self._createTaskChain(SLOT_BUTTON) as tc:
+        #         tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.button.movie)
+        #         tc.addScope(self._scopeButton)
+        pass
 
     def _scopeButton(self, source):
         self.isHoldingItem = False
