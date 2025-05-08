@@ -123,5 +123,5 @@ class QuestBackpack(BaseEntity):
 
                 tc_race.addListener(Notificator.onQuestItemClicked, Filter=_filter)
                 tc_race.addPrint("Quest item {!r} clicked".format(quest_item_name))
-                tc_race.addNotify(Notificator.onPopUpShow, "QuestItemDescription", popup.BUTTONS_STATE_CLOSE,
+                tc_race.addNotify(Notificator.onPopUpShow, "QuestItemDescription", popup.BUTTONS_STATE_CLOSE, popup.PROTOTYPE_BG_BIG,
                                   ChapterId=chapter_id, ItemName=quest_item_name, ConvertToStoreItemName=False)
