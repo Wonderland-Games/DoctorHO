@@ -17,6 +17,7 @@ TEXT_ITEM_NAME_TEMPLATE = "ID_QuestItem_{}_{}"
 TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE = "ID_QuestItem_{}_{}"
 
 ITEM_BOX_SIZE = 500.0
+TEXT_ITEM_DESCRIPTION_LENGTH_PERCENT = 0.9
 
 QUEST_ITEM_STORE_GROUP = "QuestItemStore"
 QUEST_ITEM_NAME = "Item_{}_{}"
@@ -49,7 +50,7 @@ class QuestItemDescription(PopUpContent):
             self.item_codename = item_name
 
         self._setupItemSprite()
-        self._setupItemName()
+        # self._setupItemName()
         self._setupItemDescriptionFull()
 
         self._adjustSlotsPositions()
@@ -80,23 +81,39 @@ class QuestItemDescription(PopUpContent):
         self.item_sprite = item_entity.generatePure()
         self.item_sprite.enable()
 
-        item_size = self.item_sprite.getSurfaceSize()
-        scale_perc_x = ITEM_BOX_SIZE / item_size.x
-        scale_perc_y = ITEM_BOX_SIZE / item_size.y
-        scale_perc = min(scale_perc_x, scale_perc_y)
-        self.item_sprite.setScale((scale_perc, scale_perc, 1.0))
+        sprite_scale = self._getSpriteScale()
+        self.item_sprite.setScale(sprite_scale)
 
         slot = self.content.getMovieSlot(SLOT_ITEM_SPRITE)
         slot.addChild(self.item_sprite)
 
+        sprite_size = self._getSpriteSize()
+        popup_content_size = self.pop_up_base.getContentSize()
+        # changing pos not working on slot somehow, so lets try change item sprite pos instead
+        self.item_sprite.setLocalPosition(Mengine.vec2f(
+            -sprite_size.x / 2,
+            -popup_content_size.y / 2
+        ))
+
+    def _getSpriteScale(self):
+        item_size = self.item_sprite.getSurfaceSize()
+        scale_perc_x = ITEM_BOX_SIZE / item_size.x
+        scale_perc_y = ITEM_BOX_SIZE / item_size.y
+        scale_perc = min(scale_perc_x, scale_perc_y)
+        sprite_scale = Mengine.vec3f(scale_perc, scale_perc, 1.0)
+        return sprite_scale
+
+    def _getSpriteSize(self):
         item_sprite_center = self.item_sprite.getLocalImageCenter()
-        self.item_sprite.setLocalPosition(Mengine.vec2f(-item_sprite_center.x * scale_perc, -item_sprite_center.y * scale_perc))
+        sprite_scale = self._getSpriteScale()
+        sprite_size = Mengine.vec2f(item_sprite_center.x * 2 * sprite_scale.x, item_sprite_center.y * 2 * sprite_scale.y)
+        return sprite_size
 
     def _setupItemName(self):
         self.item_name = Mengine.createNode("TextField")
         self.item_name.setName(self.item_codename + "_" + TEXT_ITEM_NAME_ANNEX)
 
-        self.item_name.setVerticalCenterAlign()
+        self.item_name.setVerticalBottomAlign()
         self.item_name.setHorizontalCenterAlign()
 
         self.item_name.setTextId(TEXT_ITEM_NAME)
@@ -107,13 +124,17 @@ class QuestItemDescription(PopUpContent):
         slot = self.content.getMovieSlot(SLOT_ITEM_NAME)
         slot.addChild(self.item_name)
 
+        popup_content_size = self.pop_up_base.getContentSize()
+        sprite_size = self._getSpriteSize()
+        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
+
         self.item_name.enable()
 
     def _setupItemDescriptionFull(self):
         self.item_description_full = Mengine.createNode("TextField")
         self.item_description_full.setName(self.item_codename + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
-        self.item_description_full.setVerticalCenterAlign()
+        self.item_description_full.setVerticalBottomAlign()
         self.item_description_full.setHorizontalCenterAlign()
 
         self.item_description_full.setTextId(TEXT_ITEM_DESCRIPTION_FULL)
@@ -123,6 +144,12 @@ class QuestItemDescription(PopUpContent):
 
         slot = self.content.getMovieSlot(SLOT_ITEM_DESCRIPTION)
         slot.addChild(self.item_description_full)
+
+        popup_content_size = self.pop_up_base.getContentSize()
+        sprite_size = self._getSpriteSize()
+        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
+
+        self.item_description_full.setMaxLength(popup_content_size.x * TEXT_ITEM_DESCRIPTION_LENGTH_PERCENT)
 
         self.item_description_full.enable()
 
