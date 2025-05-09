@@ -149,7 +149,7 @@ class QuestItemDescription(PopUpContent):
         sprite_size = self._getSpriteSize()
         slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
 
-        self.item_description_full.setMaxLength(popup_content_size.x * TEXT_ITEM_DESCRIPTION_LENGTH_PERCENT)
+        self.item_description_full.setMaxLength(popup_content_size.x)
 
         self.item_description_full.enable()
 
