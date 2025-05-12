@@ -51,6 +51,7 @@ class QuestItemDescription(PopUpContent):
 
         self._setupItemSprite()
         # self._setupItemName()
+        self._setupPopUpTitle()
         self._setupItemDescriptionFull()
 
         self._adjustSlotsPositions()
@@ -129,6 +130,10 @@ class QuestItemDescription(PopUpContent):
         slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
 
         self.item_name.enable()
+
+    def _setupPopUpTitle(self):
+        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_codename, TEXT_ITEM_NAME_ANNEX)
+        self.title_text_id = item_name_text_id
 
     def _setupItemDescriptionFull(self):
         self.item_description_full = Mengine.createNode("TextField")
