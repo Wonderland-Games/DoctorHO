@@ -1,2 +1,7 @@
 Localization/** filter=lfs diff=lfs merge=lfs -text
 Resources/** filter=lfs diff=lfs merge=lfs -text
+
+Localization/**/*.py -filter -diff -merge text
+Localization/**/*.xml -filter -diff -merge text
+Resources/**/*.py -filter -diff -merge text
+Resources/**/*.xml -filter -diff -merge text
