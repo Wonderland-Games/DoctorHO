@@ -142,6 +142,8 @@ class QuestItemDescription(PopUpContent):
         self.item_description_full.setVerticalBottomAlign()
         self.item_description_full.setHorizontalCenterAlign()
 
+        self.item_description_full.setJustify(True)
+
         self.item_description_full.setTextId(TEXT_ITEM_DESCRIPTION_FULL)
         item_description_full_text_id = TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE.format(self.item_codename, TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
         item_description_full_text = Mengine.getTextFromId(item_description_full_text_id)
