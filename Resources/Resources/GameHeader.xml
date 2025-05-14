@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3d92cda6d9c665f0aa744bac4fd4fb4028c1a4a39cc8026b032bbf25956f2255
-size 106
+<DataBlock Name = "GameHeader">
+    <Include Path = "Movies2/GameHeader/GameHeader.bin"/>
+</DataBlock>

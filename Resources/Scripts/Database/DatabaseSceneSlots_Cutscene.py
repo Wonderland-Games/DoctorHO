@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d575bab128542d92c2b148c5d4421a9490c2b92db25484735c82358ab76dff8e
-size 824
+from Foundation.Database import Database
+
+class DatabaseSceneSlots_Cutscene(Database):
+    def __init__(self):
+        super(DatabaseSceneSlots_Cutscene, self).__init__()
+        self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Cutscene", Type="Layer2D", Width=2736, Height=1536, Main=1)
+        self.addRecord(Name="Intro", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Header", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Banner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
+        self.addRecord(Name="Fade", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="BlockInput", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        pass
+    pass

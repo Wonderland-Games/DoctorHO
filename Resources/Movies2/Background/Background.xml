@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:aa05f2e6750e9fa73dac93cb68fb620b3b8ffa64fe2b6b9db7c5d8e67264d3c8
-size 390
+<?xml version="1.0"?>
+<DataBlock Name="Background">
+	<Resource Name="Movie2_Background" Type="ResourceMovie2">
+		<File Path="Movies2/Background/Background.aez" />
+		<Composition Name="Background" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Dark Blue Solid 1" Type="Solid" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

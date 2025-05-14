@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1a7ded0b3cde657ebd1115292ab9d5f4e6461b1036fca663a5c6e081fe8f44b7
-size 773
+from Foundation.Group import Group
+
+class GroupLoading(Group):
+    Category = "Resources"
+
+    def _getLayerParams(self):
+        params = { "Size" : (2736,1536), "Type" : "Layer2D", "Name" : "Layer2D_Main", "Main" : True }
+        return params
+        pass
+
+    def _onLoader(self):
+        self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2736, 1536), Main = True )
+        self.createObject( "Loading", Name = "Demon_Loading" )
+        def setup_Demon_Loading(self):
+            self.createObject( "Movie2", Name = "Movie2_Content" , ResourceMovie = "Movie2_Loading", CompositionName = "Content"  )
+            pass
+        Demon_Loading = self.getObject( "Demon_Loading")
+        setup_Demon_Loading(Demon_Loading)
+        pass
+    pass

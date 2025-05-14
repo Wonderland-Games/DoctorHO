@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b01f9e40e7027afcfee38bab56470428307bd684619009ab4e95d3a340d0df03
-size 545
+<?xml version="1.0"?>
+<DataBlock Name="Advertising">
+	<Resource Name="Movie2_Advertising" Type="ResourceMovie2">
+		<File Path="Movies2/Advertising/Advertising.aez" />
+		<Composition Name="Content" Duration="2.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="ID_AdvertisingScene" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" Color="1.0;1.0;1.0;0.1500000059604644775390625" Options="30307;26723" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

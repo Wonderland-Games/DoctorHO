@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:15d9204127349afe2f1a07f7ce0b1b20dd6a5a0da6f43cfe195c6eaa4b0b0d82
-size 262
+<Texts>
+	<Text Key="APPLICATION_TITLE" Value="DoctorHO" />
+	
+	<Text Key="ID_TEXT_BUILD_VERSION" Value="%s" />
+	
+	<Text Key="ID_LivesCounter" Value="%s" />
+	<Text Key="ID_ItemsCounter" Value="%s/%s" />
+	<Text Key="ID_HintCounter" Value="%s" />
+	
+</Texts>

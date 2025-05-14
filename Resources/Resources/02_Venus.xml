@@ -1,3 +1,95 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8fead70c9fb6ec7ab6fba52cd34370fcbda386148fe2400cfaba9454a3e1b439
-size 7776
+<DataBlock Name = "02_Venus">
+    <Resource Name = "02_Venus/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "1536;1536"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Notebook/_Item_Notebook[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Notebook/Item_Notebook[Full].png" Codec = "pngImage" MaxSize = "243;179"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Notebook/_Item_Notebook[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Notebook/Item_Notebook[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Binoculars/_Item_Binoculars[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Binoculars/Item_Binoculars[Full].png" Codec = "pngImage" MaxSize = "158;108"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Binoculars/_Item_Binoculars[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Binoculars/Item_Binoculars[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Helmet/_Item_Helmet[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Helmet/Item_Helmet[Full].png" Codec = "pngImage" MaxSize = "130;154"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Helmet/_Item_Helmet[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Helmet/Item_Helmet[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Backpack/_Item_Backpack[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Backpack/Item_Backpack[Full].png" Codec = "pngImage" MaxSize = "122;209"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Backpack/_Item_Backpack[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Backpack/Item_Backpack[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Phone/_Item_Phone[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Phone/Item_Phone[Full].png" Codec = "pngImage" MaxSize = "223;213"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Phone/_Item_Phone[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Phone/Item_Phone[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Respirator/_Item_Respirator[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Respirator/Item_Respirator[Full].png" Codec = "pngImage" MaxSize = "167;115"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Respirator/_Item_Respirator[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Respirator/Item_Respirator[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Drone/_Item_Drone[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Drone/Item_Drone[Full].png" Codec = "pngImage" MaxSize = "270;192"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Drone/_Item_Drone[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Drone/Item_Drone[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Pistol/_Item_Pistol[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Pistol/Item_Pistol[Full].png" Codec = "pngImage" MaxSize = "168;119"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Pistol/_Item_Pistol[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Pistol/Item_Pistol[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Quest_Gun/_Item_Quest_Gun[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Quest_Gun/Item_Quest_Gun[Full].png" Codec = "pngImage" MaxSize = "244;69"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Quest_Gun/_Item_Quest_Gun[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Quest_Gun/Item_Quest_Gun[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Sword/_Item_Sword[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Sword/Item_Sword[Full].png" Codec = "pngImage" MaxSize = "307;206"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Sword/_Item_Sword[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Sword/Item_Sword[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Robot/_Item_Robot[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Robot/Item_Robot[Full].png" Codec = "pngImage" MaxSize = "201;265"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Robot/_Item_Robot[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Robot/Item_Robot[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Boots/_Item_Boots[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Boots/Item_Boots[Full].png" Codec = "pngImage" MaxSize = "100;135"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Boots/_Item_Boots[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Boots/Item_Boots[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Armor/_Item_Armor[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Armor/Item_Armor[Full].png" Codec = "pngImage" MaxSize = "167;203"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Armor/_Item_Armor[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Armor/Item_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Spaceship/_Item_Spaceship[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Spaceship/Item_Spaceship[Full].png" Codec = "pngImage" MaxSize = "235;138"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Spaceship/_Item_Spaceship[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Spaceship/Item_Spaceship[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Clock/_Item_Clock[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Clock/Item_Clock[Full].png" Codec = "pngImage" MaxSize = "153;146"/>
+    </Resource>
+    <Resource Name = "02_Venus/Layer2D_Main/Item_Clock/_Item_Clock[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/02_Venus/Layer2D_Main/Item_Clock/Item_Clock[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+</DataBlock>

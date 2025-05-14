@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5df9c8e24719618805cd8000c01393d5379567e25d1c0b1f6ff6cda3d157aef6
-size 798
+<?xml version="1.0"?>
+<DataBlock Name="LevelCardStore">
+	<Resource Name="Movie2_LevelCardStore" Type="ResourceMovie2">
+		<File Path="Movies2/LevelCardStore/LevelCardStore.aez" />
+		<Composition Name="01_Forest" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="White Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" Color="0.5;1.0;0.25;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Atlantis" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="White Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" Color="0.25;0.75;1.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

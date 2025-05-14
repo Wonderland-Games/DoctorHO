@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2e8726bff83997f4dd2d8fb22b598b7543120f2bbd5f42e8229b5814c0c53b38
-size 288
+<?xml version="1.0"?>
+<DataBlock Name="Cutscene">
+	<Resource Name="Movie2_Cutscene" Type="ResourceMovie2">
+		<File Path="Movies2/Cutscene/Cutscene.aez" />
+		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" />
+	</Resource>
+</DataBlock>

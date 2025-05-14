@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:53ce9892afc137cc9ec07347d7ff474e1a79c711a144e294a9ccf0f40df9f2ec
-size 719
+from Foundation.Database import Database
+
+class DatabaseSceneSlots_Loading(Database):
+    def __init__(self):
+        super(DatabaseSceneSlots_Loading, self).__init__()
+        self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Loading", Type="Layer2D", Width=2736, Height=1536, Main=1)
+        self.addRecord(Name="FadeUI", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="PopUp", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Fade", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="BlockInput", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        pass
+    pass

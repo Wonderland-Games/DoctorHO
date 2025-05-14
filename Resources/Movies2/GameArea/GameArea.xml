@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a8b2f2cce321a383def79f18ecbf48cae5fa2069f90be36a1d2a23c51daf0442
-size 2805
+<?xml version="1.0"?>
+<DataBlock Name="GameArea">
+	<Resource Name="0f/90e424294e431239b84b1692fb81834f073aa9.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/0f/90e424294e431239b84b1692fb81834f073aa9.png" MaxSize="32;32" />
+	</Resource>
+	<Resource Name="d0/03b535b473d20be1efa761425e551b49381236.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/d0/03b535b473d20be1efa761425e551b49381236.png" MaxSize="256;256" Size="258;258" Offset="4294967295;4294967295" />
+	</Resource>
+	<Resource Name="Movie2_GameArea" Type="ResourceMovie2">
+		<File Path="Movies2/GameArea/GameArea.aez" />
+		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="miss_click" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="search_level" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="search_panel" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="HintEffect_Hide" Duration="0.5" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Hint_Effect_Background.png" Type="Image" Matrix="90.0;0.0;0.0;0.0;0.0;90.0;0.0;0.0;0.0;0.0;1.0;0.0;-72.0;-72.0;0.0;1.0" Color="1.0;1.0;1.0;0.75" TrackMatte="0" />
+			<Layer Index="1" Name="cutout" Type="Image" Matrix="0.75;0.0;0.0;0.0;0.0;0.75;0.0;0.0;0.0;0.0;1.0;0.0;-96.0;-96.0;0.0;1.0" TrackMatte="1" />
+		</Composition>
+		<Composition Name="HintEffect_Idle" Duration="2.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Hint_Effect_Background.png" Type="Image" Matrix="90.0;0.0;0.0;0.0;0.0;90.0;0.0;0.0;0.0;0.0;1.0;0.0;-72.0;-72.0;0.0;1.0" Color="1.0;1.0;1.0;0.75" TrackMatte="0" />
+			<Layer Index="1" Name="cutout" Type="Image" Matrix="0.75;0.0;0.0;0.0;0.0;0.75;0.0;0.0;0.0;0.0;1.0;0.0;-96.0;-96.0;0.0;1.0" TrackMatte="1" />
+		</Composition>
+		<Composition Name="HintEffect_Show" Duration="0.5" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Hint_Effect_Background.png" Type="Image" Matrix="90.0;0.0;0.0;0.0;0.0;90.0;0.0;0.0;0.0;0.0;1.0;0.0;-72.0;-72.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+			<Layer Index="1" Name="cutout" Type="Image" Matrix="5.0;0.0;0.0;0.0;0.0;5.0;0.0;0.0;0.0;0.0;1.0;0.0;-640.0;-640.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="1" />
+		</Composition>
+		<Composition Name="SearchPanel" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-550.0;-231.0;550.0;231.0" />
+	</Resource>
+</DataBlock>

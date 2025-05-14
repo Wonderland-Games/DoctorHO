@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8155fa18d54ddfb456a963d39af63751207ac0f3e0fa4e40031d3678fe8e6697
-size 467
+from Foundation.Database import Database
+
+class DatabaseSceneSlots_Advertising(Database):
+    def __init__(self):
+        super(DatabaseSceneSlots_Advertising, self).__init__()
+        self.addRecord(Name="Advertising", Type="Layer2D", Width=2736, Height=1536, Main=1)
+        self.addRecord(Name="Fade", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="BlockInput", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        pass
+    pass
