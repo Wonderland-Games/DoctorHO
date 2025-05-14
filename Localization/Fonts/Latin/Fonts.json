@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e54f1e9dd46e0a5dd07fe86f056a7754bb984b0cb28d457ef0de0aa83d082cf2
-size 354
+{
+	"GAME_FONTS": {
+		"Default": "Dev",
+		"Font": [
+			"Dev",
+			"DevDark"
+		]
+	},
+	
+	"Dev": {
+		"Type": "TTF",
+		"Precompile": 1,
+		"Height": 72,
+		"DPI": 96,
+		"Glyph": "Ubuntu-Regular"
+	},
+	"DevDark": {
+		"Type": "TTF",
+		"Precompile": 1,
+		"Height": 72,
+		"DPI": 96,
+		"Glyph": "Ubuntu-Regular",
+		"ColorFont": [0,0,0,255]
+	}
+}

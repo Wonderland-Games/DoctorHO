@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:53797be697addf8aed74825c92a3c177f456bfa14ca94608091c8924bb12a471
-size 603
+<?xml version="1.0"?>
+<DataBlock Name="Lobby">
+	<Resource Name="Movie2_Lobby" Type="ResourceMovie2">
+		<File Path="Movies2/Lobby/Lobby.aez" />
+		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="QuestBackpack" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="ChapterLevels" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

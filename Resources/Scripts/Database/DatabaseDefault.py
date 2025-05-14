@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:65ab31bd7013efab9f87d8293ee01792f0d3b08ef24a63ebe55cbfdd57a62be6
-size 632
+from Foundation.Database import Database
+
+class DatabaseDefault(Database):
+    def __init__(self):
+        super(DatabaseDefault, self).__init__()
+        self.addRecord(Param="DefaultMusicVolume", Debug=1.0, Master=1.0)
+        self.addRecord(Param="DefaultSoundVolume", Debug=1.0, Master=1.0)
+        self.addRecord(Param="DefaultArrowRadius", Debug=10.0, Master=10.0)
+        self.addRecord(Param="DefaultMobileArrowRadius", Debug=15.0, Master=15.0)
+        self.addRecord(Param="TransitionFadeInTime", Debug=0.25, Master=0.25)
+        self.addRecord(Param="TransitionFadeOutTime", Debug=0.25, Master=0.25)
+        pass
+    pass

@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:22c79c84a6994d9d0bbba27f17bfefe6e70e3a5b6819432550b5f6ec30da0bb4
-size 543
+from Foundation.Group import Group
+
+class GroupIntro(Group):
+    Category = "Resources"
+
+    def _getLayerParams(self):
+        params = { "Size" : (2736,1536), "Type" : "Layer2D", "Name" : "Layer2D_Main", "Main" : True }
+        return params
+        pass
+
+    def _onLoader(self):
+        self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2736, 1536), Main = True )
+        self.createObject( "Movie2", Name = "Movie2_Cutscene" , ResourceMovie = "Movie2_Intro", CompositionName = "Cutscene"  )
+        pass
+    pass

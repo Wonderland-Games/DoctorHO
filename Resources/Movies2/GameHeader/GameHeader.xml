@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2315da2ad0f725c7f99a032176a3b8646de07d9c075905b5e22514dd1600113b
-size 666
+<?xml version="1.0"?>
+<DataBlock Name="GameHeader">
+	<Resource Name="Movie2_GameHeader" Type="ResourceMovie2">
+		<File Path="Movies2/GameHeader/GameHeader.aez" />
+		<Composition Name="Content" Duration="0.533333361148834228515625" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="674.0;-628.0;2038.0;-348.0">
+			<Layer Index="0" Name="settings" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="lives" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

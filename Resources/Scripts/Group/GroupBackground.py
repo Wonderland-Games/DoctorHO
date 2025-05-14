@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0323be5b20952b85be03fa68cdee614fd39426a334ec2c1351438e470af3c7a7
-size 557
+from Foundation.Group import Group
+
+class GroupBackground(Group):
+    Category = "Resources"
+
+    def _getLayerParams(self):
+        params = { "Size" : (2736,1536), "Type" : "Layer2D", "Name" : "Layer2D_Main", "Main" : True }
+        return params
+        pass
+
+    def _onLoader(self):
+        self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2736, 1536), Main = True )
+        self.createObject( "Movie2", Name = "Movie2_Background" , ResourceMovie = "Movie2_Background", CompositionName = "Background"  )
+        pass
+    pass

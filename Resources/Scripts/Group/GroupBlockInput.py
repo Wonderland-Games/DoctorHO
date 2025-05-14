@@ -1,3 +1,16 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d1b8f6d139c0d9f61a9f8bcd552f6467d220adc2a4cf0a187d9ffe8ec64ba9f7
-size 720
+from Foundation.Group import Group
+
+class GroupBlockInput(Group):
+    Category = "Resources"
+
+    def _getLayerParams(self):
+        params = { "Size" : (2736,1536), "Type" : "Layer2D", "Name" : "Layer2D_Main", "Main" : True }
+        return params
+        pass
+
+    def _onLoader(self):
+        self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2736, 1536), Main = True )
+        self.createObject( "Movie2", Name = "Movie2_BlockInput", Interactive = True, Enable = False , ResourceMovie = "Movie2_BlockInput", CompositionName = "BlockInput"  )
+        self.createObject( "Socket", Name = "Socket_Click", Polygon = [(-679, -900),(3541, -926),(3548, 2829),(-689, 2769)] )
+        pass
+    pass

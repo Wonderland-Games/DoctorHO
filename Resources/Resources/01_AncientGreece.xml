@@ -1,3 +1,95 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:02e8c1628fcd33d11d8dfac750f77c3a4ce74bf49e34ba90fe99f9f16325b3b4
-size 8102
+<DataBlock Name = "01_AncientGreece">
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2736;1536"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Jug/_Item_Jug[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Jug/Item_Jug[Full].png" Codec = "pngImage" MaxSize = "198;216"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Jug/_Item_Jug[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Jug/Item_Jug[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Spoon/_Item_Spoon[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Spoon/Item_Spoon[Full].png" Codec = "pngImage" MaxSize = "57;231"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Spoon/_Item_Spoon[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Spoon/Item_Spoon[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Scroll/_Item_Scroll[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Scroll/Item_Scroll[Full].png" Codec = "pngImage" MaxSize = "171;238"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Scroll/_Item_Scroll[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Scroll/Item_Scroll[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Bust/_Item_Bust[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Bust/Item_Bust[Full].png" Codec = "pngImage" MaxSize = "146;216"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Bust/_Item_Bust[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Bust/Item_Bust[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Quest_Helmet/_Item_Quest_Helmet[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Quest_Helmet/Item_Quest_Helmet[Full].png" Codec = "pngImage" MaxSize = "195;249"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Quest_Helmet/_Item_Quest_Helmet[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Quest_Helmet/Item_Quest_Helmet[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Sword/_Item_Sword[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Sword/Item_Sword[Full].png" Codec = "pngImage" MaxSize = "194;195"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Sword/_Item_Sword[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Sword/Item_Sword[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Food/_Item_Food[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Food/Item_Food[Full].png" Codec = "pngImage" MaxSize = "241;232"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Food/_Item_Food[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Food/Item_Food[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Torch/_Item_Torch[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Torch/Item_Torch[Full].png" Codec = "pngImage" MaxSize = "72;195"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Torch/_Item_Torch[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Torch/Item_Torch[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Bow/_Item_Bow[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Bow/Item_Bow[Full].png" Codec = "pngImage" MaxSize = "184;183"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Bow/_Item_Bow[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Bow/Item_Bow[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Armor/_Item_Armor[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Armor/Item_Armor[Full].png" Codec = "pngImage" MaxSize = "203;243"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Armor/_Item_Armor[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Armor/Item_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Harp/_Item_Harp[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Harp/Item_Harp[Full].png" Codec = "pngImage" MaxSize = "114;181"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Harp/_Item_Harp[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Harp/Item_Harp[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Shoes/_Item_Shoes[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Shoes/Item_Shoes[Full].png" Codec = "pngImage" MaxSize = "178;149"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Shoes/_Item_Shoes[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Shoes/Item_Shoes[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Necklace/_Item_Necklace[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Necklace/Item_Necklace[Full].png" Codec = "pngImage" MaxSize = "157;117"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Necklace/_Item_Necklace[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Necklace/Item_Necklace[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Staff/_Item_Staff[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Staff/Item_Staff[Full].png" Codec = "pngImage" MaxSize = "122;239"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Staff/_Item_Staff[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Staff/Item_Staff[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Crown/_Item_Crown[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Crown/Item_Crown[Full].png" Codec = "pngImage" MaxSize = "137;75"/>
+    </Resource>
+    <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Crown/_Item_Crown[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Crown/Item_Crown[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+</DataBlock>

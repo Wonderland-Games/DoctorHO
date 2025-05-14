@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7e69f48b74cfc57ae023ace83a0cf57e211123d464fce4b8cec255e76b804861
-size 1628
+from Foundation.Database import Database
+
+class DatabaseDefaultSlots_Lobby(Database):
+    def __init__(self):
+        super(DatabaseDefaultSlots_Lobby, self).__init__()
+        self.addRecord(Slot="Background", Type="Scene", Group="Background", Enable=1)
+        self.addRecord(Slot="Lobby", Type="Scene", Group="Lobby", Enable=1)
+        self.addRecord(Slot="01_AncientEgypt", Type="Scene", Group="01_AncientEgypt", Enable=0)
+        self.addRecord(Slot="01_AncientGreece", Type="Scene", Group="01_AncientGreece", Enable=0)
+        self.addRecord(Slot="01_AncientRome", Type="Scene", Group="01_AncientRome", Enable=0)
+        self.addRecord(Slot="02_Europa", Type="Scene", Group="02_Europa", Enable=0)
+        self.addRecord(Slot="02_Mars", Type="Scene", Group="02_Mars", Enable=0)
+        self.addRecord(Slot="02_Titan", Type="Scene", Group="02_Titan", Enable=0)
+        self.addRecord(Slot="02_Venus", Type="Scene", Group="02_Venus", Enable=0)
+        self.addRecord(Slot="02_Moon", Type="Scene", Group="02_Moon", Enable=0)
+        self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
+        self.addRecord(Slot="Header", Type="Scene", Group="Header", Enable=1)
+        self.addRecord(Slot="Banner", Type="Scene", Group="Banner", Enable=1, Platform="PC")
+        self.addRecord(Slot="FadeUI", Type="Scene", Group="FadeUI", Enable=1)
+        self.addRecord(Slot="PopUp", Type="Scene", Group="PopUp", Enable=0)
+        self.addRecord(Slot="Fade", Type="Scene", Group="Fade", Enable=1)
+        self.addRecord(Slot="BlockInput", Type="Scene", Group="BlockInput", Enable=1)
+        pass
+    pass

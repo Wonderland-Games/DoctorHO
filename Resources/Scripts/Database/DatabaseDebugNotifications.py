@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6860b96545a1e9b57bfffeda1c4d46dbf7ac5867a2a3837cec689b9cd0d30f08
-size 698
+from Foundation.Database import Database
+
+class DatabaseDebugNotifications(Database):
+    def __init__(self):
+        super(DatabaseDebugNotifications, self).__init__()
+        self.addRecord(Identity="onLevelStart")
+        self.addRecord(Identity="onLevelEnd")
+        self.addRecord(Identity="onLevelMissClicked")
+        self.addRecord(Identity="onLevelHintClicked")
+        self.addRecord(Identity="onLevelLivesDecrease")
+        self.addRecord(Identity="onLevelLivesChanged")
+        self.addRecord(Identity="onPopUpShow")
+        self.addRecord(Identity="onPopUpHide")
+        self.addRecord(Identity="onPopUpShowEnd")
+        self.addRecord(Identity="onPopUpHideEnd")
+        pass
+    pass

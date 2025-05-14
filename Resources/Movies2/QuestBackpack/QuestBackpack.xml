@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:85390a9e778bcf19e5eb176de4cea8f5583dc88ae90e9407f65f2dfe7fe64c97
-size 2137
+<?xml version="1.0"?>
+<DataBlock Name="QuestBackpack">
+	<Resource Name="Movie2_QuestBackpack" Type="ResourceMovie2">
+		<File Path="Movies2/QuestBackpack/QuestBackpack.aez" />
+		<Composition Name="ChapterSlots_Ancient" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="QuestItem_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1048.0;1568.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="QuestItem_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1048.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="QuestItem_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1688.0;1568.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="ChapterSlots_SolarSystem" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="QuestItem_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1008.0;1728.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="QuestItem_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1008.0;1008.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="QuestItem_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="3" Name="QuestItem_4" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1728.0;1008.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="4" Name="QuestItem_5" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1728.0;1728.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Lobby" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="ChapterQuestItems" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

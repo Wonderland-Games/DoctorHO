@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9e592f70b4fa1dcbdc2deeedd8704f3725956e3c02e283e39161f610a0c282fc
-size 473
+from Foundation.Group import Group
+
+class GroupFadeUI(Group):
+    Category = "Resources"
+
+    def _getLayerParams(self):
+        params = { "Size" : (2736,1536), "Type" : "Layer2D", "Name" : "Layer2D_Main", "Main" : True }
+        return params
+        pass
+
+    def _onLoader(self):
+        self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2736, 1536), Main = True )
+        self.createObject( "Fade", Name = "Demon_Fade" )
+        pass
+    pass

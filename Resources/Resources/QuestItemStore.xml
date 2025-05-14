@@ -1,3 +1,50 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0fd9f37ec3a517dab922e1804c7aed6fd4ae79ede5ef5e5c1b5f3291c54c5016
-size 4651
+<DataBlock Name = "QuestItemStore">
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Armor/_Item_1_Quest_Armor[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Armor/Item_1_Quest_Armor[Full].png" Codec = "pngImage" MaxSize = "427;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Armor/_Item_1_Quest_Armor[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Armor/Item_1_Quest_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Helmet/_Item_1_Quest_Helmet[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Helmet/Item_1_Quest_Helmet[Full].png" Codec = "pngImage" MaxSize = "401;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Helmet/_Item_1_Quest_Helmet[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Helmet/Item_1_Quest_Helmet[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Bust/_Item_1_Quest_Bust[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Bust/Item_1_Quest_Bust[Full].png" Codec = "pngImage" MaxSize = "346;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_1_Quest_Bust/_Item_1_Quest_Bust[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_1_Quest_Bust/Item_1_Quest_Bust[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Armor/_Item_2_Quest_Armor[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Armor/Item_2_Quest_Armor[Full].png" Codec = "pngImage" MaxSize = "421;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Armor/_Item_2_Quest_Armor[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Armor/Item_2_Quest_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Helmet/_Item_2_Quest_Helmet[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Helmet/Item_2_Quest_Helmet[Full].png" Codec = "pngImage" MaxSize = "432;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Helmet/_Item_2_Quest_Helmet[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Helmet/Item_2_Quest_Helmet[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Sword/_Item_2_Quest_Sword[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Sword/Item_2_Quest_Sword[Full].png" Codec = "pngImage" MaxSize = "512;344"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Sword/_Item_2_Quest_Sword[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Sword/Item_2_Quest_Sword[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Gun/_Item_2_Quest_Gun[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Gun/Item_2_Quest_Gun[Full].png" Codec = "pngImage" MaxSize = "512;145"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Gun/_Item_2_Quest_Gun[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Gun/Item_2_Quest_Gun[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Spaceship/_Item_2_Quest_Spaceship[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Spaceship/Item_2_Quest_Spaceship[Full].png" Codec = "pngImage" MaxSize = "512;300"/>
+    </Resource>
+    <Resource Name = "QuestItemStore/Layer2D_Main/Item_2_Quest_Spaceship/_Item_2_Quest_Spaceship[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore/Layer2D_Main/Item_2_Quest_Spaceship/Item_2_Quest_Spaceship[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+</DataBlock>

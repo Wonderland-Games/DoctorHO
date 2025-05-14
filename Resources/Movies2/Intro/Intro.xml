@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:60e4d518e9b9f99ea9864345af36e3335c8a432ed4737d1c96d777c61d3b355e
-size 436
+<?xml version="1.0"?>
+<DataBlock Name="Intro">
+	<Resource Name="Movie2_Intro" Type="ResourceMovie2">
+		<File Path="Movies2/Intro/Intro.aez" />
+		<Composition Name="Cutscene" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

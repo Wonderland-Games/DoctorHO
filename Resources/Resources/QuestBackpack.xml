@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bd868f2e01f21dde42fc9cbe913f31f1a1edca86647b509ffdcf9ec810d6d909
-size 115
+<DataBlock Name = "QuestBackpack">
+    <Include Path = "Movies2/QuestBackpack/QuestBackpack.bin"/>
+</DataBlock>

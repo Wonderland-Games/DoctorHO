@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:017c62a8a7c9c5199930bcecb10ee750b8def40fc4959ac6506863b076d298cb
-size 762
+from Foundation.Database import Database
+
+class DatabaseSystems(Database):
+    def __init__(self):
+        super(DatabaseSystems, self).__init__()
+        self.addRecord(Module="Game.Systems", Name="SystemGlobal", Global=1, Priority=1)
+        self.addRecord(Module="Game.Systems", Name="SystemGame", Global=1)
+        self.addRecord(Module="Foundation.Systems", Name="SystemDebugNotifications", Global=1, Development=1)
+        self.addRecord(Module="Foundation.Systems", Name="SystemFade", Global=1)
+        self.addRecord(Module="UIKit.Systems", Name="SystemPopUp", Global=1)
+        self.addRecord(Module="Game.Systems", Name="SystemUI", Global=1)
+        self.addRecord(Module="Foundation.Systems", Name="SystemAdvertising", Global=1)
+        pass
+    pass

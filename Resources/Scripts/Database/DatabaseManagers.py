@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fe6c81eea4fedba20e11a2db3b3c2ed6e2ac01757e6953f3df1286bbf8f48b19
-size 977
+from Foundation.Database import Database
+
+class DatabaseManagers(Database):
+    def __init__(self):
+        super(DatabaseManagers, self).__init__()
+        self.addRecord(Module="Foundation", Name="SettingsManager")
+        self.addRecord(Module="Foundation", Name="DefaultManager", Param="Default")
+        self.addRecord(Module="Foundation", Name="SystemManager")
+        self.addRecord(Module="Foundation", Name="GroupManager", Param="Groups")
+        self.addRecord(Module="Foundation", Name="DemonManager", Param="Demons")
+        self.addRecord(Module="Foundation", Name="SceneManager", Param="DefaultSlots")
+        self.addRecord(Module="Foundation", Name="SceneManager", Param="SceneSlots")
+        self.addRecord(Module="Foundation", Name="SceneManager", Param="Scenes")
+        self.addRecord(Module="Foundation", Name="DebugNotificationsManager", Param="DebugNotifications")
+        self.addRecord(Module="Game.Managers", Name="GameManager")
+        pass
+    pass
