@@ -33,6 +33,7 @@ class DatabasePrototypes(Database):
         self.addORM(RecordPrototypes("LevelLost_Icon", None, None, "Movie2_Circle", "Movie2_Circle", None, Icon=dict(Slot="icon", Prototype="Heart_Big")))
         self.addORM(RecordPrototypes("LevelLost_Ad", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, Icon=dict(Slot="icon", Prototype="Advertising", Size="Medium")))
         self.addORM(RecordPrototypes("LevelLost_Restart", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, {}))
+        self.addORM(RecordPrototypes("LevelLost_Lobby", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, {}))
         self.addORM(RecordPrototypes("LevelWon_Lobby", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, Icon=dict(Slot="icon", Prototype="Lobby")))
         self.addORM(RecordPrototypes("Lobby_Play", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, {}))
         self.addORM(RecordPrototypes("MissClickEffect", None, None, "Movie2_MissClickEffect", "Movie2_MissClickEffect", None, {}))
