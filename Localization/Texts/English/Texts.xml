@@ -17,6 +17,7 @@
 	
 	<Text Key="ID_LevelLost_Ad" Value="Watch Ad" />
 	<Text Key="ID_LevelLost_Restart" Value="Restart Level" />
+	<Text Key="ID_LevelLost_Lobby" Value="Return to Lobby" />
 	
 	<Text Key="ID_LevelWon_Lobby" Value="Return to Lobby" />
 	
