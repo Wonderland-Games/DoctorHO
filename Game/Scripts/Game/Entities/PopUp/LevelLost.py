@@ -102,4 +102,5 @@ class LevelLost(PopUpContent):
 
     def _scopeLobby(self, source):
         source.addNotify(Notificator.onPopUpHide)
+        source.addFunction(GameManager.removeGame)
         source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)
