@@ -5,6 +5,7 @@ from Game.Managers.GameManager import GameManager
 SLOT_ICON = "Icon"
 SLOT_AD = "Ad"
 SLOT_RESTART = "Restart"
+SLOT_LOBBY = "Lobby"
 
 
 class LevelLost(PopUpContent):
@@ -48,7 +49,7 @@ class LevelLost(PopUpContent):
         self._attachObjectToSlot(self.icon, SLOT_ICON)
 
     def _setupButtons(self):
-        buttons = [SLOT_AD, SLOT_RESTART]
+        buttons = [SLOT_AD, SLOT_RESTART, SLOT_LOBBY]
 
         for name in buttons:
             container = self._generateContainter(name)
@@ -81,6 +82,12 @@ class LevelLost(PopUpContent):
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_restart.movie)
                 tc.addScope(self._scopeRestart)
 
+        button_lobby = self.buttons.get(SLOT_LOBBY)
+        if button_lobby is not None:
+            with self._createTaskChain(SLOT_LOBBY) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_lobby.movie)
+                tc.addScope(self._scopeLobby)
+
     def _scopeAdvertisement(self, source):
         source.addNotify(Notificator.onPopUpHide)
         source.addNotify(Notificator.onCallRewardedAd, "Lives")
@@ -92,3 +99,8 @@ class LevelLost(PopUpContent):
         source.addFunction(GameManager.removeGame)
         source.addFunction(GameManager.prepareGame, level_id)
         source.addFunction(Mengine.restartCurrentScene, True, None)
+
+    def _scopeLobby(self, source):
+        source.addNotify(Notificator.onPopUpHide)
+        source.addFunction(GameManager.removeGame)
+        source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)

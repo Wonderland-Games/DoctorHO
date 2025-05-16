@@ -50,6 +50,7 @@ class SystemUI(BaseSystem):
 
             "LevelLost_Ad",
             "LevelLost_Restart",
+            "LevelLost_Lobby",
 
             "LevelWon_Lobby",
 
