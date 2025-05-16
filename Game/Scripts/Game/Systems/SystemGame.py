@@ -101,7 +101,7 @@ class SystemGame(System):
             Notification.notify(Notificator.onPopUpShow, "LevelWon", popup.BUTTONS_STATE_DISABLE)
             self._removeTaskChains()
         else:
-            Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE)
+            Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
 
         GameManager.endGame(is_win)
 
