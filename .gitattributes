@@ -7,3 +7,10 @@ Localization/**/*.json -filter -diff -merge text
 Resources/**/*.py -filter -diff -merge text
 Resources/**/*.xml -filter -diff -merge text
 Resources/**/*.json -filter -diff -merge text
+
+Localization/*.py -filter -diff -merge text
+Localization/*.xml -filter -diff -merge text
+Localization/**.json -filter -diff -merge text
+Resources/*.py -filter -diff -merge text
+Resources/*.xml -filter -diff -merge text
+Resources/*.json -filter -diff -merge text
