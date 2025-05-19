@@ -7,10 +7,11 @@ class CutsceneManager(Manager):
     _cutscenes = {}
 
     class Cutscene(object):
-        def __init__(self, cutscene_id, cutscene_group_name, cutscene_movie_name):
+        def __init__(self, cutscene_id, cutscene_group_name, cutscene_movie_name, cutscene_movies):
             self.cutscene_id = cutscene_id
             self.cutscene_group_name = cutscene_group_name
             self.cutscene_movie_name = cutscene_movie_name
+            self.cutscene_movies = cutscene_movies
 
     @staticmethod
     def loadParams(module, param):
@@ -19,13 +20,14 @@ class CutsceneManager(Manager):
             cutscene_id = record.get("CutsceneId")
             cutscene_group_name = record.get("CutsceneGroupName")
             cutscene_movie_name = record.get("CutsceneMovieName")
+            cutscene_movies = record.get("CutsceneMovies", [])
 
             if GroupManager.hasGroup(cutscene_group_name) is False:
                 Trace.msg_err("CutsceneManager.loadParams: invalid add cutscene {!r}, not found group {!r}"
                               .format(cutscene_id, cutscene_group_name))
                 continue
 
-            cutscene = CutsceneManager.Cutscene(cutscene_id, cutscene_group_name, cutscene_movie_name)
+            cutscene = CutsceneManager.Cutscene(cutscene_id, cutscene_group_name, cutscene_movie_name, cutscene_movies)
             CutsceneManager._cutscenes[cutscene_id] = cutscene
 
         return True
