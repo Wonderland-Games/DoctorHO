@@ -2,12 +2,14 @@ from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.GroupManager import GroupManager
 from Game.Managers.CutsceneManager import CutsceneManager
+from UIKit.Managers.PrototypeManager import PrototypeManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CUTSCENE = "Cutscene"
 SLOT_SKIP = "Skip"
+PROTOTYPE_SKIP = "Cutscene_Skip"
 
 CUTSCENE_MOVIE_STATE_PLAY = "Play"
 CUTSCENE_MOVIE_STATE_LOOP = "Loop"
@@ -77,7 +79,20 @@ class Cutscene(BaseEntity):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupSkipButton(self):
-        pass
+        self.skip_button = PrototypeManager.generateObjectUnique(PROTOTYPE_SKIP, PROTOTYPE_SKIP)
+        self.skip_button.setTextAliasEnvironment(PROTOTYPE_SKIP)
+        # self.skip_button.setEnable(True)
+
+        skip_button_slot = self.content.getMovieSlot(SLOT_SKIP)
+        skip_button_node = self.skip_button.getEntityNode()
+        skip_button_slot.addChild(skip_button_node)
+
+        _, game_height, _, bottom_offset, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+
+        skip_button_bounds = self.skip_button.getCompositionBounds()
+        skip_button_size = Utils.getBoundingBoxSize(skip_button_bounds)
+        skip_button_pos_y = game_height - bottom_offset - skip_button_size.y / 2
+        skip_button_slot.setWorldPosition(Mengine.vec2f(x_center, skip_button_pos_y))
 
     def _setupCutscene(self):
         self.cutscene_params = CutsceneManager.getCutscene(self.CutsceneId)
@@ -161,16 +176,94 @@ class Cutscene(BaseEntity):
         return tc
 
     def _runTaskChains(self):
+        with self._createTaskChain(SLOT_SKIP, Repeat=True) as tc:
+            tc.addEnable(self.skip_button)
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.skip_button)
+            tc.addPrint("Skip button clicked")
+            tc.addDisable(self.skip_button)
+
         if self.cutscene_params is None:
             return
 
+        cutscene_movies = self.cutscene_params.cutscene_movies
+        cutscene_movies_len = len(cutscene_movies)
+
+        if cutscene_movies_len == 0:
+            return
+
+        print cutscene_movies_len, cutscene_movies
+
         with self._createTaskChain(SLOT_CUTSCENE) as tc:
-            with tc.addRepeatTask() as (repeat, until):
-                repeat.addScope(self._scopePlayLoop)
-                until.addTask("TaskMouseButtonClick")
-                until.addTask("TaskMouseButtonClick")
-                until.addTask("TaskMouseButtonClick")
-                until.addTask("TaskMouseButtonClick")
+            with tc.addForTask(cutscene_movies_len) as (it, sourceFor):
+                sourceFor.addScope(self._testForTask, it)
+
+            for cutscene_movie_name in cutscene_movies:
+                cutscene_movie = GroupManager.getObject(self.cutscene_params.cutscene_group_name, cutscene_movie_name)
+                if cutscene_movie is None:
+                    continue
+
+                if CUTSCENE_MOVIE_STATE_PLAY in cutscene_movie_name:
+                    print "ITS PLAY MOVIE"
+                    tc.addPrint("ITS PLAY MOVIE")
+
+                elif CUTSCENE_MOVIE_STATE_LOOP in cutscene_movie_name:
+                    print "ITS LOOP MOVIE"
+                    tc.addPrint("ITS LOOP MOVIE")
+
+                # cutscene_movie_node = cutscene_movie.getEntityNode()
+                # cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
+                # cutscene_slot.addChild(cutscene_movie_node)
+                #
+                # _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
+                # cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
+                #
+                # cutscene_movie.setEnable(True)
+                #
+                # tc.addPlay(cutscene_movie)
+
+
+
+        # # 1 play cutscene
+        # # 2 if have loop, play loop
+        # # 3 wait click
+        # # 4 if have more cutscene, return to 1
+        # # 5 else return to lobby
+        #
+        # with self._createTaskChain(SLOT_CUTSCENE, Repeat=True) as tc:
+        #
+        #     # 1 play cutscene
+        #     tc.addScope(self._scopePlayCutsceneMovie)
+        #
+        #     # 2 if have loop, play loop
+        #     with tc.addIfTask(if we have loop cutscene movie) as (loop, no_loop):
+        #         with loop.addRepeatUntil() as (repeat, until):
+        #             repeat.addScope(self._scopePlayLoop)
+        #             # 3 wait click
+        #             until.addTask("TaskMouseButtonClick")
+        #
+        #         # 3 wait click
+        #         no_loop.addTask("TaskMouseButtonClick")
+        #
+        #     # 4 if have more cutscene, return to 1
+        #     with tc.addIfTask( if we have more cutscene movies) as (_, to_lobby):
+        #         # _ here taskchain will be done and run again, because of repeat param
+        #
+        #         # 5 else return to lobby
+        #         to_lobby.addNotify(Notificator.onChangeScene, "Lobby")
+        #         to_lobby.addBlock()
+
+
+
+            # with tc.addRepeatTask() as (repeat, until):
+            #     repeat.addScope(self._scopePlayLoop)
+            #     until.addTask("TaskMouseButtonClick")
+            #     until.addTask("TaskMouseButtonClick")
+            #     until.addTask("TaskMouseButtonClick")
+            #     until.addTask("TaskMouseButtonClick")
+
+
+    def _testForTask(self, source, it):
+        source.addPrint("Test for task: {}".format(it))
 
     def _scopePlayLoop(self, source):
         source.addScope(self._scopePlayCutsceneMovie)
