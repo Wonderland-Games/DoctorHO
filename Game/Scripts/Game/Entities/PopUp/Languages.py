@@ -1,4 +1,8 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from Foundation.LanguagesManager import LanguagesManager
+from Foundation.SystemManager import SystemManager
+
+SLOT_BUTTONS = "Buttons"
 
 
 class Languages(PopUpContent):
@@ -29,14 +33,21 @@ class Languages(PopUpContent):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupButtons(self):
-        buttons = []
+        #self._changeLocale("en")
+        locales = LanguagesManager.getLocales()
+        print(locales)
 
-        for name in buttons:
-            container = self._generateContainter(name)
+        for name in locales:
+            container = self._generateContainter(SLOT_BUTTONS)
             if container is None:
                 continue
 
-            self._attachObjectToSlot(container, name)
+            text_id = LanguagesManager.getLanguageTextId(name)
+            button_text = Mengine.getTextFromId(text_id)
+            print(button_text)
+            container.setTextAliasEnvironment(button_text)
+
+            self._attachObjectToSlot(container, SLOT_BUTTONS)
             self.buttons[name] = container
 
     def _setupSlotsPositions(self):
@@ -50,3 +61,16 @@ class Languages(PopUpContent):
 
     def _runTaskChains(self):
         pass
+
+    def _changeLocale(self, locale):
+        if SystemManager.hasSystem("SystemAutoLanguage"):
+            Mengine.changeCurrentAccountSetting("SelectedLanguage", unicode(locale))
+            SystemManager.getSystem("SystemAutoLanguage").disable()
+
+        def cbOnSceneRestartChangeLocale(scene, isActive, isError):
+            print("Scene: ", scene)
+            if scene is None:
+                Mengine.setLocale(locale)
+                Trace.msg("Locale changed to {!r}".format(locale))
+
+        Mengine.restartCurrentScene(True, cbOnSceneRestartChangeLocale)

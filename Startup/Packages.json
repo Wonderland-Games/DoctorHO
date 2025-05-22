@@ -19,7 +19,8 @@
             "Fonts_Latin",
             
             "Texts_All",
-            "Texts_English"
+            "Texts_English",
+			"Texts_Ukrainian"
         ]
     },
     "Foundation": {
@@ -87,6 +88,13 @@
         "Path": "../Localization/Texts/English/",
         "Description": "Package.bin",
         "Locales": ["en"],
+        "NoPak": 1
+    },
+	"Texts_Ukrainian": {
+        "Name": "Texts_Ukrainian",
+        "Path": "../Localization/Texts/Ukrainian/",
+        "Description": "Package.bin",
+        "Locales": ["ukr"],
         "NoPak": 1
     }
 }
