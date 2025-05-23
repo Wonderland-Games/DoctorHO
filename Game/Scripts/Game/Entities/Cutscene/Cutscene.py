@@ -112,6 +112,10 @@ class Cutscene(BaseEntity):
         # self.cutscene_movie.setPlay(True)
         # self.cutscene_movie.setLoop(True)
 
+        cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
+        _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
+        cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
+
     def _setupCutsceneMovie(self, source=None):
         print "1 Cutscene movie parent: {}".format(self.cutscene_movie.getParent())
         cutscene_movie_node = self.cutscene_movie.getEntityNode()
@@ -165,8 +169,6 @@ class Cutscene(BaseEntity):
 
         return cutscene_movie
 
-    # def _changeCurrentCutsceneMovieState(self):
-
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def _createTaskChain(self, name, **params):
@@ -176,94 +178,61 @@ class Cutscene(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        with self._createTaskChain(SLOT_SKIP, Repeat=True) as tc:
-            tc.addEnable(self.skip_button)
-            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.skip_button)
-            tc.addPrint("Skip button clicked")
-            tc.addDisable(self.skip_button)
-
         if self.cutscene_params is None:
             return
 
         cutscene_movies = self.cutscene_params.cutscene_movies
         cutscene_movies_len = len(cutscene_movies)
-
-        if cutscene_movies_len == 0:
-            return
-
         print cutscene_movies_len, cutscene_movies
 
         with self._createTaskChain(SLOT_CUTSCENE) as tc:
-            with tc.addForTask(cutscene_movies_len) as (it, sourceFor):
-                sourceFor.addScope(self._testForTask, it)
-
+            # for each cutscene movie
             for cutscene_movie_name in cutscene_movies:
                 cutscene_movie = GroupManager.getObject(self.cutscene_params.cutscene_group_name, cutscene_movie_name)
                 if cutscene_movie is None:
                     continue
 
-                if CUTSCENE_MOVIE_STATE_PLAY in cutscene_movie_name:
-                    print "ITS PLAY MOVIE"
-                    tc.addPrint("ITS PLAY MOVIE")
+                # play cutscene movie with conditions
+                tc.addScope(self._scopePlayCutsceneMovie2, cutscene_movie)
 
-                elif CUTSCENE_MOVIE_STATE_LOOP in cutscene_movie_name:
-                    print "ITS LOOP MOVIE"
-                    tc.addPrint("ITS LOOP MOVIE")
+            tc.addNotify(Notificator.onChangeScene, "Lobby")
 
-                # cutscene_movie_node = cutscene_movie.getEntityNode()
-                # cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
-                # cutscene_slot.addChild(cutscene_movie_node)
-                #
-                # _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
-                # cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
-                #
-                # cutscene_movie.setEnable(True)
-                #
-                # tc.addPlay(cutscene_movie)
+    def _scopePlayCutsceneMovie2(self, source, cutscene_movie):
+        # get cutscene movie node and remember its parent
+        cutscene_movie_node = cutscene_movie.getEntityNode()
+        cutscene_movie_node_parent = cutscene_movie_node.getParent()
 
+        # attach cutscene movie node to cutscene slot
+        cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
+        cutscene_slot.addChild(cutscene_movie_node)
 
+        # get cutscene movie name to check its type
+        cutscene_movie_name = cutscene_movie.getName()
 
-        # # 1 play cutscene
-        # # 2 if have loop, play loop
-        # # 3 wait click
-        # # 4 if have more cutscene, return to 1
-        # # 5 else return to lobby
-        #
-        # with self._createTaskChain(SLOT_CUTSCENE, Repeat=True) as tc:
-        #
-        #     # 1 play cutscene
-        #     tc.addScope(self._scopePlayCutsceneMovie)
-        #
-        #     # 2 if have loop, play loop
-        #     with tc.addIfTask(if we have loop cutscene movie) as (loop, no_loop):
-        #         with loop.addRepeatUntil() as (repeat, until):
-        #             repeat.addScope(self._scopePlayLoop)
-        #             # 3 wait click
-        #             until.addTask("TaskMouseButtonClick")
-        #
-        #         # 3 wait click
-        #         no_loop.addTask("TaskMouseButtonClick")
-        #
-        #     # 4 if have more cutscene, return to 1
-        #     with tc.addIfTask( if we have more cutscene movies) as (_, to_lobby):
-        #         # _ here taskchain will be done and run again, because of repeat param
-        #
-        #         # 5 else return to lobby
-        #         to_lobby.addNotify(Notificator.onChangeScene, "Lobby")
-        #         to_lobby.addBlock()
+        # cutscene movie state is Play
+        if CUTSCENE_MOVIE_STATE_PLAY in cutscene_movie_name:
+            source.addPlay(cutscene_movie)
 
+        # cutscene movie state is Loop
+        elif CUTSCENE_MOVIE_STATE_LOOP in cutscene_movie_name:
+            with source.addRaceTask(2) as (play_loop, click_skip):
+                # play cutscene idle movie with loop
+                play_loop.addPlay(cutscene_movie, Loop=True)
 
+                # enable skip button
+                click_skip.addEnable(self.skip_button)
+                click_skip.addPrint("Skip button enabled")
 
-            # with tc.addRepeatTask() as (repeat, until):
-            #     repeat.addScope(self._scopePlayLoop)
-            #     until.addTask("TaskMouseButtonClick")
-            #     until.addTask("TaskMouseButtonClick")
-            #     until.addTask("TaskMouseButtonClick")
-            #     until.addTask("TaskMouseButtonClick")
+                # click skip button
+                click_skip.addTask("TaskMovie2ButtonClick", Movie2Button=self.skip_button)
+                click_skip.addPrint("Skip button clicked")
 
+                # disable skip button
+                click_skip.addDisable(self.skip_button)
+                click_skip.addPrint("Skip button disabled")
 
-    def _testForTask(self, source, it):
-        source.addPrint("Test for task: {}".format(it))
+        # return cutscene movie node to its parent
+        source.addFunction(cutscene_movie_node_parent.addChild, cutscene_movie_node)
 
     def _scopePlayLoop(self, source):
         source.addScope(self._scopePlayCutsceneMovie)
