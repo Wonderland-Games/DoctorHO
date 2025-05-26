@@ -11,7 +11,6 @@ class DatabaseManagers(Database):
         self.addRecord(Module="Foundation", Name="SceneManager", Param="DefaultSlots")
         self.addRecord(Module="Foundation", Name="SceneManager", Param="SceneSlots")
         self.addRecord(Module="Foundation", Name="SceneManager", Param="Scenes")
-        self.addRecord(Module="Foundation", Name="LanguagesManager", Param="Languages")
         self.addRecord(Module="Foundation", Name="DebugNotificationsManager", Param="DebugNotifications")
         self.addRecord(Module="Game.Managers", Name="GameManager")
         self.addRecord(Module="Game.Managers", Name="CutsceneManager", Param="Cutscenes")
