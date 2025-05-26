@@ -57,6 +57,8 @@ class SystemUI(BaseSystem):
             "QuestItemReceived_Button",
 
             "Lobby_Play",
+
+            "Cutscene_Skip",
         ]
         
         for env in environments:

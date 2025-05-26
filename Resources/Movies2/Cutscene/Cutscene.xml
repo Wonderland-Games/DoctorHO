@@ -2,6 +2,9 @@
 <DataBlock Name="Cutscene">
 	<Resource Name="Movie2_Cutscene" Type="ResourceMovie2">
 		<File Path="Movies2/Cutscene/Cutscene.aez" />
-		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" />
+		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Cutscene" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Skip" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
 	</Resource>
 </DataBlock>
