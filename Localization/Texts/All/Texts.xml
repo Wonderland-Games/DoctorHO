@@ -8,21 +8,11 @@
 	<Text Key="ID_HintCounter" Value="%s" />
 	
 	<Text Key="ID_Language_English" Value="English" />
+	<!--
+	<Text Key="ID_Language_Ukrainian" Value="Ukrainian" />
+	<Text Key="ID_Language_Russian" Value="Russian" />
+	-->
 	<Text Key="ID_Language_Ukrainian" Value="Українська" />
 	<Text Key="ID_Language_Russian" Value="Русский" />
-	<Text Key="ID_Language_Polish" Value="Polski" />
-	<Text Key="ID_Language_Romanian" Value="Română" />
-	<Text Key="ID_Language_German" Value="Deutsch" />
-	<Text Key="ID_Language_French" Value="Français" />
-	<Text Key="ID_Language_Italian" Value="Italiano" />
-	<Text Key="ID_Language_Spanish" Value="Español" />
-	<Text Key="ID_Language_Portuguese" Value="Português" />
-	<Text Key="ID_Language_Dutch" Value="Nederlands" />
-	<Text Key="ID_Language_Swedish" Value="Svenska" />
-	<Text Key="ID_Language_Turkish" Value="Türkçe" />
-	<Text Key="ID_Language_Japanese" Value="日本語" />
-	<Text Key="ID_Language_Chinese" Value="中文" />
-	<Text Key="ID_Language_Hindi" Value="हिन्दी" />
-	<Text Key="ID_Language_Indonesian" Value="Bahasa Indonesia" />
 	
 </Texts>
