@@ -211,13 +211,13 @@ class Cutscene(BaseEntity):
 
         # cutscene movie state is Play
         if CUTSCENE_MOVIE_STATE_PLAY in cutscene_movie_name:
-            source.addPlay(cutscene_movie)
+            source.addPlay(cutscene_movie, ValidationParentEnable=False)
 
         # cutscene movie state is Loop
         elif CUTSCENE_MOVIE_STATE_LOOP in cutscene_movie_name:
             with source.addRaceTask(2) as (play_loop, click_skip):
                 # play cutscene idle movie with loop
-                play_loop.addPlay(cutscene_movie, Loop=True)
+                play_loop.addPlay(cutscene_movie, Loop=True, ValidationParentEnable=False)
 
                 # enable skip button
                 click_skip.addEnable(self.skip_button)
@@ -232,7 +232,7 @@ class Cutscene(BaseEntity):
                 click_skip.addPrint("Skip button disabled")
 
         # return cutscene movie node to its parent
-        source.addFunction(cutscene_movie_node_parent.addChild, cutscene_movie_node)
+        source.addReturn(cutscene_movie)
 
     def _scopePlayLoop(self, source):
         source.addScope(self._scopePlayCutsceneMovie)
