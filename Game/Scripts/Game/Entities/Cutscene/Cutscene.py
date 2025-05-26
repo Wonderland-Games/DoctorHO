@@ -200,7 +200,6 @@ class Cutscene(BaseEntity):
     def _scopePlayCutsceneMovie2(self, source, cutscene_movie):
         # get cutscene movie node and remember its parent
         cutscene_movie_node = cutscene_movie.getEntityNode()
-        cutscene_movie_node_parent = cutscene_movie_node.getParent()
 
         # attach cutscene movie node to cutscene slot
         cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
