@@ -141,4 +141,4 @@ class Loading(BaseEntity):
         if Mengine.hasOption("nobanner") is False:
             source.addFunction(AdvertisementProvider.showBanner)
 
-        source.addNotify(Notificator.onChangeScene, "Lobby")
+        source.addNotify(Notificator.onChangeScene, "Cutscene")
