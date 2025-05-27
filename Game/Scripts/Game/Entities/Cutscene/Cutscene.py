@@ -34,6 +34,9 @@ class Cutscene(BaseEntity):
         self.cutscene_movie_number = None
         self.cutscene_movie_state = None
 
+        self.cutscene_current_number = None
+        self.cutscene_movies = {}
+
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
@@ -103,6 +106,23 @@ class Cutscene(BaseEntity):
         self.cutscene_movie_state = CUTSCENE_MOVIE_STATE_PLAY
         self.cutscene_movie_index = 0
 
+        self.cutscene_movies = {
+            1: {
+                "Play": "movie_obj",
+                "Loop": "movie_obj",
+            },
+            2: {
+                "Play": "movie_obj",
+                "Loop": "movie_obj",
+            },
+        }
+
+        movies_count_over = False
+        while movies_count_over is False:
+            # self.cutscene_movies
+
+            movies_count_over = True
+
         # self.cutscene_movie = self._getCutsceneMovieByNumberAndState()
         #
         # self._setupCutsceneMovie(self.cutscene_movie)
@@ -167,6 +187,14 @@ class Cutscene(BaseEntity):
         print ("Cutscene movie name: ", cutscene_movie_name)
         cutscene_movie = GroupManager.getObject(cutscene_group_name, cutscene_movie_name)
 
+        return cutscene_movie
+
+    def _getNextCutsceneMovie(self):
+        self.cutscene_current_number
+
+        cutscene_group_name = self.cutscene_params.cutscene_group_name
+        cutscene_movie_name = CUTSCENE_MOVIE_TEMPLATE.format("state", "number")
+        cutscene_movie = GroupManager.getObject(cutscene_group_name, cutscene_movie_name)
         return cutscene_movie
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
