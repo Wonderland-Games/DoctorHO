@@ -2,9 +2,6 @@
 <DataBlock Name="Intro">
 	<Resource Name="Movie2_Intro" Type="ResourceMovie2">
 		<File Path="Movies2/Intro/Intro.aez" />
-		<Composition Name="Cutscene" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
-			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" TrackMatte="0" />
-		</Composition>
 		<Composition Name="Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
@@ -15,7 +12,8 @@
 			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
 		</Composition>
 		<Composition Name="Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
-			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="0" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Null 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1318.0;1318.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
 	</Resource>
 </DataBlock>
