@@ -27,15 +27,7 @@ class Cutscene(BaseEntity):
         self.content = None
         self.tcs = []
         self.skip_button = None
-
         self.cutscene_params = None
-        self.cutscene_movie = None
-        self.cutscene_movie_index = None
-        self.cutscene_movie_number = None
-        self.cutscene_movie_state = None
-
-        self.cutscene_current_number = None
-        self.cutscene_movies = {}
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -70,14 +62,7 @@ class Cutscene(BaseEntity):
             self.skip_button.onDestroy()
             self.skip_button = None
 
-        if self.cutscene_movie is not None:
-            self.cutscene_movie.returnToParent()
-            self.cutscene_movie = None
-
-        self.cutscene_movie_number = None
-        self.cutscene_movie_state = None
         self.cutscene_params = None
-        self.cutscene_movie_index = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -102,100 +87,43 @@ class Cutscene(BaseEntity):
         if self.cutscene_params is None:
             return
 
-        self.cutscene_movie_number = 1
-        self.cutscene_movie_state = CUTSCENE_MOVIE_STATE_PLAY
-        self.cutscene_movie_index = 0
-
-        self.cutscene_movies = {
-            1: {
-                "Play": "movie_obj",
-                "Loop": "movie_obj",
-            },
-            2: {
-                "Play": "movie_obj",
-                "Loop": "movie_obj",
-            },
-        }
-
-        movies_count_over = False
-        while movies_count_over is False:
-            # self.cutscene_movies
-
-            movies_count_over = True
-
-        # self.cutscene_movie = self._getCutsceneMovieByNumberAndState()
-        #
-        # self._setupCutsceneMovie(self.cutscene_movie)
-
-        # temp
-        # self.cutscene_movie.setEnable(True)
-        # self.cutscene_movie.setPlay(True)
-        # self.cutscene_movie.setLoop(True)
-
         cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
         _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
         cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
-
-    def _setupCutsceneMovie(self, source=None):
-        print "1 Cutscene movie parent: {}".format(self.cutscene_movie.getParent())
-        cutscene_movie_node = self.cutscene_movie.getEntityNode()
-        cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
-        cutscene_slot.addChild(cutscene_movie_node)
-
-        _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
-        cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
-
-        self.cutscene_movie.setEnable(True)
-
-        print "2 Cutscene movie parent: {}".format(self.cutscene_movie.getParent())
 
     # - Movies ---------------------------------------------------------------------------------------------------------
 
-    def _incCutsceneMovieIndex(self):
-        self.cutscene_movie_index += 1
+    def _searchCutsceneMoviesInGroup(self):
+        cutscene_movies = []
+        cutscene_movie_number = 1
+        movies_count_over = False
 
-    def _getCutsceneMovieByListIndex(self):
-        if self.cutscene_movie_index + 1 > len(self.cutscene_params.cutscene_movies):
-            return None
+        while movies_count_over is False:
 
-        cutscene_movies = self.cutscene_params.cutscene_movies
-        print ("Cutscene movies: ", cutscene_movies)
+            cutscene_movie_play_name = CUTSCENE_MOVIE_TEMPLATE.format(CUTSCENE_MOVIE_STATE_PLAY, cutscene_movie_number)
+            if GroupManager.hasObject(self.cutscene_params.cutscene_group_name, cutscene_movie_play_name) is False:
+                movies_count_over = True
+                break
 
-        cutscene_group_name = self.cutscene_params.cutscene_group_name
-        cutscene_movie_name = self.cutscene_params.cutscene_movies[self.cutscene_movie_index]
-        print ("Cutscene movie name: ", cutscene_movie_name)
-        cutscene_movie = GroupManager.getObject(cutscene_group_name, cutscene_movie_name)
+            cutscene_movies.append(cutscene_movie_play_name)
 
-        return cutscene_movie
+            cutscene_movie_loop_name = CUTSCENE_MOVIE_TEMPLATE.format(CUTSCENE_MOVIE_STATE_LOOP, cutscene_movie_number)
+            if GroupManager.hasObject(self.cutscene_params.cutscene_group_name, cutscene_movie_loop_name) is True:
+                cutscene_movies.append(cutscene_movie_loop_name)
 
-    def _getCutsceneMovieStateByName(self):
-        cutscene_movie_name = self.cutscene_params.cutscene_movies[self.cutscene_movie_index]
+            cutscene_movie_number += 1
 
-        states = [CUTSCENE_MOVIE_STATE_PLAY, CUTSCENE_MOVIE_STATE_LOOP]
-        for state in states:
-            if state in cutscene_movie_name:
-                return state
+        return cutscene_movies
 
-        return None
+    def _validateCutsceneMovies(self, cutscene_movies):
+        valid_cutscene_movies = []
+        for cutscene_movie_name in cutscene_movies:
+            if GroupManager.hasObject(self.cutscene_params.cutscene_group_name, cutscene_movie_name):
+                valid_cutscene_movies.append(cutscene_movie_name)
+            else:
+                Trace.msg_err("Cutscene movie {!r} not found in group {!r}".format(cutscene_movie_name, self.cutscene_params.cutscene_group_name))
 
-    def _getCutsceneMovieByNumberAndState(self):
-        cutscene_movies = self.cutscene_params.cutscene_movies
-        print ("Cutscene movies: ", cutscene_movies)
-
-        cutscene_group_name = self.cutscene_params.cutscene_group_name
-        cutscene_movie_name = CUTSCENE_MOVIE_TEMPLATE.format(self.cutscene_movie_state, self.cutscene_movie_number)
-        print ("Cutscene movie name: ", cutscene_movie_name)
-        cutscene_movie = GroupManager.getObject(cutscene_group_name, cutscene_movie_name)
-
-        return cutscene_movie
-
-    def _getNextCutsceneMovie(self):
-        self.cutscene_current_number
-
-        cutscene_group_name = self.cutscene_params.cutscene_group_name
-        cutscene_movie_name = CUTSCENE_MOVIE_TEMPLATE.format("state", "number")
-        cutscene_movie = GroupManager.getObject(cutscene_group_name, cutscene_movie_name)
-        return cutscene_movie
+        return valid_cutscene_movies
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -210,8 +138,12 @@ class Cutscene(BaseEntity):
             return
 
         cutscene_movies = self.cutscene_params.cutscene_movies
-        cutscene_movies_len = len(cutscene_movies)
-        print cutscene_movies_len, cutscene_movies
+        if len(cutscene_movies) == 0:
+            cutscene_movies = self._searchCutsceneMoviesInGroup()
+        else:
+            cutscene_movies = self._validateCutsceneMovies(cutscene_movies)
+
+        print len(cutscene_movies), cutscene_movies
 
         with self._createTaskChain(SLOT_CUTSCENE) as tc:
             # for each cutscene movie
@@ -260,20 +192,3 @@ class Cutscene(BaseEntity):
 
         # return cutscene movie node to its parent
         source.addReturn(cutscene_movie)
-
-    def _scopePlayLoop(self, source):
-        source.addScope(self._scopePlayCutsceneMovie)
-
-        source.addTask("TaskMouseButtonClick")
-        source.addFunction(self._incCutsceneMovieIndex)
-
-    def _scopePlayCutsceneMovie(self, source):
-        self.cutscene_movie = self._getCutsceneMovieByListIndex()
-        self._setupCutsceneMovie()
-
-        # source.addScope(self._setupCutsceneMovie)
-        source.addPrint("3 Cutscene movie parent: {}".format(self.cutscene_movie.getParent()))
-        # source.addPlay(self.cutscene_movie)
-        source.addPrint(" Start playing cutscene movie: {}".format(self.cutscene_movie.getName()))
-        source.addDelay(1000.0)
-        source.addPrint(" End playing cutscene movie: {}".format(self.cutscene_movie.getName()))
