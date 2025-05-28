@@ -16,7 +16,7 @@ class Languages(PopUpContent):
 
         self.buttons_list = {}
 
-    # - PopUpContent ---------------------------------------------------------------------------------------------------
+    # - PopUpContent ---------------------------------------------------------
 
     def _onInitializeContent(self):
         super(Languages, self)._onInitializeContent()
@@ -34,18 +34,22 @@ class Languages(PopUpContent):
 
         self.buttons_list = {}
 
-    # - Setup ----------------------------------------------------------------------------------------------------------
+    # - Setup ----------------------------------------------------------------
 
     def _setupButtons(self):
-        locales = LanguagesManager.getLocales()
+        current_locale = LanguagesManager.getLocale()
+        enable_locales = LanguagesManager.getLocales()
 
-        for name in locales:
-            container = self._generateContainer(name)
+        for locale_name in enable_locales:
+            container = self._generateContainer(locale_name)
             if container is None:
                 continue
 
+            if current_locale == locale_name:
+                container.movie.setBlock(True)
+
             self._attachObjectToSlot(container, SLOT_BUTTONS)
-            self.buttons_list[name] = container
+            self.buttons_list[locale_name] = container
 
     def _setupSlotsPositions(self):
         objects_list = []
@@ -54,7 +58,7 @@ class Languages(PopUpContent):
 
         self.setupObjectsSlotsAsTable(objects_list, False)
 
-    # - TaskChain ------------------------------------------------------------------------------------------------------
+    # - TaskChain ------------------------------------------------------------
 
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_BUTTONS) as tc:
@@ -67,10 +71,11 @@ class Languages(PopUpContent):
         self.tcs.append(tc)
         return tc
 
-    def _generateContainer(self, name, **params):
+    def _generateContainer(self, locale_name, **params):
         prototype_name = "{}_{}".format(self.__class__.__name__, SLOT_BUTTONS)
-        env_name = "{}_{}_{}".format(self.__class__.__name__, SLOT_BUTTONS, name)
+        env_name = "{}_{}_{}".format(self.__class__.__name__, SLOT_BUTTONS, locale_name)
 
+        print(prototype_name)
         container = PrototypeManager.generateObjectContainer(prototype_name, **params)
         if container is None:
             return None
@@ -78,7 +83,7 @@ class Languages(PopUpContent):
         container.setTextAliasEnvironment(env_name)
         container.setEnable(True)
 
-        text_id = LanguagesManager.getLanguageTextId(name)
+        text_id = LanguagesManager.getLanguageTextId(locale_name)
         if text_id is None:
             return None
 
@@ -86,14 +91,13 @@ class Languages(PopUpContent):
 
         return container
 
-
     def _changeLocale(self, locale):
         if LanguagesManager.getLocale() == locale:
-            # already set to this locale
+            Trace.msg("Current locale {!r} is already set!".format(locale))
             return
 
         if LanguagesManager.hasLocale(locale) is False:
-            Trace.log("System", 2, "Can't set locale to {} - not exists in game".format(locale))
+            Trace.msg("Can't set locale to {!r} - not exists in game".format(locale))
             return
 
         if Mengine.getCurrentScene() is None:
