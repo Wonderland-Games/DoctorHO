@@ -113,6 +113,9 @@
 		<Composition Name="Square" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-100.0;-99.99997711181640625;100.0;100.00006866455078125">
 			<Layer Index="0" Name="White Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1268.0;668.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
+		<Composition Name="Text" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-529.99993896484375;-50.0;530.00030517578125;50.0">
+			<Layer Index="0" Name="$UIText" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" Options="26723;30307" TrackMatte="0" />
+		</Composition>
 		<Composition Name="PopUpBackground_Big" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-500.0;-900.0;500.0;900.0">
 			<Layer Index="0" Name="Medium Gray-Blue Solid 4" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;868.0;468.0;0.0;1.0" TrackMatte="0" />
 		</Composition>

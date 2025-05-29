@@ -46,6 +46,6 @@ class DatabasePrototypes(Database):
         self.addORM(RecordPrototypes("QuestItemReceived_Button", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, {}))
         self.addORM(RecordPrototypes("QuestBackpack", None, None, "Movie2Button_Square_256", "Movie2Button_Square_256", None, Icon=dict(Slot="icon", Prototype="Backpack")))
         self.addORM(RecordPrototypes("Lobby", None, None, "Movie2Button_Square_256", "Movie2Button_Square_256", None, Icon=dict(Slot="icon", Prototype="InvestigationBoard")))
-        self.addORM(RecordPrototypes("Cutscene_Skip", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, {}))
+        self.addORM(RecordPrototypes("Cutscene_Skip", None, None, "Movie2_Text", "Movie2_Text", None, {}))
         pass
     pass

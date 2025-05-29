@@ -7,10 +7,13 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
-SLOT_CUTSCENE = "Cutscene"
+
 SLOT_SKIP = "Skip"
 PROTOTYPE_SKIP = "Cutscene_Skip"
+ALIAS_SKIP = "$UIText"
+TEXT_SKIP = "ID_Cutscene_Skip"
 
+SLOT_CUTSCENE = "Cutscene"
 CUTSCENE_MOVIE_STATE_PLAY = "Play"
 CUTSCENE_MOVIE_STATE_LOOP = "Loop"
 CUTSCENE_MOVIE_TEMPLATE = "Movie2_{}_{}"
@@ -26,7 +29,7 @@ class Cutscene(BaseEntity):
         super(Cutscene, self).__init__()
         self.content = None
         self.tcs = []
-        self.skip_button = None
+        self.movie_skip = None
         self.cutscene_params = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
@@ -58,29 +61,29 @@ class Cutscene(BaseEntity):
             tc.cancel()
         self.tcs = []
 
-        if self.skip_button is not None:
-            self.skip_button.onDestroy()
-            self.skip_button = None
+        if self.movie_skip is not None:
+            self.movie_skip.onDestroy()
+            self.movie_skip = None
 
         self.cutscene_params = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupSkipButton(self):
-        self.skip_button = PrototypeManager.generateObjectUnique(PROTOTYPE_SKIP, PROTOTYPE_SKIP)
-        self.skip_button.setTextAliasEnvironment(PROTOTYPE_SKIP)
-        # self.skip_button.setEnable(True)
+        self.movie_skip = PrototypeManager.generateObjectUnique(PROTOTYPE_SKIP, PROTOTYPE_SKIP)
+        self.movie_skip.setTextAliasEnvironment(PROTOTYPE_SKIP)
+        Mengine.setTextAlias(PROTOTYPE_SKIP, ALIAS_SKIP, TEXT_SKIP)
 
-        skip_button_slot = self.content.getMovieSlot(SLOT_SKIP)
-        skip_button_node = self.skip_button.getEntityNode()
-        skip_button_slot.addChild(skip_button_node)
+        skip_slot = self.content.getMovieSlot(SLOT_SKIP)
+        skip_node = self.movie_skip.getEntityNode()
+        skip_slot.addChild(skip_node)
 
         _, game_height, _, bottom_offset, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
 
-        skip_button_bounds = self.skip_button.getCompositionBounds()
-        skip_button_size = Utils.getBoundingBoxSize(skip_button_bounds)
-        skip_button_pos_y = game_height - bottom_offset - skip_button_size.y / 2
-        skip_button_slot.setWorldPosition(Mengine.vec2f(x_center, skip_button_pos_y))
+        skip_bounds = self.movie_skip.getCompositionBounds()
+        skip_size = Utils.getBoundingBoxSize(skip_bounds)
+        skip_pos_y = game_height - bottom_offset - skip_size.y / 2
+        skip_slot.setWorldPosition(Mengine.vec2f(x_center, skip_pos_y))
 
     def _setupCutscene(self):
         self.cutscene_params = CutsceneManager.getCutscene(self.CutsceneId)
@@ -178,17 +181,14 @@ class Cutscene(BaseEntity):
                 # play cutscene idle movie with loop
                 play_loop.addPlay(cutscene_movie, Loop=True, ValidationParentEnable=False)
 
-                # enable skip button
-                click_skip.addEnable(self.skip_button)
-                click_skip.addPrint("Skip button enabled")
+                # enable movie skip
+                click_skip.addEnable(self.movie_skip)
 
-                # click skip button
-                click_skip.addTask("TaskMovie2ButtonClick", Movie2Button=self.skip_button)
-                click_skip.addPrint("Skip button clicked")
+                # click mouse button
+                click_skip.addTask("TaskMouseButtonClick", isDown=False)
 
-                # disable skip button
-                click_skip.addDisable(self.skip_button)
-                click_skip.addPrint("Skip button disabled")
+                # disable movie skip
+                click_skip.addDisable(self.movie_skip)
 
         # return cutscene movie node to its parent
         source.addReturn(cutscene_movie)
