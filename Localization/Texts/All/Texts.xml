@@ -7,4 +7,8 @@
 	<Text Key="ID_ItemsCounter" Value="%s/%s" />
 	<Text Key="ID_HintCounter" Value="%s" />
 	
+	<Text Key="ID_Language_English" Value="English" />
+	<Text Key="ID_Language_Ukrainian" Value="Українська" />
+	<Text Key="ID_Language_Russian" Value="Русский" />
+	
 </Texts>
