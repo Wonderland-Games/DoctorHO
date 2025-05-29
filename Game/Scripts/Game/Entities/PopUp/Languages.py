@@ -75,7 +75,6 @@ class Languages(PopUpContent):
         prototype_name = "{}_{}".format(self.__class__.__name__, SLOT_BUTTONS)
         env_name = "{}_{}_{}".format(self.__class__.__name__, SLOT_BUTTONS, locale_name)
 
-        print(prototype_name)
         container = PrototypeManager.generateObjectContainer(prototype_name, **params)
         if container is None:
             return None
