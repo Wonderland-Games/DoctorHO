@@ -25,6 +25,8 @@
 	
 	<Text Key="ID_Lobby_Play" Value="Play Level" />
 	
+	<Text Key="ID_Cutscene_Skip" Value="Click to continue..." />
+	
 	<Text Key="ID_LevelCardTitle" Font="Dev" Value="%s" />
 	<Text Key="ID_LevelCardTitle_01_Forest" Value="Forest" />
 	<Text Key="ID_LevelCardTitle_02_Atlantis" Value="Atlantis" />
