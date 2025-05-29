@@ -296,12 +296,12 @@ class GameArea(BaseEntity):
         source.addFunction(level_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
 
-        # get panel item screen position
-        panel_item_screen_pos = panel_item_root.getScreenPosition()
+        # get panel item screen size
+        panel_item_size = panel_item.getSize()
 
         # calculate offset
-        offset_x = panel_item_screen_pos.x/2
-        offset_y = panel_item_screen_pos.y/2
+        offset_x = panel_item_size.x / 2.0
+        offset_y = panel_item_size.y / 2.0
 
         # create offset
         offset = (offset_x, offset_y)
