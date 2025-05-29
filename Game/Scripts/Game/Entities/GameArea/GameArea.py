@@ -5,7 +5,7 @@ from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
-
+from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_MISS_CLICK = "miss_click"
@@ -290,9 +290,21 @@ class GameArea(BaseEntity):
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
 
+        #panel_item_scale = Mengine.vec3f(3.3, 3.3, 0.0)
+
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
+
+        # get panel item screen position
+        panel_item_screen_pos = panel_item_root.getScreenPosition()
+
+        # calculate offset
+        offset_x = panel_item_screen_pos.x/2
+        offset_y = panel_item_screen_pos.y/2
+
+        # create offset
+        offset = (offset_x, offset_y)
 
         source.addPrint(" * START SCENE ITEM ANIM")
 
@@ -300,7 +312,7 @@ class GameArea(BaseEntity):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
                           Time=SCENE_ITEM_SCALE_TIME)
             move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=panel_item_root,
-                         Time=SCENE_ITEM_MOVE_TIME)
+                         Time=SCENE_ITEM_MOVE_TIME, Offset=offset)
 
         source.addPrint(" * END SCENE ITEM ANIM")
 
