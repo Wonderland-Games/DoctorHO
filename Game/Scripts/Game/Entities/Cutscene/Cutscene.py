@@ -12,6 +12,7 @@ SLOT_SKIP = "Skip"
 PROTOTYPE_SKIP = "Cutscene_Skip"
 ALIAS_SKIP = "$UIText"
 TEXT_SKIP = "ID_Cutscene_Skip"
+SKIP_ALPHA_TIME = 200.0
 
 SLOT_CUTSCENE = "Cutscene"
 CUTSCENE_MOVIE_STATE_PLAY = "Play"
@@ -161,6 +162,9 @@ class Cutscene(BaseEntity):
             tc.addNotify(Notificator.onChangeScene, "Lobby")
 
     def _scopePlayCutsceneMovie2(self, source, cutscene_movie):
+        # get skip movie entity node for alpha animation
+        skip_node = self.movie_skip.getEntityNode()
+
         # get cutscene movie node and remember its parent
         cutscene_movie_node = cutscene_movie.getEntityNode()
 
@@ -181,13 +185,15 @@ class Cutscene(BaseEntity):
                 # play cutscene idle movie with loop
                 play_loop.addPlay(cutscene_movie, Loop=True, ValidationParentEnable=False)
 
-                # enable movie skip
+                # enable and alpha out movie skip
                 click_skip.addEnable(self.movie_skip)
+                click_skip.addTask("TaskNodeAlphaTo", Node=skip_node, From=0.0, To=1.0, Time=SKIP_ALPHA_TIME)
 
                 # click mouse button
                 click_skip.addTask("TaskMouseButtonClick", isDown=False)
 
-                # disable movie skip
+                # disable and alpha in movie skip
+                click_skip.addTask("TaskNodeAlphaTo", Node=skip_node, From=1.0, To=0.0, Time=SKIP_ALPHA_TIME)
                 click_skip.addDisable(self.movie_skip)
 
         # return cutscene movie node to its parent
