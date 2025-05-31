@@ -6,6 +6,7 @@ from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
+from Foundation.SceneManager import SceneManager
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_MISS_CLICK = "miss_click"
@@ -27,6 +28,7 @@ class GameArea(BaseEntity):
         self.miss_click = None
         self.search_level = None
         self.search_panel = None
+        self.virtual_area = VirtualArea()
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -289,22 +291,30 @@ class GameArea(BaseEntity):
 
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
+        #level_item_scale = level_item_entity.getSpriteScale()
+        #print("Level Item Scale - {}".format(level_item_scale))
 
-        #panel_item_scale = Mengine.vec3f(3.3, 3.3, 0.0)
+        CurrentScene = SceneManager.getCurrentScene()
+
+        if CurrentScene is None:
+            return
+
+        MainLayer = CurrentScene.getMainLayer()
+
+        cur_scale = MainLayer.getScale()
+        print("Current Scale - {}".format(cur_scale))
+        print("Panel Item Scale - {}".format(panel_item_scale))
+
+
+        #moving_node.setLocalScale(level_item_scale)
+        scale_factor = self.virtual_area.get_scale_factor()
+        panel_item_scale = 1.0/scale_factor
+        print("Scale factor - {}".format(scale_factor))
+        #panel_item_scale = Mengine.vec3f(2.0, 2.0, 2.0)
 
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
-
-        # get panel item screen size
-        panel_item_size = panel_item.getSize()
-
-        # calculate offset
-        offset_x = panel_item_size.x / 2.0
-        offset_y = panel_item_size.y / 2.0
-
-        # create offset
-        offset = (offset_x, offset_y)
 
         source.addPrint(" * START SCENE ITEM ANIM")
 
@@ -312,7 +322,7 @@ class GameArea(BaseEntity):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
                           Time=SCENE_ITEM_SCALE_TIME)
             move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=panel_item_root,
-                         Time=SCENE_ITEM_MOVE_TIME, Offset=offset)
+                         Time=SCENE_ITEM_MOVE_TIME)
 
         source.addPrint(" * END SCENE ITEM ANIM")
 
