@@ -28,7 +28,6 @@ class GameArea(BaseEntity):
         self.miss_click = None
         self.search_level = None
         self.search_panel = None
-        self.virtual_area = VirtualArea()
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -302,15 +301,11 @@ class GameArea(BaseEntity):
         MainLayer = CurrentScene.getMainLayer()
 
         cur_scale = MainLayer.getScale()
-        print("Current Scale - {}".format(cur_scale))
-        print("Panel Item Scale - {}".format(panel_item_scale))
-
 
         #moving_node.setLocalScale(level_item_scale)
-        scale_factor = self.virtual_area.get_scale_factor()
-        panel_item_scale = 1.0/scale_factor
-        print("Scale factor - {}".format(scale_factor))
-        #panel_item_scale = Mengine.vec3f(2.0, 2.0, 2.0)
+
+        scale_factor = 1.0 / self.search_level.virtual_area.get_scale_factor()
+        display_item_scale = Mengine.vec3f(scale_factor, scale_factor, 1)
 
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
@@ -319,8 +314,8 @@ class GameArea(BaseEntity):
         source.addPrint(" * START SCENE ITEM ANIM")
 
         with source.addParallelTask(2) as (scale, move):
-            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
-                          Time=SCENE_ITEM_SCALE_TIME)
+            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, From=display_item_scale,
+                          To=panel_item_scale, Time=SCENE_ITEM_SCALE_TIME)
             move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=panel_item_root,
                          Time=SCENE_ITEM_MOVE_TIME)
 
