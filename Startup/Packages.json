@@ -19,7 +19,9 @@
             "Fonts_Latin",
             
             "Texts_All",
-            "Texts_English"
+            "Texts_English",
+			"Texts_Ukrainian",
+            "Texts_Russian"
         ]
     },
     "Foundation": {
@@ -71,7 +73,7 @@
         "Name": "Fonts_Latin",
         "Path": "../Localization/Fonts/Latin/",
         "Description": "Package.bin",
-        "Locales": ["en"],
+        "Locales": ["en", "uk", "ru"],
         "NoPak": 1
     },
     
@@ -87,6 +89,20 @@
         "Path": "../Localization/Texts/English/",
         "Description": "Package.bin",
         "Locales": ["en"],
+        "NoPak": 1
+    },
+	"Texts_Ukrainian": {
+        "Name": "Texts_Ukrainian",
+        "Path": "../Localization/Texts/Ukrainian/",
+        "Description": "Package.bin",
+        "Locales": ["uk"],
+        "NoPak": 1
+    },
+    "Texts_Russian": {
+        "Name": "Texts_Russian",
+        "Path": "../Localization/Texts/Russian/",
+        "Description": "Package.bin",
+        "Locales": ["ru"],
         "NoPak": 1
     }
 }
