@@ -21,6 +21,12 @@
 			<Layer Index="1" Name="icon" Type="Movie2Slot" Matrix="0.89999997615814208984375;0.0;0.0;0.0;0.0;0.89999997615814208984375;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="2" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
+		<Composition Name="Rectangle_Block" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-399.999908447265625;-100.0;400.000274658203125;100.0">
+			<Layer Index="0" Name="Deep Green Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;968.0;668.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="icon" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1068.0;768.0;0.0;1.0" Color="0.14117647707462310791015625;0.13725490868091583251953125;0.20392157137393951416015625;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="$UIButton" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;768.0;0.0;1.0" Color="0.14117647707462310791015625;0.13725490868091583251953125;0.20392157137393951416015625;1.0" Options="30307;26732" TrackMatte="0" />
+			<Layer Index="3" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
 		<Composition Name="Rectangle_Idle" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-399.999908447265625;-100.0;400.000274658203125;100.0">
 			<Layer Index="0" Name="Medium Blue Solid 2" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;968.0;668.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="icon" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1068.0;768.0;0.0;1.0" Color="0.14117647707462310791015625;0.13725490868091583251953125;0.20392157137393951416015625;1.0" TrackMatte="0" />
