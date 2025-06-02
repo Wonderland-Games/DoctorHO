@@ -7,7 +7,7 @@ class DatabaseDefaultSlots_Cutscene(Database):
         self.addRecord(Slot="Cutscene", Type="Scene", Group="Cutscene", Enable=1)
         self.addRecord(Slot="Intro", Type="Scene", Group="Intro", Enable=0)
         self.addRecord(Slot="Header", Type="Scene", Group="Header", Enable=1)
-        self.addRecord(Slot="Banner", Type="Scene", Group="Banner", Enable=1, Platform="PC")
+        self.addRecord(Slot="Banner", Type="Scene", Group="Banner", Enable=0, Platform="PC")
         self.addRecord(Slot="Fade", Type="Scene", Group="Fade", Enable=1)
         self.addRecord(Slot="BlockInput", Type="Scene", Group="BlockInput", Enable=1)
         pass

@@ -33,25 +33,36 @@ class Cutscene(BaseEntity):
         self.movie_skip = None
         self.cutscene_params = None
 
+    def _isPlayable(self):
+        if self.CutsceneId is None:
+            return False
+
+        self.cutscene_params = CutsceneManager.getCutscene(self.CutsceneId)
+        if self.cutscene_params is None:
+            return False
+
+        self.content = self.object.getObject(MOVIE_CONTENT)
+        if self.content is None:
+            return False
+
+        return True
+
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
         super(Cutscene, self)._onPreparation()
-        self.content = self.object.getObject(MOVIE_CONTENT)
-        if self.content is None:
+        if self._isPlayable() is False:
             return
 
-        self._setupSkipButton()
-
-        # temp
-        self.object.setParam("CutsceneId", "Intro")
-        if self.CutsceneId is None:
-            return
-
+        self._setupSkipMovie()
         self._setupCutscene()
 
     def _onActivate(self):
         super(Cutscene, self)._onActivate()
+        if self._isPlayable() is False:
+            Notification.notify(Notificator.onChangeScene, "Lobby")
+            return
+
         self._runTaskChains()
 
     def _onDeactivate(self):
@@ -70,7 +81,7 @@ class Cutscene(BaseEntity):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupSkipButton(self):
+    def _setupSkipMovie(self):
         self.movie_skip = PrototypeManager.generateObjectUnique(PROTOTYPE_SKIP, PROTOTYPE_SKIP)
         self.movie_skip.setTextAliasEnvironment(PROTOTYPE_SKIP)
         Mengine.setTextAlias(PROTOTYPE_SKIP, ALIAS_SKIP, TEXT_SKIP)
@@ -87,10 +98,6 @@ class Cutscene(BaseEntity):
         skip_slot.setWorldPosition(Mengine.vec2f(x_center, skip_pos_y))
 
     def _setupCutscene(self):
-        self.cutscene_params = CutsceneManager.getCutscene(self.CutsceneId)
-        if self.cutscene_params is None:
-            return
-
         cutscene_slot = self.content.getMovieSlot(SLOT_CUTSCENE)
         _, _, _, _, _, x_center, y_center = AdjustableScreenUtils.getMainSizesExt()
         cutscene_slot.setWorldPosition(Mengine.vec2f(x_center, y_center))
@@ -138,9 +145,6 @@ class Cutscene(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        if self.cutscene_params is None:
-            return
-
         cutscene_movies = self.cutscene_params.cutscene_movies
         if len(cutscene_movies) == 0:
             cutscene_movies = self._searchCutsceneMoviesInGroup()
