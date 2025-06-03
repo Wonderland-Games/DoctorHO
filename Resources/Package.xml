@@ -37,6 +37,8 @@
 		<Resource Path="Resources/02_Moon.bin" />
 		
 		<Resource Path="Resources/Intro.bin" />
+		<Resource Path="Resources/Cutscene_01.bin" />
+		<Resource Path="Resources/Cutscene_02.bin" />
 		
 	</Resources>
 </Pak>
