@@ -257,6 +257,8 @@ class GameManager(Manager):
     @staticmethod
     def getCurrentQuestCutsceneId():
         current_quest_params = GameManager.getCurrentQuestParams()
+        if current_quest_params is None:
+            return None  # or raise ValueError("No quest data available to retrieve CutsceneId.")
         cutscene_id = current_quest_params.CutsceneId
         return cutscene_id
 
