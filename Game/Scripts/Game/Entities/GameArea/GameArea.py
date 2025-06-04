@@ -290,8 +290,7 @@ class GameArea(BaseEntity):
 
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
-        #level_item_scale = level_item_entity.getSpriteScale()
-        #print("Level Item Scale - {}".format(level_item_scale))
+        panel_item_sprite = panel_item.getSprite()
 
         CurrentScene = SceneManager.getCurrentScene()
 
@@ -311,25 +310,13 @@ class GameArea(BaseEntity):
         source.addFunction(level_item.setEnable, False)
         # source.addFunction(scene_item.onDestroy)
 
-        p_size = panel_item.getSize()
-        print("Size - {}".format(p_size))
-        l_size = level_item.getEntity().getSize()
-        print("Size - {}".format(l_size))
-
-        x = l_size.x / 2
-        y = l_size.y / 2
-        print("Level item x-{} y-{}".format(x, y))
-
-        panel_origin = Mengine.vec3f(-200.0, -200.0, 0.0)
-
         source.addPrint(" * START SCENE ITEM ANIM")
 
-        with source.addParallelTask(3) as (scale, move, origin):
+        with source.addParallelTask(2) as (scale, move):
             scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, From=display_item_scale,
                           To=panel_item_scale, Time=SCENE_ITEM_SCALE_TIME)
             move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING,
-                         Follow=panel_item_root, Time=SCENE_ITEM_MOVE_TIME)
-            origin.addTask("TaskNodeOriginTo", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Origin=panel_origin)
+                         Follow=panel_item_sprite, Time=SCENE_ITEM_MOVE_TIME)
 
         source.addPrint(" * END SCENE ITEM ANIM")
 

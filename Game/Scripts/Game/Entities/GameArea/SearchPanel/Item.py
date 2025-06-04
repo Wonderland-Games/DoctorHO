@@ -129,6 +129,9 @@ class Item(Initializer):
     def getSpriteScale(self):
         return self.sprite.getScale()
 
+    def getSprite(self):
+        return self.sprite
+
     def _positionSprite(self):
         sprite_scale = self.sprite.getScale()
         sprite_size_base = self.sprite.getSurfaceSize()
