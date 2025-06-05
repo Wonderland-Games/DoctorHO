@@ -6,6 +6,7 @@ from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
+
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_MISS_CLICK = "miss_click"
 SLOT_SEARCH_LEVEL = "search_level"
@@ -284,14 +285,12 @@ class GameArea(BaseEntity):
             panel_item = item
             break
 
-        panel_item_root = panel_item.getRoot()
-
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
         panel_item_sprite = panel_item.getSprite()
 
         scale_factor = 1.0 / self.search_level.virtual_area.get_scale_factor()
-        display_item_scale = Mengine.vec3f(scale_factor, scale_factor, 1)
+        display_item_scale = Mengine.vec3f(scale_factor, scale_factor, 1.0)
 
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
