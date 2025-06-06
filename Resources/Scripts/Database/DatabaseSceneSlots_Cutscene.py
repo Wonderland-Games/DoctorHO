@@ -6,6 +6,8 @@ class DatabaseSceneSlots_Cutscene(Database):
         self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Cutscene", Type="Layer2D", Width=2736, Height=1536, Main=1)
         self.addRecord(Name="Intro", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Cutscene_01", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Cutscene_02", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Header", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Banner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
         self.addRecord(Name="Fade", Type="Layer2D", Width=2736, Height=1536, Main=0)

@@ -98,10 +98,21 @@ class SystemGame(System):
         popup = popup_object.entity
 
         if is_win is True:
-            Notification.notify(Notificator.onPopUpShow, "LevelWon", popup.BUTTONS_STATE_DISABLE)
+            # Notification.notify(Notificator.onPopUpShow, "LevelWon", popup.BUTTONS_STATE_DISABLE)
             self._removeTaskChains()
+
+            quest_index = GameManager.getCurrentGameParam("QuestIndex")
+            cutscene_object = DemonManager.getDemon("Cutscene")
+            cutscene_id = GameManager.getCurrentQuestCutsceneId()
+
+            if quest_index is not None:
+                cutscene_object.setParam("CutsceneId", cutscene_id)
+                Notification.notify(Notificator.onChangeScene, "Cutscene")
+            else:
+                Notification.notify(Notificator.onChangeScene, "Lobby")
         else:
             Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
+            # Notification.notify(Notificator.onChangeScene, "Lobby")
 
         GameManager.endGame(is_win)
 

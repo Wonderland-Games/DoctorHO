@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<DataBlock Name="Cutscene_02">
+	<Resource Name="77/610c1174145a416947837d704fcc0a8132f414.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/77/610c1174145a416947837d704fcc0a8132f414.png" MaxSize="211;256" />
+	</Resource>
+	<Resource Name="f4/6613e90b58953cbdc369aea7a32ab4d65b6eb9.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/f4/6613e90b58953cbdc369aea7a32ab4d65b6eb9.png" MaxSize="256;73" />
+	</Resource>
+	<Resource Name="b2/da2ca48477a76c0769a25f4d8f2f270034a2e8.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/b2/da2ca48477a76c0769a25f4d8f2f270034a2e8.png" MaxSize="215;256" />
+	</Resource>
+	<Resource Name="93/9ad8df107519a6afa7bf7a7bac7ebcd267325a.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/93/9ad8df107519a6afa7bf7a7bac7ebcd267325a.png" MaxSize="256;150" />
+	</Resource>
+	<Resource Name="d6/7d5ea3d3050fd1881e8c4662ed78d9b495a582.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/d6/7d5ea3d3050fd1881e8c4662ed78d9b495a582.png" MaxSize="256;172" />
+	</Resource>
+	<Resource Name="Movie2_Cutscene_02" Type="ResourceMovie2">
+		<File Path="Movies2/Cutscene_02/Cutscene_02.aez" />
+		<Composition Name="Armor_Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1262.5;1240.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Armor_Loop_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1262.5;1240.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Armor_Play_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1262.5;1240.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Armor_Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1262.5;1240.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_2_Quest_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1262.5;1240.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Gun_Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Gun.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1331.5;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Gun_Loop_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Gun.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1331.5;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Gun_Play_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Gun.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1331.5;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Gun_Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Gun.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1331.5;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_2_Quest_Gun.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1331.5;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Helmet_Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Helmet.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1260.5;1240.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Helmet_Loop_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Helmet.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1260.5;1240.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Helmet_Play_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Helmet.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1260.5;1240.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Helmet_Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Helmet.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1260.5;1240.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_2_Quest_Helmet.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1260.5;1240.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Spaceship_Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Spaceship.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1293.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Spaceship_Loop_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Spaceship.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1293.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Spaceship_Play_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Spaceship.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1293.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Spaceship_Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Spaceship.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1293.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_2_Quest_Spaceship.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1293.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Sword_Loop_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Sword.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1282.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Sword_Loop_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Sword.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1282.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Sword_Play_1" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Sword.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1282.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Sword_Play_2" Duration="3.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Item_2_Quest_Sword.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1282.0;0.0;1.0" Color="0.0;1.0;0.5;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_2_Quest_Sword.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1240.0;1282.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>
