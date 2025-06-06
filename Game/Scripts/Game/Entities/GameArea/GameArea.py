@@ -285,10 +285,12 @@ class GameArea(BaseEntity):
             panel_item = item
             break
 
-        panel_item_root = panel_item.getRoot()
-
         # prepare variables for tc
         panel_item_scale = panel_item.getSpriteScale()
+        panel_item_sprite = panel_item.getSprite()
+
+        scale_factor = 1.0 / self.search_level.virtual_area.get_scale_factor()
+        display_item_scale = Mengine.vec3f(scale_factor, scale_factor, 1.0)
 
         # destroy/disable level item and run move animation
         source.addFunction(level_item.setEnable, False)
@@ -297,10 +299,10 @@ class GameArea(BaseEntity):
         source.addPrint(" * START SCENE ITEM ANIM")
 
         with source.addParallelTask(2) as (scale, move):
-            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, To=panel_item_scale,
-                          Time=SCENE_ITEM_SCALE_TIME)
-            move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING, Follow=panel_item_root,
-                         Time=SCENE_ITEM_MOVE_TIME)
+            scale.addTask("TaskNodeScaleTo", Node=moving_node, Easing=SCENE_ITEM_SCALE_EASING, From=display_item_scale,
+                          To=panel_item_scale, Time=SCENE_ITEM_SCALE_TIME)
+            move.addTask("TaskNodeBezier2ScreenFollow", Node=moving_node, Easing=SCENE_ITEM_MOVE_EASING,
+                         Follow=panel_item_sprite, Time=SCENE_ITEM_MOVE_TIME)
 
         source.addPrint(" * END SCENE ITEM ANIM")
 

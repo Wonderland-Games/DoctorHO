@@ -127,7 +127,10 @@ class Item(Initializer):
         self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
 
     def getSpriteScale(self):
-        return self.sprite.getScale()
+        return self.sprite.getWorldScale()
+
+    def getSprite(self):
+        return self.sprite
 
     def _positionSprite(self):
         sprite_scale = self.sprite.getScale()
