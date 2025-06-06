@@ -317,6 +317,9 @@ class GameArea(BaseEntity):
         if panel_item is None:
             return
 
+        # unscale display
+        display_scale_factor = 1.0 / self.search_level.virtual_area.get_scale_factor()
+
         # save hint item
         self.search_panel.hint.hint_item = panel_item.item_obj
 
@@ -339,6 +342,7 @@ class GameArea(BaseEntity):
         Mengine.destroyNode(temp_hint_node)
 
         # hint effect logic
+        source.addFunction(self.search_level.virtual_area.set_scale, display_scale_factor)
         source.addFunction(self.search_panel.hint.decHintCount)
         source.addFunction(self.search_panel.switchHints)
 
