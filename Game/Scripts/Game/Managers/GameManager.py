@@ -240,10 +240,27 @@ class GameManager(Manager):
             return None
 
     @staticmethod
+    def getCurrentQuestParams():
+        player_data = GameManager.getPlayerGameData()
+        chapter_data = player_data.getCurrentChapterData()
+        chapter_id = chapter_data.getChapterId()
+        current_quest_index = chapter_data.getCurrentQuestIndex()
+        quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, current_quest_index)
+        return quest_params
+
+    @staticmethod
     def getQuestParamsByLevel(level_id):
         params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module, GameManager.s_db_name_quests,
                                                    filter=lambda param: param.LevelId == level_id)
         return params
+
+    @staticmethod
+    def getCurrentQuestCutsceneId():
+        current_quest_params = GameManager.getCurrentQuestParams()
+        if current_quest_params is None:
+            return None
+        cutscene_id = current_quest_params.CutsceneId
+        return cutscene_id
 
     @staticmethod
     def getRandomPlayerData():

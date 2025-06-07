@@ -29,5 +29,7 @@ class DatabaseGroups(Database):
         self.addRecord(GroupName="02_Venus")
         self.addRecord(GroupName="02_Moon")
         self.addRecord(GroupName="Intro")
+        self.addRecord(GroupName="Cutscene_01")
+        self.addRecord(GroupName="Cutscene_02")
         pass
     pass
