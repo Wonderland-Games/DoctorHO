@@ -66,6 +66,8 @@ class HintEffect(Initializer):
         HotSpotCircle.setOutward(True)
         prototype_node.addChild(HotSpotCircle)
 
+        HotSpotCircle.setRelationTransformation(transformation)
+
     def _playEffect(self, source, state):
         print(" * PLAY HINT EFFECT '{}'".format(state))
 
