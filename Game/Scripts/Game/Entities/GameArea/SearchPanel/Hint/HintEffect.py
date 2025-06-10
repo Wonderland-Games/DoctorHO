@@ -61,6 +61,11 @@ class HintEffect(Initializer):
         prototype_movie = prototype.getMovie()
         prototype_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, transformation, True)
 
+        HotSpotCircle = Mengine.createNode("HotSpotCircle")
+        HotSpotCircle.setRadius(256)
+        HotSpotCircle.setOutward(True)
+        prototype_node.addChild(HotSpotCircle)
+
     def _playEffect(self, source, state):
         print(" * PLAY HINT EFFECT '{}'".format(state))
 
