@@ -1,8 +1,11 @@
+import math
+
 from Foundation.Initializer import Initializer
 
 
 LAYER_HINT_EFFECT_CUTOUT = "cutout"
 MOVIE_HINT_EFFECT = "Movie2_HintEffect_"
+CIRCLE_AIR_PERCENTAGE = 50.0
 
 
 class HintEffect(Initializer):
@@ -61,8 +64,13 @@ class HintEffect(Initializer):
         prototype_movie = prototype.getMovie()
         prototype_movie.setExtraTransformation(LAYER_HINT_EFFECT_CUTOUT, transformation, True)
 
+        hint_item_size = self.game.search_panel.hint.hint_item.getEntity().getSize()
+        item_circle_radius = math.sqrt(hint_item_size.x ** 2 + hint_item_size.y ** 2) / 2
+        air_value = (item_circle_radius / 100) * CIRCLE_AIR_PERCENTAGE
+        hot_spot_radius = item_circle_radius + air_value
+
         hot_spot_circle = Mengine.createNode("HotSpotCircle")
-        hot_spot_circle.setRadius(256)
+        hot_spot_circle.setRadius(hot_spot_radius)
         hot_spot_circle.setOutward(True)
         prototype_node.addChild(hot_spot_circle)
 

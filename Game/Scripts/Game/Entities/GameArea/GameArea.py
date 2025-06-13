@@ -351,7 +351,6 @@ class GameArea(BaseEntity):
 
         source.addScope(self.search_panel.hint.hint_effect.show, hint_item_transformation)
         source.addTask("TaskItemClick", Item=self.search_panel.hint.hint_item, AutoEnable=False)
-        #source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.search_panel.hint.hint_item)
         source.addScope(self.search_panel.hint.hint_effect.hide, hint_item_transformation)
 
         source.addFunction(self.search_panel.hint.cleanHintItem)
