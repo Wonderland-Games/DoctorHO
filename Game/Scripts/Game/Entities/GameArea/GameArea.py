@@ -69,19 +69,17 @@ class GameArea(BaseEntity):
         if self.content is None:
             return
 
-        '''
         self._initSearchPanel()
         self._initMissClick()
         self._initSearchLevel()
-        '''
         self._initLayout()
 
         self.search_panel.onInitialize2()
-        '''
+
         self._attachMissClick()
         self._attachSearchLevel()
         self._attachSearchPanel()
-        '''
+
         self._runTaskChains()
         self._handleCheats()
 
@@ -179,12 +177,14 @@ class GameArea(BaseEntity):
         print("Finish _initLayout")
 
     def _setLevelSearch(self, offset, size):
+        print("_setLevelSearch")
         _, _, _, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
         search_level_slot.setWorldPosition(Mengine.vec2f(x_center, offset))
         self.search_level.attachTo(search_level_slot)
 
     def _setSearchPanel(self, offset, size):
+        print("_setSearchPanel")
         _, _, _, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
         search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, offset))
@@ -195,10 +195,11 @@ class GameArea(BaseEntity):
 
         search_level_size = self.search_level.getSize()
         pos_y = viewport.begin.y + header_height + search_level_size.y / 2
-
+        '''
         search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
         search_level_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
         self.search_level.attachTo(search_level_slot)
+        '''
 
     # - SearchPanel ----------------------------------------------------------------------------------------------------
 
@@ -211,10 +212,11 @@ class GameArea(BaseEntity):
 
         search_panel_size = self.search_panel.getSize()
         pos_y = game_height - banner_height - search_panel_size.y / 2
-
+        '''
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
         search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
         self.search_panel.attachTo(search_panel_slot)
+        '''
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
