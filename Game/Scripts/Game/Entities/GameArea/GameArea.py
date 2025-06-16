@@ -148,6 +148,7 @@ class GameArea(BaseEntity):
         self.game_area_layout = Mengine.createLayout()
         print("Layout Height:{}".format(Mengine.getGameViewport().getHeight()))
         self.game_area_layout.setLayoutSizer(lambda: Mengine.getGameViewport().getHeight())
+        print("SearchLevelHeight:{}".format(self.search_level.getSize().y))
         self.game_area_layout.addLayoutElement(
             "SearchLevel",
             True,
@@ -160,7 +161,7 @@ class GameArea(BaseEntity):
         self.game_area_layout.addLayoutElement(
             "Spacer",
             False,
-            1.0,
+            0.5,
             True,
             lambda: 0.0,
             lambda offset, size: None
@@ -178,13 +179,17 @@ class GameArea(BaseEntity):
 
     def _setLevelSearch(self, offset, size):
         print("_setLevelSearch")
-        _, _, _, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        print("Offset:{}".format(offset))
+        print("Size:{}".format(size))
+        _, _, header_height, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, offset))
+        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, offset+900))
         self.search_level.attachTo(search_level_slot)
 
     def _setSearchPanel(self, offset, size):
         print("_setSearchPanel")
+        print("Offset:{}".format(offset))
+        print("Size:{}".format(size))
         _, _, _, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
         search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, offset))
@@ -192,6 +197,7 @@ class GameArea(BaseEntity):
 
     def _attachSearchLevel(self):
         _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        print("HeaderHeight:{}".format(header_height))
 
         search_level_size = self.search_level.getSize()
         pos_y = viewport.begin.y + header_height + search_level_size.y / 2
