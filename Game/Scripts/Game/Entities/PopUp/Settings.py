@@ -20,14 +20,18 @@ class Settings(PopUpContent):
         self.checkboxes = {}
         self.buttons = {}
 
+        self.layout = None
+
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
     def _onInitializeContent(self):
         super(Settings, self)._onInitializeContent()
 
-        self._setupCheckBoxes()
+        # self._setupCheckBoxes()
         self._setupButtons()
-        self._setupSlotsPositions()
+        
+        # self._setupSlotsPositions()
+        self._adjustLayout()
 
         self._runTaskChains()
 
@@ -41,6 +45,62 @@ class Settings(PopUpContent):
         for button in self.checkboxes.values():
             button.onDestroy()
         self.checkboxes = {}
+
+        if self.layout is not None:
+            Mengine.destroyLayout(self.layout)
+            self.layout = None
+
+    # - Layout ---------------------------------------------------------------------------------------------------------
+
+    def _adjustLayout(self):
+        self.layout = Mengine.createLayout()
+
+        content_size = self.pop_up_base.getContentSize()
+        print "[= layout.setLayoutSizer:", content_size.y
+        self.layout.setLayoutSizer(lambda: content_size.y)
+
+        print "[= Buttons:", self.buttons.keys()
+        buttons_list = self.buttons.items()
+        for i, (slot_name, button) in enumerate(buttons_list):
+            def _cbSetOffsetSize(_slot_name):
+                return lambda offset, size: self._setButtonOffsetPos(_slot_name, offset, size)
+
+            print "[= layout.addLayoutElement:", slot_name
+            self.layout.addLayoutElement(
+                slot_name,
+                True,
+                0.0,
+                True,
+                lambda: button.getSize().y,
+                _cbSetOffsetSize(slot_name)
+            )
+
+            continue
+
+            # WIP
+            if i != len(buttons_list) - 1:
+
+                print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
+
+                spacer_percent = 1.0 / float(len(buttons_list)+1)
+                print "spacer_percent:", spacer_percent
+
+                self.layout.addLayoutElement(
+                    "Spacer_{}".format(i),
+                    True,
+                    spacer_percent,
+                    True,
+                    lambda: 0.0,
+                    None
+                )
+
+    def _setButtonOffsetPos(self, slot_name, offset, button_size):
+        print "[= _setButtonOffsetPos:", slot_name, offset, button_size
+
+        slot_button = self.content.getMovieSlot(slot_name)
+        content_size = self.pop_up_base.getContentSize()
+        slot_button.setLocalPosition(Mengine.vec2f(0.0, -content_size.y/2 + offset + button_size/2))
+        print slot_button.getLocalPosition()
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
