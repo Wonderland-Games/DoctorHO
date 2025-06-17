@@ -145,10 +145,28 @@ class GameArea(BaseEntity):
 
     def _initLayout(self):
         print("Start _initLayout")
+        _, _, header_height, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         self.game_area_layout = Mengine.createLayout()
-        print("Layout Height:{}".format(Mengine.getGameViewport().getHeight()))
         self.game_area_layout.setLayoutSizer(lambda: Mengine.getGameViewport().getHeight())
-        print("SearchLevelHeight:{}".format(self.search_level.getSize().y))
+        print("Header:{}".format(header_height))
+        self.game_area_layout.addLayoutElement(
+            "Header",
+            True,
+            0.0,
+            True,
+            lambda: header_height,
+            lambda offset, size: None
+        )
+        print("Spacer_1:{}".format(5.0))
+        self.game_area_layout.addLayoutElement(
+            "Spacer_1",
+            False,
+            0.5,
+            True,
+            lambda: 5.0,
+            lambda offset, size: None
+        )
+        print("SearchLevel:{}".format(self.search_level.getSize().y))
         self.game_area_layout.addLayoutElement(
             "SearchLevel",
             True,
@@ -157,16 +175,16 @@ class GameArea(BaseEntity):
             lambda: self.search_level.getSize().y,
             lambda offset, size: self._setLevelSearch(offset, size)
         )
-
+        print("Spacer_2:{}".format(5.0))
         self.game_area_layout.addLayoutElement(
-            "Spacer",
+            "Spacer_2",
             False,
             0.5,
             True,
-            lambda: 0.0,
+            lambda: 5.0,
             lambda offset, size: None
         )
-
+        print("SearchPanel:{}".format(self.search_panel.getSize().y))
         self.game_area_layout.addLayoutElement(
             "SearchPanel",
             True,
@@ -175,6 +193,27 @@ class GameArea(BaseEntity):
             lambda: self.search_panel.getSize().y,
             lambda offset, size: self._setSearchPanel(offset, size)
         )
+        print("Spacer_3:{}".format(5.0))
+        self.game_area_layout.addLayoutElement(
+            "Spacer_3",
+            False,
+            0.5,
+            True,
+            lambda: 5.0,
+            lambda offset, size: None
+        )
+        print("Banner:{}".format(banner_height))
+        self.game_area_layout.addLayoutElement(
+            "Banner",
+            True,
+            0.0,
+            True,
+            lambda: banner_height,
+            lambda offset, size: None
+        )
+        print("LayoutHeight:{}".format(Mengine.getGameViewport().getHeight()))
+        elements_height = header_height + 5.0 + self.search_level.getSize().y + 5.0 + self.search_panel.getSize().y+5.0+banner_height
+        print("ElementsHeight:{}".format(elements_height))
         print("Finish _initLayout")
 
     def _setLevelSearch(self, offset, size):
