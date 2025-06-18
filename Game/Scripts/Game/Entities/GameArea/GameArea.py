@@ -161,16 +161,16 @@ class GameArea(BaseEntity):
         self.game_area_layout.addLayoutElement(
             "Spacer_1",
             False,
-            0.5,
+            0.1,
             True,
-            lambda: 5.0,
+            lambda: 3.0,
             lambda offset, size: None
         )
         print("SearchLevel:{}".format(self.search_level.getSize().y))
         self.game_area_layout.addLayoutElement(
             "SearchLevel",
-            True,
-            0.0,
+            False,
+            5.0,
             True,
             lambda: self.search_level.getSize().y,
             lambda offset, size: self._setLevelSearch(offset, size)
@@ -179,9 +179,9 @@ class GameArea(BaseEntity):
         self.game_area_layout.addLayoutElement(
             "Spacer_2",
             False,
-            0.5,
+            0.1,
             True,
-            lambda: 5.0,
+            lambda: 3.0,
             lambda offset, size: None
         )
         print("SearchPanel:{}".format(self.search_panel.getSize().y))
@@ -197,9 +197,9 @@ class GameArea(BaseEntity):
         self.game_area_layout.addLayoutElement(
             "Spacer_3",
             False,
-            0.5,
+            0.1,
             True,
-            lambda: 5.0,
+            lambda: 3.0,
             lambda offset, size: None
         )
         print("Banner:{}".format(banner_height))
@@ -220,6 +220,11 @@ class GameArea(BaseEntity):
         print("_setLevelSearch")
         print("Offset:{}".format(offset))
         print("Size:{}".format(size))
+        print("LevelSearch.size:{}".format(self.search_level.getSize()))
+        if size != self.search_level.getSize().y:
+            scale =  size / self.search_level.getSize().y
+            print("Scale:{}".format(str(scale)))
+            self.search_level.virtual_area.set_scale(scale)
         _, _, header_height, _, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
         search_level_slot.setWorldPosition(Mengine.vec2f(x_center, offset+900))
