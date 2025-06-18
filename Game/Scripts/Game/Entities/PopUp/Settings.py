@@ -10,6 +10,8 @@ SLOT_SUPPORT = "Support"
 SLOT_CREDITS = "Credits"
 SLOT_LOBBY = "Lobby"
 
+LAYOUT_SPACER = "Spacer_{}"
+
 
 class Settings(PopUpContent):
     content_id = "Settings"
@@ -61,9 +63,23 @@ class Settings(PopUpContent):
 
         print "[= Buttons:", self.buttons.keys()
         buttons_list = self.buttons.items()
+        buttons_list_length = len(buttons_list)
+        spacers_count = buttons_list_length + 1
+        spacer_percent = 1.0 / (float(spacers_count) + float(buttons_list_length))
+
         for i, (slot_name, button) in enumerate(buttons_list):
             def _cbSetOffsetSize(_slot_name):
                 return lambda offset, size: self._setButtonOffsetPos(_slot_name, offset, size)
+
+            print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
+            self.layout.addLayoutElement(
+                LAYOUT_SPACER.format(i),
+                False,
+                spacer_percent,
+                True,
+                lambda: 0.0,
+                None
+            )
 
             print "[= layout.addLayoutElement:", slot_name
             self.layout.addLayoutElement(
@@ -75,19 +91,11 @@ class Settings(PopUpContent):
                 _cbSetOffsetSize(slot_name)
             )
 
-            continue
-
-            # WIP
-            if i != len(buttons_list) - 1:
-
-                print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
-
-                spacer_percent = 1.0 / float(len(buttons_list)+1)
-                print "spacer_percent:", spacer_percent
-
+            if i == buttons_list_length - 1:
+                print "[= layout.addLayoutElement:", "Spacer_{}".format(i+1)
                 self.layout.addLayoutElement(
-                    "Spacer_{}".format(i),
-                    True,
+                    LAYOUT_SPACER.format(i+1),
+                    False,
                     spacer_percent,
                     True,
                     lambda: 0.0,
@@ -156,7 +164,12 @@ class Settings(PopUpContent):
 
     def _setupSlotsPositions(self):
         objects_list = []
-        objects_list.append(self.checkboxes)
+
+        # add checkboxes to objects list
+        if len(self.checkboxes) > 0:
+            objects_list.append(self.checkboxes)
+
+        # add buttons to objects list
         for (key, button) in self.buttons.items():
             objects_list.append({key: button})
 
