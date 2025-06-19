@@ -1,6 +1,6 @@
 <DataBlock Name = "02_Moon">
     <Resource Name = "02_Moon/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
-        <File Path = "Art/02_Moon/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "1536;1536"/>
+        <File Path = "Art/02_Moon/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
     </Resource>
     <Resource Name = "02_Moon/Layer2D_Main/Item_Notebook/_Item_Notebook[Full]" Type = "ResourceImageDefault">
         <File Path = "Art/02_Moon/Layer2D_Main/Item_Notebook/Item_Notebook[Full].png" Codec = "pngImage" MaxSize = "243;179"/>

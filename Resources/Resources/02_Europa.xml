@@ -1,6 +1,6 @@
 <DataBlock Name = "02_Europa">
     <Resource Name = "02_Europa/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
-        <File Path = "Art/02_Europa/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2736;1536"/>
+        <File Path = "Art/02_Europa/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
     </Resource>
     <Resource Name = "02_Europa/Layer2D_Main/Item_Notebook/_Item_Notebook[Full]" Type = "ResourceImageDefault">
         <File Path = "Art/02_Europa/Layer2D_Main/Item_Notebook/Item_Notebook[Full].png" Codec = "pngImage" MaxSize = "243;179"/>
