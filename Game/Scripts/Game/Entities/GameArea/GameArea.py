@@ -1,6 +1,5 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
-from Game.Managers.GameManager import GameManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
@@ -440,6 +439,7 @@ class GameArea(BaseEntity):
         Mengine.destroyNode(temp_hint_node)
 
         # hint effect logic
+        source.addFunction(self.search_level.virtual_area.set_scale, 1.0)
         source.addFunction(self.search_panel.hint.decHintCount)
         source.addFunction(self.search_panel.switchHints)
 
@@ -448,7 +448,7 @@ class GameArea(BaseEntity):
         source.addFunction(self.search_level.virtual_area.freeze, True)
 
         source.addScope(self.search_panel.hint.hint_effect.show, hint_item_transformation)
-        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.search_panel.hint.hint_item)
+        source.addTask("TaskItemClick", Item=self.search_panel.hint.hint_item, AutoEnable=False)
         source.addScope(self.search_panel.hint.hint_effect.hide, hint_item_transformation)
 
         source.addFunction(self.search_panel.hint.cleanHintItem)

@@ -1,6 +1,6 @@
 <DataBlock Name = "01_AncientGreece">
     <Resource Name = "01_AncientGreece/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
-        <File Path = "Art/01_AncientGreece/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2736;1536"/>
+        <File Path = "Art/01_AncientGreece/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
     </Resource>
     <Resource Name = "01_AncientGreece/Layer2D_Main/Item_Jug/_Item_Jug[Full]" Type = "ResourceImageDefault">
         <File Path = "Art/01_AncientGreece/Layer2D_Main/Item_Jug/Item_Jug[Full].png" Codec = "pngImage" MaxSize = "198;216"/>
