@@ -47,6 +47,7 @@ class SearchPanel(Initializer):
         self._initVirtualArea()
 
         self._createRoot()
+        self._createHint()
         self._attachPanel()
 
         return True
@@ -219,13 +220,21 @@ class SearchPanel(Initializer):
 
         return Mengine.vec2f(panel_width, panel_size.y)
 
+    def getFullSize(self):
+        panel_size = self.getSize()
+        hint_size = self.hint.getSize()
+
+        return Mengine.vec2f(panel_size.x, panel_size.y + hint_size.y)
+
+
     # - Hint -----------------------------------------------------------------------------------------------------------
 
-    def _setupHint(self):
+    def _createHint(self):
         self.hint = Hint()
         self.hint.onInitialize(self.game)
         self.hint.attachTo(self.root)
 
+    def _setupHint(self):
         panel_size = self.getSize()
         hint_size = self.hint.getSize()
         hint_node = self.hint.getRoot()
