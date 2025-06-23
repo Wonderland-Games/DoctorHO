@@ -2,8 +2,8 @@ from UIKit.Systems.SystemUserInterface import SystemUserInterface as BaseSystem
 from Foundation.GroupManager import GroupManager
 from Foundation.TaskManager import TaskManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+from Foundation.Providers.DummyAdvertisement import DummyAdvertisement
 
-BANNER_HEIGHT = 50.0
 
 class SystemUI(BaseSystem):
     def _cbRun(self):
@@ -26,7 +26,10 @@ class SystemUI(BaseSystem):
         scale = game_width / banner_width
 
         banner.setEnable(True)
-        banner.setScale((scale, 1.0, 1.0))
+        banner.setScale((scale, scale, 1.0))
+
+        DummyAdvertisement.setBannerScale(scale)
+        banner_height = DummyAdvertisement.getBannerHeight()
 
         def _setup():
             if banner.isActive() is False:
@@ -35,7 +38,7 @@ class SystemUI(BaseSystem):
             node = banner.getEntityNode()
             node.setLocalPosition((
                 viewport.begin.x + game_width / 2,
-                viewport.begin.y + game_height - BANNER_HEIGHT / 2
+                viewport.begin.y + game_height - banner_height / 2
             ))
 
         with TaskManager.createTaskChain() as tc:
