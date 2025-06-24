@@ -14,6 +14,10 @@ class SystemUI(BaseSystem):
     def _devAdjustBanner(self):
         banner = GroupManager.getObject("Banner", "Movie2_Banner")
 
+        # Banner movie size, maybe later we could take it by method
+        banner_movie_height = 50.0
+        banner_movie_width = 320.0
+
         if _DEVELOPMENT is False or Mengine.hasOption("nobanner") is True:
             banner.setEnable(False)
             return
@@ -21,8 +25,12 @@ class SystemUI(BaseSystem):
         viewport = Mengine.getGameViewport()
         game_width = AdjustableScreenUtils.getGameWidth()
         game_height = AdjustableScreenUtils.getGameHeight()
-        scale_factor = DummyAdvertisement.getBannerScaleFactor()
+
+        # Actual banner parameters
+        banner_width = DummyAdvertisement.getBannerWidth()
         banner_height = DummyAdvertisement.getBannerHeight()
+
+        scale_factor = banner_width / banner_movie_width
 
         banner.setEnable(True)
         banner.setScale((scale_factor, scale_factor, 1.0))
