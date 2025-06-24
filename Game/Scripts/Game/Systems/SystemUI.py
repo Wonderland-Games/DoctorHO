@@ -21,15 +21,11 @@ class SystemUI(BaseSystem):
         viewport = Mengine.getGameViewport()
         game_width = AdjustableScreenUtils.getGameWidth()
         game_height = AdjustableScreenUtils.getGameHeight()
-
-        banner_width = 320.0
-        scale = game_width / banner_width
+        scale_factor = DummyAdvertisement.getBannerScaleFactor()
+        banner_height = DummyAdvertisement.getBannerHeight()
 
         banner.setEnable(True)
-        banner.setScale((scale, scale, 1.0))
-
-        DummyAdvertisement.setBannerScale(scale)
-        banner_height = DummyAdvertisement.getBannerHeight()
+        banner.setScale((scale_factor, scale_factor, 1.0))
 
         def _setup():
             if banner.isActive() is False:
