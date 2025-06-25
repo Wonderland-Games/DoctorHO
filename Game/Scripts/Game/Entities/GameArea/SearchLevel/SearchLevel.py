@@ -141,7 +141,7 @@ class SearchLevel(Initializer):
         _, _, header_y, _, _, _, _ = AdjustableScreenUtils.getMainSizesExt()
         diff = box_size.y - scene_size.y
         pos_y = header_y + diff / 2
-        scene_node.setLocalPosition(Mengine.vec2f(0, pos_y))
+        #scene_node.setLocalPosition(Mengine.vec2f(0.0, pos_y))
 
     def getSize(self):
         box_width = self.box_points.z - self.box_points.x
