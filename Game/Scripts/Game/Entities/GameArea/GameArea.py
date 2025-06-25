@@ -26,6 +26,33 @@ class GameArea(BaseEntity):
         self.miss_click = None
         self.search_level = None
         self.search_panel = None
+        self.game_area_layout = None
+
+        self.search_slot = {}
+        self.layout_metrics = {
+            "banner_height": 50.0,
+            "header_height": 280.0,
+            "frame_points_search_level": Mengine.vec4f(
+                783.0,
+                280.0,
+                1953.0,
+                1820.0
+            ),
+            "search_level": Mengine.vec2f(
+                1170,
+                1540
+            ),
+            "search_panel": Mengine.vec2f(
+                1100.0,
+                662.0
+            ),
+            "spacer_height": 3.0,
+            "viewport": {
+                "begin": Mengine.vec2f(783.0, 280.0),
+                "end": Mengine.vec2f(1953.0, 1820.0)
+            },
+            "x_center": 1368.0,
+        }
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -70,12 +97,11 @@ class GameArea(BaseEntity):
         self._initSearchPanel()
         self._initMissClick()
         self._initSearchLevel()
+        self._initLayout()
 
         self.search_panel.onInitialize2()
 
         self._attachMissClick()
-        self._attachSearchLevel()
-        self._attachSearchPanel()
 
         self._runTaskChains()
         self._handleCheats()
@@ -103,68 +129,89 @@ class GameArea(BaseEntity):
     # - MissClick ------------------------------------------------------------------------------------------------------
 
     def _initMissClick(self):
-        search_panel_size = self.search_panel.getSize()
-        _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        frame_begin_x = viewport.begin.x
-        frame_begin_y = viewport.begin.y + header_height
-        frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height - search_panel_size.y
-        frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
-
         self.miss_click = MissClick()
-        self.miss_click.onInitialize(self, frame_points)
+        self.miss_click.onInitialize(self, self.layout_metrics["frame_points_search_level"])
 
     def _attachMissClick(self):
-        _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-
         miss_click_size = self.miss_click.getSize()
-        pos_y = viewport.begin.y + header_height + miss_click_size.y / 2
+        pos_y = self.layout_metrics["viewport"]["begin"].y + self.layout_metrics["header_height"] + miss_click_size.y / 2
 
         miss_click_slot = self.content.getMovieSlot(SLOT_MISS_CLICK)
-        miss_click_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
+        miss_click_slot.setWorldPosition(Mengine.vec2f(self.layout_metrics["x_center"], pos_y))
         self.miss_click.attachTo(miss_click_slot)
 
     # - SearchLevel ----------------------------------------------------------------------------------------------------
 
     def _initSearchLevel(self):
-        search_panel_size = self.search_panel.getSize()
-        _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        frame_begin_x = viewport.begin.x
-        frame_begin_y = viewport.begin.y + header_height
-        frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height - search_panel_size.y
-        frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
-
         self.search_level = SearchLevel()
-        self.search_level.onInitialize(self, frame_points)
-
-    def _attachSearchLevel(self):
-        _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        search_level_size = self.search_level.getSize()
-        pos_y = viewport.begin.y + header_height + search_level_size.y / 2
-
-        search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
-        self.search_level.attachTo(search_level_slot)
+        self.search_level.onInitialize(self, self.layout_metrics["frame_points_search_level"])
+        self.search_slot[SLOT_SEARCH_LEVEL] = self.search_level
 
     # - SearchPanel ----------------------------------------------------------------------------------------------------
 
     def _initSearchPanel(self):
         self.search_panel = SearchPanel()
         self.search_panel.onInitialize(self)
+        self.search_slot[SLOT_SEARCH_PANEL] = self.search_panel
 
-    def _attachSearchPanel(self):
-        _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+    # - Layout ---------------------------------------------------------------------------------------------------------
 
-        search_panel_size = self.search_panel.getSize()
-        pos_y = game_height - banner_height - search_panel_size.y / 2
+    def _initLayout(self):
+        self.game_area_layout = Mengine.createLayout()
+        self.game_area_layout.setLayoutSizer(lambda: Mengine.getGameViewport().getHeight())
 
-        search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
-        search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
-        self.search_panel.attachTo(search_panel_slot)
+        layout_config = [
+            ("Header", self.layout_metrics["header_height"]),
+            ("Spacer_1", self.layout_metrics["spacer_height"]),
+            (SLOT_SEARCH_LEVEL, "dynamic"),
+            ("Spacer_2", self.layout_metrics["spacer_height"]),
+            (SLOT_SEARCH_PANEL, "dynamic"),
+            ("Spacer_3", self.layout_metrics["spacer_height"]),
+            ("Banner", self.layout_metrics["banner_height"]),
+        ]
+
+        for name, value in layout_config:
+            if value == "dynamic":
+                self._addVisualLayoutElement(name)
+            else:
+                self._addLayoutOnlyElement(name, value)
+
+    def _addVisualLayoutElement(self, element_name):
+        height_getters = {
+            SLOT_SEARCH_LEVEL: lambda: self.layout_metrics["search_level"].y,
+            SLOT_SEARCH_PANEL: lambda: self.layout_metrics["search_panel"].y,
+        }
+
+        height_fn = height_getters.get(element_name)
+
+        if height_fn is None:
+            Trace.msg_err("GameArea: There is no {!r} element".format(element_name))
+
+        self.game_area_layout.addLayoutElement(
+            element_name,
+            True,
+            0.0,
+            True,
+            height_fn,
+            lambda offset, size: self._setSearchElement(element_name, offset, size)
+        )
+
+    def _addLayoutOnlyElement(self, element_name, element_height):
+        self.game_area_layout.addLayoutElement(
+            element_name,
+            True,
+            0.0,
+            True,
+            lambda: element_height,
+            lambda offset, size: None
+        )
+
+    def _setSearchElement(self, slot_name, offset, size):
+        movie_slot = self.content.getMovieSlot(slot_name)
+        pos_y = offset + size / 2.0
+
+        movie_slot.setWorldPosition(Mengine.vec2f(self.layout_metrics["x_center"], pos_y))
+        self.search_slot[slot_name].attachTo(movie_slot)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
