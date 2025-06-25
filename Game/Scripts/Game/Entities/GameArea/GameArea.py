@@ -15,7 +15,6 @@ SCENE_ITEM_MOVE_EASING = "easyCubicIn"
 SCENE_ITEM_MOVE_TIME = 1000.0
 SCENE_ITEM_SCALE_EASING = "easyBackOut"
 SCENE_ITEM_SCALE_TIME = 1000.0
-SPACER_HEIGHT = 3.0
 
 
 class GameArea(BaseEntity):
@@ -30,7 +29,30 @@ class GameArea(BaseEntity):
         self.game_area_layout = None
 
         self.search_slot = {}
-        self.layout_metrics = {}
+        self.layout_metrics = {
+            "banner_height": 50.0,
+            "header_height": 280.0,
+            "frame_points_search_level": Mengine.vec4f(
+                783.0,
+                280.0,
+                1953.0,
+                1820.0
+            ),
+            "search_level": Mengine.vec2f(
+                1170,
+                1540
+            ),
+            "search_panel": Mengine.vec2f(
+                1100.0,
+                662.0
+            ),
+            "spacer_height": 3.0,
+            "viewport": {
+                "begin": Mengine.vec2f(783.0, 280.0),
+                "end": Mengine.vec2f(1953.0, 1820.0)
+            },
+            "x_center": 1368.0,
+        }
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -104,25 +126,6 @@ class GameArea(BaseEntity):
             self.miss_click.onFinalize()
             self.miss_click = None
 
-    def _calcLayoutMetrics(self):
-        search_panel_size = self.search_panel.getFullSize()
-        _, _, header_height, banner_height, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        layout_metrics = {
-            "header_height": header_height,
-            "banner_height": banner_height,
-            "x_center": x_center,
-            "viewport": viewport,
-            "frame_points_search_level": Mengine.vec4f(
-                viewport.begin.x,
-                viewport.begin.y + header_height,
-                viewport.end.x,
-                viewport.end.y - banner_height - search_panel_size.y
-            )
-        }
-
-        self.layout_metrics = layout_metrics
-
     # - MissClick ------------------------------------------------------------------------------------------------------
 
     def _initMissClick(self):
@@ -131,7 +134,7 @@ class GameArea(BaseEntity):
 
     def _attachMissClick(self):
         miss_click_size = self.miss_click.getSize()
-        pos_y = self.layout_metrics["viewport"].begin.y + self.layout_metrics["header_height"] + miss_click_size.y / 2
+        pos_y = self.layout_metrics["viewport"]["begin"].y + self.layout_metrics["header_height"] + miss_click_size.y / 2
 
         miss_click_slot = self.content.getMovieSlot(SLOT_MISS_CLICK)
         miss_click_slot.setWorldPosition(Mengine.vec2f(self.layout_metrics["x_center"], pos_y))
@@ -151,8 +154,6 @@ class GameArea(BaseEntity):
         self.search_panel.onInitialize(self)
         self.search_slot[SLOT_SEARCH_PANEL] = self.search_panel
 
-        self._calcLayoutMetrics()
-
     # - Layout ---------------------------------------------------------------------------------------------------------
 
     def _initLayout(self):
@@ -161,11 +162,11 @@ class GameArea(BaseEntity):
 
         layout_config = [
             ("Header", self.layout_metrics["header_height"]),
-            ("Spacer_1", SPACER_HEIGHT),
+            ("Spacer_1", self.layout_metrics["spacer_height"]),
             (SLOT_SEARCH_LEVEL, "dynamic"),
-            ("Spacer_2", SPACER_HEIGHT),
+            ("Spacer_2", self.layout_metrics["spacer_height"]),
             (SLOT_SEARCH_PANEL, "dynamic"),
-            ("Spacer_3", SPACER_HEIGHT),
+            ("Spacer_3", self.layout_metrics["spacer_height"]),
             ("Banner", self.layout_metrics["banner_height"]),
         ]
 
@@ -177,8 +178,8 @@ class GameArea(BaseEntity):
 
     def _addVisualLayoutElement(self, element_name):
         height_getters = {
-            SLOT_SEARCH_LEVEL: lambda: self.search_level.getSize().y,
-            SLOT_SEARCH_PANEL: lambda: self.search_panel.getFullSize().y,
+            SLOT_SEARCH_LEVEL: lambda: self.layout_metrics["search_level"].y,
+            SLOT_SEARCH_PANEL: lambda: self.layout_metrics["search_panel"].y,
         }
 
         height_fn = height_getters.get(element_name)
