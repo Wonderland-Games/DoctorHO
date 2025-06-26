@@ -1,7 +1,7 @@
 from UIKit.Systems.SystemUserInterface import SystemUserInterface as BaseSystem
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Foundation.GroupManager import GroupManager
 from Foundation.TaskManager import TaskManager
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Foundation.Providers.DummyAdvertisement import DummyAdvertisement
 
 
@@ -14,39 +14,44 @@ class SystemUI(BaseSystem):
     def _devAdjustBanner(self):
         banner = GroupManager.getObject("Banner", "Movie2_Banner")
 
-        # Banner movie size, maybe later we could take it by method
-        banner_movie_height = 50.0
-        banner_movie_width = 320.0
-
         if _DEVELOPMENT is False or Mengine.hasOption("nobanner") is True:
             banner.setEnable(False)
             return
-
-        viewport = Mengine.getGameViewport()
-        game_width = AdjustableScreenUtils.getGameWidth()
-        game_height = AdjustableScreenUtils.getGameHeight()
-
-        # Actual banner parameters
-        banner_width = DummyAdvertisement.getBannerWidth()
-        banner_height = DummyAdvertisement.getBannerHeight()
-
-        scale_factor = banner_width / banner_movie_width
-
-        banner.setEnable(True)
-        banner.setScale((scale_factor, scale_factor, 1.0))
 
         def _setup():
             if banner.isActive() is False:
                 Trace.msg_err("SystemUI._devAdjustBanner: Movie2_Banner entity is not active!!!!!")
                 return
-            node = banner.getEntityNode()
-            node.setLocalPosition((
-                viewport.begin.x + game_width / 2,
-                viewport.begin.y + game_height - banner_height / 2
+
+            # Get banner node
+            banner_node = banner.getEntityNode()
+
+            # Banner movie size (REMAKE HARDCODE TO SOMETHING MORE AUTOMATIC!)
+            banner_movie_width = 320.0
+            banner_movie_height = 50.0
+
+            # Dummy advertisement banner size
+            banner_width = DummyAdvertisement.getBannerWidth()
+            banner_height = DummyAdvertisement.getBannerHeight()
+
+            # Set banner scale
+            scale_factor_width = banner_width / banner_movie_width
+            scale_factor_height = banner_height / banner_movie_height
+            banner_node.setScale((scale_factor_width, scale_factor_height, 1.0))
+
+            # Game screen parameters, set banner position
+            game_viewport = Mengine.getGameViewport()
+            game_width = AdjustableScreenUtils.getGameWidth()
+            game_height = AdjustableScreenUtils.getGameHeight()
+
+            banner_node.setLocalPosition((
+                game_viewport.begin.x + game_width / 2,
+                game_viewport.begin.y + game_height - banner_height / 2
             ))
 
         with TaskManager.createTaskChain() as tc:
             tc.addListener(Notificator.onSceneInit, Filter=lambda scene: scene == "Lobby")
+            tc.addEnable(banner)
             tc.addFunction(_setup)
 
     def _setTexts(self):
