@@ -10,6 +10,8 @@ SLOT_SUPPORT = "Support"
 SLOT_CREDITS = "Credits"
 SLOT_LOBBY = "Lobby"
 
+LAYOUT_SPACER = "Spacer_{}"
+
 
 class Settings(PopUpContent):
     content_id = "Settings"
@@ -20,14 +22,18 @@ class Settings(PopUpContent):
         self.checkboxes = {}
         self.buttons = {}
 
+        self.layout = None
+
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
     def _onInitializeContent(self):
         super(Settings, self)._onInitializeContent()
 
-        self._setupCheckBoxes()
+        # self._setupCheckBoxes()
         self._setupButtons()
-        self._setupSlotsPositions()
+        
+        # self._setupSlotsPositions()
+        self._adjustLayout()
 
         self._runTaskChains()
 
@@ -41,6 +47,75 @@ class Settings(PopUpContent):
         for button in self.checkboxes.values():
             button.onDestroy()
         self.checkboxes = {}
+
+        if self.layout is not None:
+            Mengine.destroyLayout(self.layout)
+            self.layout = None
+
+    # - Layout ---------------------------------------------------------------------------------------------------------
+
+    def _adjustLayout(self):
+        self.layout = Mengine.createLayout()
+
+        def _getContentSizeY():
+            content_size = self.pop_up_base.getContentSize()
+            print "[= layout.setLayoutSizer:", content_size.y
+            return content_size.y
+
+        self.layout.setLayoutSizer(_getContentSizeY)
+
+        print "[= Buttons:", self.buttons.keys()
+        buttons_list = self.buttons.items()
+        buttons_list_length = len(buttons_list)
+        spacers_count = buttons_list_length + 1
+        spacer_percent = 1.0 / (float(spacers_count) + float(buttons_list_length))
+
+        for i, (slot_name, button) in enumerate(buttons_list):
+            def _getButtonSizeY():
+                button_size = button.getSize()
+                return button_size.y
+
+            def _cbSetOffsetPosY(_slot_name):
+                return lambda offset, size: self._setButtonOffsetPosY(_slot_name, offset, size)
+
+            print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
+            self.layout.addLayoutElement(
+                LAYOUT_SPACER.format(i),
+                False,
+                spacer_percent,
+                True,
+                lambda: 0.0,
+                None
+            )
+
+            print "[= layout.addLayoutElement:", slot_name
+            self.layout.addLayoutElement(
+                slot_name,
+                True,
+                0.0,
+                True,
+                _getButtonSizeY,
+                _cbSetOffsetPosY(slot_name)
+            )
+
+            if i == buttons_list_length - 1:
+                print "[= layout.addLayoutElement:", "Spacer_{}".format(i+1)
+                self.layout.addLayoutElement(
+                    LAYOUT_SPACER.format(i+1),
+                    False,
+                    spacer_percent,
+                    True,
+                    lambda: 0.0,
+                    None
+                )
+
+    def _setButtonOffsetPosY(self, slot_name, offset, button_size):
+        print "[= _setButtonOffsetPosY:", slot_name, offset, button_size
+
+        slot_button = self.content.getMovieSlot(slot_name)
+        content_size = self.pop_up_base.getContentSize()
+        slot_button.setLocalPosition(Mengine.vec2f(0.0, -content_size.y/2 + offset + button_size/2))
+        print slot_button.getLocalPosition()
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -96,7 +171,12 @@ class Settings(PopUpContent):
 
     def _setupSlotsPositions(self):
         objects_list = []
-        objects_list.append(self.checkboxes)
+
+        # add checkboxes to objects list
+        if len(self.checkboxes) > 0:
+            objects_list.append(self.checkboxes)
+
+        # add buttons to objects list
         for (key, button) in self.buttons.items():
             objects_list.append({key: button})
 
