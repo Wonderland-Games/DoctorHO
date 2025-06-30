@@ -57,9 +57,12 @@ class Settings(PopUpContent):
     def _adjustLayout(self):
         self.layout = Mengine.createLayout()
 
-        content_size = self.pop_up_base.getContentSize()
-        print "[= layout.setLayoutSizer:", content_size.y
-        self.layout.setLayoutSizer(lambda: content_size.y)
+        def _getContentSizeY():
+            content_size = self.pop_up_base.getContentSize()
+            print "[= layout.setLayoutSizer:", content_size.y
+            return content_size.y
+
+        self.layout.setLayoutSizer(_getContentSizeY)
 
         print "[= Buttons:", self.buttons.keys()
         buttons_list = self.buttons.items()
@@ -68,8 +71,12 @@ class Settings(PopUpContent):
         spacer_percent = 1.0 / (float(spacers_count) + float(buttons_list_length))
 
         for i, (slot_name, button) in enumerate(buttons_list):
-            def _cbSetOffsetSize(_slot_name):
-                return lambda offset, size: self._setButtonOffsetPos(_slot_name, offset, size)
+            def _getButtonSizeY():
+                button_size = button.getSize()
+                return button_size.y
+
+            def _cbSetOffsetPosY(_slot_name):
+                return lambda offset, size: self._setButtonOffsetPosY(_slot_name, offset, size)
 
             print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
             self.layout.addLayoutElement(
@@ -87,8 +94,8 @@ class Settings(PopUpContent):
                 True,
                 0.0,
                 True,
-                lambda: button.getSize().y,
-                _cbSetOffsetSize(slot_name)
+                _getButtonSizeY,
+                _cbSetOffsetPosY(slot_name)
             )
 
             if i == buttons_list_length - 1:
@@ -102,8 +109,8 @@ class Settings(PopUpContent):
                     None
                 )
 
-    def _setButtonOffsetPos(self, slot_name, offset, button_size):
-        print "[= _setButtonOffsetPos:", slot_name, offset, button_size
+    def _setButtonOffsetPosY(self, slot_name, offset, button_size):
+        print "[= _setButtonOffsetPosY:", slot_name, offset, button_size
 
         slot_button = self.content.getMovieSlot(slot_name)
         content_size = self.pop_up_base.getContentSize()
