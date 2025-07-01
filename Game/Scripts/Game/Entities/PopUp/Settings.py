@@ -1,5 +1,6 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent
 from Game.Managers.GameManager import GameManager
+from Foundation.LayoutBox import LayoutBox
 
 
 SLOT_SOUND = "Sound"
@@ -33,7 +34,8 @@ class Settings(PopUpContent):
         self._setupButtons()
         
         # self._setupSlotsPositions()
-        self._adjustLayout()
+        # self._adjustLayout()
+        self._adjustLayoutBox()
 
         self._runTaskChains()
 
@@ -116,6 +118,77 @@ class Settings(PopUpContent):
         content_size = self.pop_up_base.getContentSize()
         slot_button.setLocalPosition(Mengine.vec2f(0.0, -content_size.y/2 + offset + button_size/2))
         print slot_button.getLocalPosition()
+
+    def _adjustLayoutBox(self):
+        class BoxElement(object):
+            def __init__(self, name, w, h):
+                self.name = name
+                self.x = 0
+                self.y = 0
+                self.w = w
+                self.h = h
+
+            def getLayoutSize(self):
+                return (self.w, self.h)
+
+            def setLayoutOffset(self, offset):
+                print "Element: ", self, self.name, " setLayoutOffset", offset
+                self.x = offset[0]
+                self.y = offset[1]
+
+            def setLayoutSize(self, size):
+                self.w = size[0]
+                self.h = size[1]
+
+        # element_1 = BoxElement("element_1", 1024, 128)
+        # element_2 = BoxElement("element_2", 1024, 128)
+        # element_3 = BoxElement("element_3", 1024, 128)
+        #
+        # print "element_1", element_1
+        # print "element_2", element_2
+        # print "element_3", element_3
+        #
+        # def __sizer():
+        #     # return (1024, 1024)
+        #     content_size = self.pop_up_base.getContentSize()
+        #     return (content_size.x, content_size.y)
+        #
+        # layout_box = LayoutBox(__sizer)
+        #
+        # with LayoutBox.BuilderVertical(layout_box) as vertical:
+        #     vertical.addFixedObject(element_1)
+        #     vertical.addPadding(100)
+        #     vertical.addFixedObject(element_2)
+        #     vertical.addPadding(100)
+        #     vertical.addFixedObject(element_3)
+        #
+        # self.layout_box = layout_box
+
+        def __getContentSize():
+            # return (1024, 1024)
+            content_size = self.pop_up_base.getContentSize()
+            return (content_size.x, content_size.y)
+
+        layout_box = LayoutBox(__getContentSize)
+        self.layout_box = layout_box
+
+        buttons_list = self.buttons.items()
+        buttons_list_length = len(buttons_list)
+
+        for i, (slot_name, button) in enumerate(buttons_list):
+            button_size = button.getSize()
+            box_element = BoxElement(slot_name, button_size.x, button_size.y)
+
+            with LayoutBox.BuilderVertical(layout_box) as vertical:
+                if i == 0:
+                    vertical.addPadding(25)
+
+                vertical.addFixedObject(box_element)
+
+                if i == buttons_list_length - 1:
+                    vertical.addPadding(25)
+                else:
+                    vertical.addPadding(100)
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
