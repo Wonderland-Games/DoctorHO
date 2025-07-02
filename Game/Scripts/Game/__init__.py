@@ -34,6 +34,7 @@ def onInitialize():
         "onLevelEnd",
         "onLevelMissClicked",
         "onLevelHintClicked",
+        "onMissClickEffect",
         "onLevelLivesDecrease",
         "onLevelLivesChanged",
         "onLevelLivesRestore",

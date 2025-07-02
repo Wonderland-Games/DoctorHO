@@ -5,7 +5,6 @@ from Foundation.DemonManager import DemonManager
 
 
 PROTOTYPE_EFFECT = "MissClickEffect"
-MOVIE_MISSCLICK_EFFECT = "Movie2_MissClickEffect_"
 
 
 class MissClickEffect(Initializer):
@@ -16,8 +15,6 @@ class MissClickEffect(Initializer):
         self.observers = []
         self.effects = []
         self.semaphore_free = Semaphore(True, "NoEffects")
-        self.movies = {}
-        self.cur_pos = 0.0
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -55,27 +52,34 @@ class MissClickEffect(Initializer):
 
         self.semaphore_free = None
         self.game = None
-        self.movies.clear()
-        self.cur_pos = None
 
     # - Observers ------------------------------------------------------------------------------------------------------
 
     def _setupObservers(self):
         self._addObserver(Notificator.onLevelMissClicked, self._cbLevelMissClicked)
+        pass
 
     def _cbLevelMissClicked(self):
+        '''
         arrow = Mengine.getArrow()
         node = arrow.getNode()
-        #position = node.getWorldPosition()
-        self.cur_pos = node.getWorldPosition()
+        position = node.getWorldPosition()
 
-        '''
         effect = self._createEffect()
         self._placeEffect(effect, position)
         self._runEffect(effect)
-        '''
-        self._runEffectNew()
 
+        miss_click_demon = DemonManager.getDemon("MissClick")
+        print("DemonMissClick")
+        for attr in dir(miss_click_demon):
+            if callable(getattr(miss_click_demon, attr)):
+                print(attr)
+        entity = miss_click_demon.getEntityNode()
+        print("EntityMisccClick")
+        for attr in dir(entity):
+            if callable(getattr(entity, attr)):
+                print(attr)
+        '''
 
         return False
 
@@ -117,86 +121,3 @@ class MissClickEffect(Initializer):
         for effect in self.effects:
             effect.onDestroy()
         self.effects = []
-
-    def _runEffectNew(self):
-        '''
-        movie_name = MOVIE_MISSCLICK_EFFECT + "Show"
-        MissClickDemon = DemonManager.getDemon("MissClick")
-
-        prototype = MissClickDemon.generateObjectUnique(movie_name, movie_name)
-        prototype_node = prototype.getEntityNode()
-        search_level_node = self.game.search_level.getRoot()
-        search_level_node.addChild(prototype_node)
-        prototype_node.setWorldPosition(position)
-        prototype.setEnable(True)
-        prototype.setPlay(True)
-        '''
-
-        with self._createTaskChain() as tc:
-            tc.addScope(self.showNew)
-            tc.addScope(self.idleNew)
-            tc.addScope(self.hideNew)
-
-    def _createEffectNew(self, state):
-        print(" * CREATE MISSCLICK EFFECT '{}'".format(state))
-
-        movie_name = MOVIE_MISSCLICK_EFFECT + state
-
-        print("_createEffectNew")
-        miss_click_demon = DemonManager.getDemon("MissClick")
-        prototype = miss_click_demon.generateObjectUnique(movie_name, movie_name)
-
-        self.movies[state] = prototype
-
-        prototype_node = prototype.getEntityNode()
-        search_level_node = self.game.search_level.getRoot()
-        search_level_node.addChild(prototype_node)
-
-        prototype_node.setWorldPosition(self.cur_pos)
-        prototype.setEnable(True)
-
-
-    def _playEffectNew(self, source, state):
-        print(" * PLAY MISSCLICK EFFECT '{}'".format(state))
-
-        prototype = self.movies.get(state)
-        if prototype is None:
-            return
-
-        source.addPlay(prototype, Wait=True, Loop=False)
-
-    def _destroyEffectNew(self, state):
-        print(" * DESTROY MISSCLICK EFFECT '{}'".format(state))
-
-        prototype = self.movies.get(state)
-        if prototype is None:
-            return
-
-        self.movies[state] = None
-
-        prototype.setEnable(True)
-
-        prototype_node = prototype.getEntityNode()
-        prototype_node.removeFromParent()
-
-        prototype.onDestroy()
-
-    def showNew(self, source):
-        # create, play, destroy show state
-        source.addFunction(self._createEffectNew, "Show")
-        source.addScope(self._playEffectNew, "Show")
-        source.addFunction(self._destroyEffectNew, "Show")
-
-
-    def idleNew(self, source):
-        # create, play, destroy idle state
-        source.addFunction(self._createEffectNew, "Idle")
-        source.addScope(self._playEffectNew, "Idle")
-        source.addFunction(self._destroyEffectNew, "Idle")
-
-
-    def hideNew(self, source):
-        # create, play, destroy hide state
-        source.addFunction(self._createEffectNew, "Hide")
-        source.addScope(self._playEffectNew, "Hide")
-        source.addFunction(self._destroyEffectNew, "Hide")
