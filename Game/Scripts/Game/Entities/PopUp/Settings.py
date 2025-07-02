@@ -120,75 +120,32 @@ class Settings(PopUpContent):
         print slot_button.getLocalPosition()
 
     def _adjustLayoutBox(self):
-        class BoxElement(object):
-            def __init__(self, name, w, h):
-                self.name = name
-                self.x = 0
-                self.y = 0
-                self.w = w
-                self.h = h
-
-            def getLayoutSize(self):
-                return (self.w, self.h)
-
-            def setLayoutOffset(self, offset):
-                print "Element: ", self, self.name, " setLayoutOffset", offset
-                self.x = offset[0]
-                self.y = offset[1]
-
-            def setLayoutSize(self, size):
-                self.w = size[0]
-                self.h = size[1]
-
-        # element_1 = BoxElement("element_1", 1024, 128)
-        # element_2 = BoxElement("element_2", 1024, 128)
-        # element_3 = BoxElement("element_3", 1024, 128)
-        #
-        # print "element_1", element_1
-        # print "element_2", element_2
-        # print "element_3", element_3
-        #
-        # def __sizer():
-        #     # return (1024, 1024)
-        #     content_size = self.pop_up_base.getContentSize()
-        #     return (content_size.x, content_size.y)
-        #
-        # layout_box = LayoutBox(__sizer)
-        #
-        # with LayoutBox.BuilderVertical(layout_box) as vertical:
-        #     vertical.addFixedObject(element_1)
-        #     vertical.addPadding(100)
-        #     vertical.addFixedObject(element_2)
-        #     vertical.addPadding(100)
-        #     vertical.addFixedObject(element_3)
-        #
-        # self.layout_box = layout_box
-
         def __getContentSize():
-            # return (1024, 1024)
             content_size = self.pop_up_base.getContentSize()
             return (content_size.x, content_size.y)
 
-        layout_box = LayoutBox(__getContentSize)
-        self.layout_box = layout_box
+        self.layout_box = LayoutBox(__getContentSize)
 
-        buttons_list = self.buttons.items()
-        buttons_list_length = len(buttons_list)
-
-        for i, (slot_name, button) in enumerate(buttons_list):
+        buttons_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
+        buttons = []
+        for slot_name in buttons_slots:
+            button = self.buttons.get(slot_name)
             button_size = button.getSize()
-            box_element = BoxElement(slot_name, button_size.x, button_size.y)
+            button.setLayoutSize((button_size.x, button_size.y))
+            buttons.append(button)
 
-            with LayoutBox.BuilderVertical(layout_box) as vertical:
-                if i == 0:
-                    vertical.addPadding(25)
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(25)
+            vertical.addFixedObject(buttons[0])
+            vertical.addPadding(100)
+            vertical.addFixedObject(buttons[1])
+            vertical.addPadding(100)
+            vertical.addFixedObject(buttons[2])
+            vertical.addPadding(25)
 
-                vertical.addFixedObject(box_element)
-
-                if i == buttons_list_length - 1:
-                    vertical.addPadding(25)
-                else:
-                    vertical.addPadding(100)
+        for button in buttons:
+            button_offset = button.getLayoutOffset()
+            button.setLocalPosition(button_offset)
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
