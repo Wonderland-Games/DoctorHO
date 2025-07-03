@@ -130,16 +130,12 @@ class Settings(PopUpContent):
         checkboxes = []
         for slot_name in checkboxes_slots:
             checkbox = self.checkboxes.get(slot_name)
-            checkbox_size = checkbox.getSize()
-            checkbox.setLayoutSize((checkbox_size.x, checkbox_size.y))
             checkboxes.append(checkbox)
 
         buttons_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
         buttons = []
         for slot_name in buttons_slots:
             button = self.buttons.get(slot_name)
-            button_size = button.getSize()
-            button.setLayoutSize((button_size.x, button_size.y))
             buttons.append(button)
 
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
@@ -159,18 +155,6 @@ class Settings(PopUpContent):
             vertical.addPadding(100)
             vertical.addFixedObject(buttons[2])
             vertical.addPadding(25)
-
-        content_size = self.pop_up_base.getContentSize()
-
-        for checkbox in checkboxes:
-            checkbox_offset = checkbox.getLayoutOffset()
-            checkbox.setLocalPosition(Mengine.vec2f(-content_size.x / 2 + checkbox_offset[0], checkbox_offset[1]))
-            print "[= Checkbox {} position: {}".format(checkbox, checkbox.getLocalPosition())
-
-        for button in buttons:
-            button_offset = button.getLayoutOffset()
-            button.setLocalPosition(Mengine.vec2f(button_offset[0], -content_size.y/2 + button_offset[1]))
-            print "[= Button {} position: {}".format(button, button.getLocalPosition())
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
