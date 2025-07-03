@@ -30,7 +30,7 @@ class Settings(PopUpContent):
     def _onInitializeContent(self):
         super(Settings, self)._onInitializeContent()
 
-        # self._setupCheckBoxes()
+        self._setupCheckBoxes()
         self._setupButtons()
         
         # self._setupSlotsPositions()
@@ -126,6 +126,14 @@ class Settings(PopUpContent):
 
         self.layout_box = LayoutBox(__getContentSize)
 
+        checkboxes_slots = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
+        checkboxes = []
+        for slot_name in checkboxes_slots:
+            checkbox = self.checkboxes.get(slot_name)
+            checkbox_size = checkbox.getSize()
+            checkbox.setLayoutSize((checkbox_size.x, checkbox_size.y))
+            checkboxes.append(checkbox)
+
         buttons_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
         buttons = []
         for slot_name in buttons_slots:
@@ -136,6 +144,15 @@ class Settings(PopUpContent):
 
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
             vertical.addPadding(25)
+            with vertical.addLayoutHorizontal(200.0) as horizontal:
+                horizontal.addPadding(25)
+                horizontal.addFixedObject(checkboxes[0])
+                horizontal.addPadding(100)
+                horizontal.addFixedObject(checkboxes[1])
+                horizontal.addPadding(100)
+                horizontal.addFixedObject(checkboxes[2])
+                horizontal.addPadding(25)
+            vertical.addPadding(100)
             vertical.addFixedObject(buttons[0])
             vertical.addPadding(100)
             vertical.addFixedObject(buttons[1])
@@ -143,9 +160,17 @@ class Settings(PopUpContent):
             vertical.addFixedObject(buttons[2])
             vertical.addPadding(25)
 
+        content_size = self.pop_up_base.getContentSize()
+
+        for checkbox in checkboxes:
+            checkbox_offset = checkbox.getLayoutOffset()
+            checkbox.setLocalPosition(Mengine.vec2f(-content_size.x / 2 + checkbox_offset[0], checkbox_offset[1]))
+            print "[= Checkbox {} position: {}".format(checkbox, checkbox.getLocalPosition())
+
         for button in buttons:
             button_offset = button.getLayoutOffset()
-            button.setLocalPosition(button_offset)
+            button.setLocalPosition(Mengine.vec2f(button_offset[0], -content_size.y/2 + button_offset[1]))
+            print "[= Button {} position: {}".format(button, button.getLocalPosition())
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
