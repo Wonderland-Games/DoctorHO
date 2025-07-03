@@ -17,11 +17,10 @@ class MissClick(BaseEntity):
 
     def _onInitialize(self, obj):
         super(MissClick, self)._onInitialize(obj)
-        #self._setupObservers()
+        self._setupObservers()
 
     def _onFinalize(self):
         super(MissClick, self)._onFinalize()
-        '''
         for state in self.movies.keys():
             self._destroyEffect(state)
         self.movies.clear()
@@ -33,7 +32,6 @@ class MissClick(BaseEntity):
         for tc in self.tcs:
             tc.cancel()
         self.tcs = []
-        '''
 
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
@@ -43,10 +41,11 @@ class MissClick(BaseEntity):
 
     def _onActivate(self):
         super(MissClick, self)._onActivate()
-        self._setupObservers()
+        #self._setupObservers()
 
     def _onDeactivate(self):
         super(MissClick, self)._onDeactivate()
+        '''
         for state in self.movies.keys():
             self.movies.pop(state, None)
         self.movies = []
@@ -58,6 +57,7 @@ class MissClick(BaseEntity):
         for tc in self.tcs:
             tc.cancel()
         self.tcs = []
+        '''
 
     # - MissClick ------------------------------------------------------------------------------------------------------
     def _addObserver(self, identity, callback, *args, **kwargs):

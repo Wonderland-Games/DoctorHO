@@ -5,6 +5,7 @@ class DatabaseGroups(Database):
         super(DatabaseGroups, self).__init__()
         self.addRecord(GroupName="Loading")
         self.addRecord(GroupName="Lobby")
+        self.addRecord(GroupName="MissClick")
         self.addRecord(GroupName="GameArea")
         self.addRecord(GroupName="Advertising")
         self.addRecord(GroupName="QuestBackpack")

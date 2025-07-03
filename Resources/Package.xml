@@ -6,6 +6,7 @@
 	<Resources>
 		<Resource Path="Resources/Loading.bin" />
 		<Resource Path="Resources/Lobby.bin" />
+		<Resource Path="Resources/MissClick.bin" />
 		<Resource Path="Resources/GameArea.bin" />
 		<Resource Path="Resources/Advertising.bin" />
 		<Resource Path="Resources/QuestBackpack.bin" />
