@@ -156,6 +156,32 @@ class Settings(PopUpContent):
             vertical.addFixedObject(buttons[2])
             vertical.addPadding(25)
 
+        content_size = self.pop_up_base.getContentSize()
+        print "\n------------------"
+        print "ContentSize:", content_size
+
+        print "[= Checkboxes:"
+        for checkbox in checkboxes:
+            checkbox_size = checkbox.getSize()
+            checkbox_layout_offset, checkbox_layout_size = checkbox.getLayoutData()
+            print "Checkbox: {}".format(checkbox.movie)
+            print "Checkbox size: {}".format(checkbox_size)
+            print "Checkbox layout size: {}".format(checkbox_layout_size)
+            print "Checkbox layout offset: {}".format(checkbox_layout_offset)
+            # checkbox.setLocalPosition(Mengine.vec2f(-content_size.x / 2 + checkbox_offset[0], checkbox_offset[1]))
+            # print "[= Checkbox {} position: {}".format(checkbox, checkbox.getLocalPosition())
+
+        print "[= Buttons:"
+        for button in buttons:
+            button_size = button.getSize()
+            button_layout_offset, button_layout_size = button.getLayoutData()
+            print "Button: {}".format(button.movie)
+            print "Button size: {}".format(button_size)
+            print "Button layout size: {}".format(button_layout_size)
+            print "Button layout offset: {}".format(button_layout_offset)
+            # button.setLocalPosition(Mengine.vec2f(button_offset[0], -content_size.y / 2 + button_offset[1]))
+            # print "[= Button {} position: {}".format(button, button.getLocalPosition())
+
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupCheckBoxes(self):
