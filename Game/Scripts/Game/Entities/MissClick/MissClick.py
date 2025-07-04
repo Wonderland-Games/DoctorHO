@@ -9,25 +9,19 @@ class MissClick(BaseScopeEntity):
 
     def __init__(self):
         super(MissClick, self).__init__()
-        self.movies = {}
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onScopeActivate(self, source):
         super(MissClick, self)._onScopeActivate(source)
+
         source.addListener(Notificator.onMissClickEffect)
+
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
-        source.addFunction(self._createEffect, "Show")
-        source.addScope(self._playEffect, "Show")
-        source.addFunction(self._destroyEffect, "Show")
 
-        source.addFunction(self._createEffect, "Idle")
-        source.addScope(self._playEffect, "Idle")
-        source.addFunction(self._destroyEffect, "Idle")
+        for state in ("Show", "Idle", "Hide"):
+            source.addScope(self._createAndPlayEffect, state)
 
-        source.addFunction(self._createEffect, "Hide")
-        source.addScope(self._playEffect, "Hide")
-        source.addFunction(self._destroyEffect, "Hide")
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
 
     def _onDeactivate(self):
@@ -38,35 +32,24 @@ class MissClick(BaseScopeEntity):
         self.movies = []
 
     # - MissClick ------------------------------------------------------------------------------------------------------
-    def _createEffect(self, state):
+
+    def _createAndPlayEffect(self, source, state):
         movie_name = MOVIE_MISSCLICK_EFFECT + state
         movie_prototype = self.object.generateObjectUnique(movie_name, movie_name)
-        self.movies[state] = movie_prototype
 
         prototype_movie_node = movie_prototype.getEntityNode()
         self.object.getEntityNode().addChild(prototype_movie_node)
+
         movie_prototype.setEnable(True)
 
-        arrow = Mengine.getArrow()
-        node = arrow.getNode()
-        position = node.getWorldPosition()
-
+        position = self._getCurPos()
         prototype_movie_node.setWorldPosition(position)
 
-    def _destroyEffect(self, state):
-        movie_prototype = self.movies.get(state)
-
-        if state in self.movies:
-            del self.movies[state]
-
-        movie_prototype.setEnable(True)
-
-        movie_prototype_node = movie_prototype.getEntityNode()
-        movie_prototype_node.removeFromParent()
-
-    def _playEffect(self, source, state):
-        movie_prototype = self.movies.get(state)
-        if movie_prototype is None:
-            return
-
         source.addPlay(movie_prototype, Loop=False)
+        source.addFunction(movie_prototype.setEnable, False)
+        source.addFunction(prototype_movie_node.removeFromParent)
+
+    def _getCurPos(self):
+        arrow = Mengine.getArrow()
+        node = arrow.getNode()
+        return node.getWorldPosition()
