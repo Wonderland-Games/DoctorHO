@@ -139,48 +139,22 @@ class Settings(PopUpContent):
             buttons.append(button)
 
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
-            vertical.addPadding(25)
+            vertical.addPadding(0.75)
             with vertical.addLayoutHorizontal(200.0) as horizontal:
-                horizontal.addPadding(25)
+                horizontal.addPadding(1)
                 horizontal.addFixedObject(checkboxes[0])
-                horizontal.addPadding(100)
+                horizontal.addPadding(1)
                 horizontal.addFixedObject(checkboxes[1])
-                horizontal.addPadding(100)
+                horizontal.addPadding(1)
                 horizontal.addFixedObject(checkboxes[2])
-                horizontal.addPadding(25)
-            vertical.addPadding(100)
+                horizontal.addPadding(1)
+            vertical.addPadding(1.75)
             vertical.addFixedObject(buttons[0])
-            vertical.addPadding(100)
+            vertical.addPadding(1)
             vertical.addFixedObject(buttons[1])
-            vertical.addPadding(100)
+            vertical.addPadding(1)
             vertical.addFixedObject(buttons[2])
-            vertical.addPadding(25)
-
-        content_size = self.pop_up_base.getContentSize()
-        print "\n------------------"
-        print "ContentSize:", content_size
-
-        print "[= Checkboxes:"
-        for checkbox in checkboxes:
-            checkbox_size = checkbox.getSize()
-            checkbox_layout_offset, checkbox_layout_size = checkbox.getLayoutData()
-            print "Checkbox: {}".format(checkbox.movie)
-            print "Checkbox size: {}".format(checkbox_size)
-            print "Checkbox layout size: {}".format(checkbox_layout_size)
-            print "Checkbox layout offset: {}".format(checkbox_layout_offset)
-            # checkbox.setLocalPosition(Mengine.vec2f(-content_size.x / 2 + checkbox_offset[0], checkbox_offset[1]))
-            # print "[= Checkbox {} position: {}".format(checkbox, checkbox.getLocalPosition())
-
-        print "[= Buttons:"
-        for button in buttons:
-            button_size = button.getSize()
-            button_layout_offset, button_layout_size = button.getLayoutData()
-            print "Button: {}".format(button.movie)
-            print "Button size: {}".format(button_size)
-            print "Button layout size: {}".format(button_layout_size)
-            print "Button layout offset: {}".format(button_layout_offset)
-            # button.setLocalPosition(Mengine.vec2f(button_offset[0], -content_size.y / 2 + button_offset[1]))
-            # print "[= Button {} position: {}".format(button, button.getLocalPosition())
+            vertical.addPadding(1.5)
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
