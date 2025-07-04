@@ -33,7 +33,6 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
-        self.addObserver(Notificator.onLevelLivesChanged, self._onLevelLivesChanged)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
         self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
@@ -83,13 +82,21 @@ class SystemGame(System):
                 hotspot_click.addListener(Notificator.onLevelMissClicked)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
 
-            tc.addNotify(Notificator.onLevelLivesDecrease)
+            with tc.addParallelTask(2) as (source_listener, source_notify):
+                def __onLevelLivesChanged(source, lives_count):
+                    if lives_count <= 0:
+                        popup_object = DemonManager.getDemon("PopUp")
+                        popup = popup_object.entity
+                        source.addNotify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
+                    else:
+                        source.addPrint("MissClickEffect")
+                        source.addNotify(Notificator.onMissClickEffect)
 
-        return False
+                    return True
 
-    def _onLevelLivesChanged(self, lives_count):
-        if lives_count <= 0:
-            Notification.notify(Notificator.onLevelEnd, False)
+                source_listener.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
+
+                source_notify.addNotify(Notificator.onLevelLivesDecrease)
 
         return False
 

@@ -18,5 +18,6 @@ class GroupMissClick(Group):
             pass
         Demon_MissClick = self.getObject( "Demon_MissClick")
         setup_Demon_MissClick(Demon_MissClick)
+        self.createObject( "Socket", Name = "Socket_Block", Interactive = False, Global = True )
         pass
     pass

@@ -106,7 +106,6 @@ class Lives(HeaderComponent):
 
         full_lives_count = len(full_lives) - 1
         Notification.notify(Notificator.onLevelLivesChanged, full_lives_count)
-        Notification.notify(Notificator.onMissClickEffect)
 
         return False
 
