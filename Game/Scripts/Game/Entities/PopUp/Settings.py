@@ -42,8 +42,9 @@ class Settings(PopUpContent):
     def _onFinalizeContent(self):
         super(Settings, self)._onFinalizeContent()
 
-        self.layout_box.finalize()
-        self.layout_box = None
+        if self.layout_box is not None:
+            self.layout_box.finalize()
+            self.layout_box = None
 
         for button in self.buttons.values():
             button.onDestroy()
