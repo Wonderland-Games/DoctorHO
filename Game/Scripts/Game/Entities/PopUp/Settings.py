@@ -1,6 +1,5 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Game.Managers.GameManager import GameManager
-from Foundation.LayoutBox import LayoutBox
 
 
 SLOT_SOUND = "Sound"
@@ -10,8 +9,6 @@ SLOT_LANGUAGES = "Languages"
 SLOT_SUPPORT = "Support"
 SLOT_CREDITS = "Credits"
 SLOT_LOBBY = "Lobby"
-
-LAYOUT_SPACER = "Spacer_{}"
 
 
 class Settings(PopUpContent):
@@ -23,8 +20,6 @@ class Settings(PopUpContent):
         self.checkboxes = {}
         self.buttons = {}
 
-        self.layout = None
-
     # - PopUpContent ---------------------------------------------------------------------------------------------------
 
     def _onInitializeContent(self):
@@ -32,19 +27,13 @@ class Settings(PopUpContent):
 
         self._setupCheckBoxes()
         self._setupButtons()
-        
         # self._setupSlotsPositions()
-        # self._adjustLayout()
-        self._adjustLayoutBox()
+        self._setupLayoutBox()
 
         self._runTaskChains()
 
     def _onFinalizeContent(self):
         super(Settings, self)._onFinalizeContent()
-
-        if self.layout_box is not None:
-            self.layout_box.finalize()
-            self.layout_box = None
 
         for button in self.buttons.values():
             button.onDestroy()
@@ -53,112 +42,6 @@ class Settings(PopUpContent):
         for button in self.checkboxes.values():
             button.onDestroy()
         self.checkboxes = {}
-
-        if self.layout is not None:
-            Mengine.destroyLayout(self.layout)
-            self.layout = None
-
-    # - Layout ---------------------------------------------------------------------------------------------------------
-
-    def _adjustLayout(self):
-        self.layout = Mengine.createLayout()
-
-        def _getContentSizeY():
-            content_size = self.pop_up_base.getContentSize()
-            print "[= layout.setLayoutSizer:", content_size.y
-            return content_size.y
-
-        self.layout.setLayoutSizer(_getContentSizeY)
-
-        print "[= Buttons:", self.buttons.keys()
-        buttons_list = self.buttons.items()
-        buttons_list_length = len(buttons_list)
-        spacers_count = buttons_list_length + 1
-        spacer_percent = 1.0 / (float(spacers_count) + float(buttons_list_length))
-
-        for i, (slot_name, button) in enumerate(buttons_list):
-            def _getButtonSizeY():
-                button_size = button.getSize()
-                return button_size.y
-
-            def _cbSetOffsetPosY(_slot_name):
-                return lambda offset, size: self._setButtonOffsetPosY(_slot_name, offset, size)
-
-            print "[= layout.addLayoutElement:", "Spacer_{}".format(i)
-            self.layout.addLayoutElement(
-                LAYOUT_SPACER.format(i),
-                False,
-                spacer_percent,
-                True,
-                lambda: 0.0,
-                None
-            )
-
-            print "[= layout.addLayoutElement:", slot_name
-            self.layout.addLayoutElement(
-                slot_name,
-                True,
-                0.0,
-                True,
-                _getButtonSizeY,
-                _cbSetOffsetPosY(slot_name)
-            )
-
-            if i == buttons_list_length - 1:
-                print "[= layout.addLayoutElement:", "Spacer_{}".format(i+1)
-                self.layout.addLayoutElement(
-                    LAYOUT_SPACER.format(i+1),
-                    False,
-                    spacer_percent,
-                    True,
-                    lambda: 0.0,
-                    None
-                )
-
-    def _setButtonOffsetPosY(self, slot_name, offset, button_size):
-        print "[= _setButtonOffsetPosY:", slot_name, offset, button_size
-
-        slot_button = self.content.getMovieSlot(slot_name)
-        content_size = self.pop_up_base.getContentSize()
-        slot_button.setLocalPosition(Mengine.vec2f(0.0, -content_size.y/2 + offset + button_size/2))
-        print slot_button.getLocalPosition()
-
-    def _adjustLayoutBox(self):
-        def __getContentSize():
-            content_size = self.pop_up_base.getContentSize()
-            return (content_size.x, content_size.y)
-
-        self.layout_box = LayoutBox(__getContentSize)
-
-        checkboxes_slots = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
-        checkboxes = []
-        for slot_name in checkboxes_slots:
-            checkbox = self.checkboxes.get(slot_name)
-            checkboxes.append(checkbox)
-
-        buttons_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
-        buttons = []
-        for slot_name in buttons_slots:
-            button = self.buttons.get(slot_name)
-            buttons.append(button)
-
-        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
-            vertical.addPadding(0.75)
-            with vertical.addLayoutHorizontal(200.0) as horizontal:
-                horizontal.addPadding(1)
-                horizontal.addFixedObject(checkboxes[0])
-                horizontal.addPadding(1)
-                horizontal.addFixedObject(checkboxes[1])
-                horizontal.addPadding(1)
-                horizontal.addFixedObject(checkboxes[2])
-                horizontal.addPadding(1)
-            vertical.addPadding(1.75)
-            vertical.addFixedObject(buttons[0])
-            vertical.addPadding(1)
-            vertical.addFixedObject(buttons[1])
-            vertical.addPadding(1)
-            vertical.addFixedObject(buttons[2])
-            vertical.addPadding(1.5)
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -212,7 +95,7 @@ class Settings(PopUpContent):
             self._attachObjectToSlot(container, name)
             self.buttons[name] = container
 
-    def _setupSlotsPositions(self):
+    def _setupSlotsPositions(self):     # deprecated method
         objects_list = []
 
         # add checkboxes to objects list
@@ -224,6 +107,31 @@ class Settings(PopUpContent):
             objects_list.append({key: button})
 
         self.setupObjectsSlotsAsTable(objects_list)
+
+    def _setupLayoutBox(self):
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(0.75)
+
+            # add horizontal checkboxes
+            with vertical.addLayoutHorizontal(200.0) as horizontal:
+                horizontal.addPadding(1)
+                horizontal.addFixedObject(self.checkboxes[SLOT_SOUND])
+                horizontal.addPadding(1)
+                horizontal.addFixedObject(self.checkboxes[SLOT_MUSIC])
+                horizontal.addPadding(1)
+                horizontal.addFixedObject(self.checkboxes[SLOT_VIBRATION])
+                horizontal.addPadding(1)
+
+            vertical.addPadding(1.75)
+
+            # add vertical buttons
+            vertical.addFixedObject(self.buttons[SLOT_LANGUAGES])
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.buttons[SLOT_SUPPORT])
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.buttons[SLOT_CREDITS])
+
+            vertical.addPadding(1.5)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
