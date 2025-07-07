@@ -1,7 +1,9 @@
 from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
 
 
-MOVIE_MISSCLICK_EFFECT = "Movie2_MissClickEffect_"
+MOVIE_SHOW = "Movie2_MissClickEffect_Show"
+MOVIE_IDLE = "Movie2_MissClickEffect_Idle"
+MOVIE_HIDE = "Movie2_MissClickEffect_Hide"
 
 
 class MissClick(BaseScopeEntity):
@@ -9,6 +11,9 @@ class MissClick(BaseScopeEntity):
 
     def __init__(self):
         super(MissClick, self).__init__()
+        self.play_time = 1000.0 # ms
+        self.factor = 1.0
+        self.freeze_time = 10000.0 # ms
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -16,38 +21,57 @@ class MissClick(BaseScopeEntity):
         super(MissClick, self)._onScopeActivate(source)
 
         source.addListener(Notificator.onMissClickEffect)
-
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
 
-        for state in ("Show", "Idle", "Hide"):
-            source.addScope(self._createAndPlayEffect, state)
+        source.addScope(self._show)
+        source.addScope(self._idle)
+        source.addScope(self._hide)
 
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
 
     def _onDeactivate(self):
         super(MissClick, self)._onDeactivate()
 
-        for state in self.movies.keys():
-            self.movies.pop(state, None)
-        self.movies = []
+        self.play_time = 0.0
+        self.factor = 0.0
+        self.freeze_time = 0.0
 
     # - MissClick ------------------------------------------------------------------------------------------------------
 
-    def _createAndPlayEffect(self, source, state):
-        movie_name = MOVIE_MISSCLICK_EFFECT + state
+    def _createEffect(self, movie_name, position):
         movie_prototype = self.object.generateObjectUnique(movie_name, movie_name)
-
-        prototype_movie_node = movie_prototype.getEntityNode()
-        self.object.getEntityNode().addChild(prototype_movie_node)
+        node = movie_prototype.getEntityNode()
+        self.object.getEntityNode().addChild(node)
 
         movie_prototype.setEnable(True)
+        node.setWorldPosition(position)
 
+        return movie_prototype
+
+    def _show(self, source):
         position = self._getCurPos()
-        prototype_movie_node.setWorldPosition(position)
+        show_movie = self._createEffect(MOVIE_SHOW, position)
+        source.addPlay(show_movie, Loop=False)
+        source.addFunction(show_movie.setEnable, False)
+        source.addFunction(show_movie.getEntityNode().removeFromParent)
 
-        source.addPlay(movie_prototype, Loop=False)
-        source.addFunction(movie_prototype.setEnable, False)
-        source.addFunction(prototype_movie_node.removeFromParent)
+    def _idle(self, source):
+        position = self._getCurPos()
+        idle_movie = self._createEffect(MOVIE_IDLE, position)
+
+        source.addPlay(idle_movie, Wait=False, Loop=True)
+        source.addDelay(self.play_time)
+        source.addInterrupt(idle_movie)
+
+        source.addFunction(idle_movie.setEnable, False)
+        source.addFunction(idle_movie.getEntityNode().removeFromParent)
+
+    def _hide(self, source):
+        position = self._getCurPos()
+        idle_movie = self._createEffect(MOVIE_HIDE, position)
+        source.addPlay(idle_movie, Loop=False)
+        source.addFunction(idle_movie.setEnable, False)
+        source.addFunction(idle_movie.getEntityNode().removeFromParent)
 
     def _getCurPos(self):
         arrow = Mengine.getArrow()
