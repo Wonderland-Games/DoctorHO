@@ -82,7 +82,7 @@ class SystemGame(System):
                 hotspot_click.addListener(Notificator.onLevelMissClicked)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
 
-            with tc.addParallelTask(2) as (source_listener, source_notify):
+            with tc.addNotifyRequest(Notificator.onLevelLivesDecrease, 1) as (response_lives_changed,):
                 def __onLevelLivesChanged(source, lives_count):
                     if lives_count <= 0:
                         popup_object = DemonManager.getDemon("PopUp")
@@ -94,9 +94,7 @@ class SystemGame(System):
 
                     return True
 
-                source_listener.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
-
-                source_notify.addNotify(Notificator.onLevelLivesDecrease)
+                response_lives_changed.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
 
         return False
 
