@@ -11,8 +11,9 @@ class MissClick(BaseScopeEntity):
 
     def __init__(self):
         super(MissClick, self).__init__()
+        self.previous_click_stamp = None
         self.play_time = 1000.0 # ms
-        self.factor = 1.0
+        self.x_factor = 1.0
         self.freeze_time = 10000.0 # ms
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
@@ -23,6 +24,8 @@ class MissClick(BaseScopeEntity):
         source.addListener(Notificator.onMissClickEffect)
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
 
+        source.addFunction(self._checkXFactor)
+
         source.addScope(self._show)
         source.addScope(self._idle)
         source.addScope(self._hide)
@@ -32,11 +35,32 @@ class MissClick(BaseScopeEntity):
     def _onDeactivate(self):
         super(MissClick, self)._onDeactivate()
 
+        self.previous_click_stamp = None
         self.play_time = 0.0
-        self.factor = 0.0
+        self.x_factor = 0.0
         self.freeze_time = 0.0
 
     # - MissClick ------------------------------------------------------------------------------------------------------
+
+    def _checkXFactor(self):
+        if self.previous_click_stamp is None:
+            self.previous_click_stamp = Mengine.getTime()
+
+        current_time_stamp = Mengine.getTime()
+        diff_ms = (current_time_stamp - self.previous_click_stamp) * 1000
+
+        if diff_ms >= self.freeze_time:
+            self.x_factor = 1.0
+        else:
+            self._increaseXFactor()
+
+        self.previous_click_stamp = current_time_stamp
+
+    def _increaseXFactor(self):
+        if self.x_factor == 1:
+            self.x_factor = 2
+        else:
+            self.x_factor *= 2
 
     def _createEffect(self, movie_name, position):
         movie_prototype = self.object.generateObjectUnique(movie_name, movie_name)
@@ -60,7 +84,8 @@ class MissClick(BaseScopeEntity):
         idle_movie = self._createEffect(MOVIE_IDLE, position)
 
         source.addPlay(idle_movie, Wait=False, Loop=True)
-        source.addDelay(self.play_time)
+        play_idle_time = self.play_time * self.x_factor
+        source.addDelay(play_idle_time)
         source.addInterrupt(idle_movie)
 
         source.addFunction(idle_movie.setEnable, False)
