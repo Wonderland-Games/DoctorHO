@@ -21,16 +21,16 @@ class MissClick(BaseScopeEntity):
     def _onScopeActivate(self, source):
         super(MissClick, self)._onScopeActivate(source)
 
-        source.addListener(Notificator.onMissClickEffect)
-        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
+        with source.addWaitListener(10000, Notificator.onMissClickEffect) as (source_expire, source_effect):
+            source_effect.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
 
-        source.addFunction(self._checkXFactor)
+            source_effect.addFunction(self._checkXFactor)
 
-        source.addScope(self._show)
-        source.addScope(self._idle)
-        source.addScope(self._hide)
+            source_effect.addScope(self._show)
+            source_effect.addScope(self._idle)
+            source_effect.addScope(self._hide)
 
-        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
+            source_effect.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
 
     def _onDeactivate(self):
         super(MissClick, self)._onDeactivate()
