@@ -26,7 +26,7 @@ class GameArea(BaseEntity):
         self.miss_click = None
         self.search_level = None
         self.search_panel = None
-        self.game_area_layout = None
+        self.layout = None
 
         self.search_slot = {}
         self.layout_metrics = {
@@ -114,6 +114,10 @@ class GameArea(BaseEntity):
             tc.cancel()
         self.tcs = []
 
+        if self.layout is not None:
+            Mengine.destroyLayout(self.layout)
+            self.layout = None
+
         if self.search_panel is not None:
             self.search_panel.onFinalize()
             self.search_panel = None
@@ -162,7 +166,7 @@ class GameArea(BaseEntity):
             viewport_height = game_viewport.getHeight()
             return viewport_height
 
-        self.game_area_layout = Mengine.createLayout(getLayoutSize)
+        self.layout = Mengine.createLayout(getLayoutSize)
 
         layout_config = [
             ("Header", self.layout_metrics["header_height"]),
@@ -191,7 +195,7 @@ class GameArea(BaseEntity):
         if height_fn is None:
             Trace.msg_err("GameArea: There is no {!r} element".format(element_name))
 
-        self.game_area_layout.addElement(
+        self.layout.addElement(
             element_name,
             True,
             0.0,
@@ -201,7 +205,7 @@ class GameArea(BaseEntity):
         )
 
     def _addLayoutOnlyElement(self, element_name, element_height):
-        self.game_area_layout.addElement(
+        self.layout.addElement(
             element_name,
             True,
             0.0,
