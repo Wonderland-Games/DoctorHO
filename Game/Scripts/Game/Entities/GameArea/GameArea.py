@@ -157,8 +157,12 @@ class GameArea(BaseEntity):
     # - Layout ---------------------------------------------------------------------------------------------------------
 
     def _initLayout(self):
-        self.game_area_layout = Mengine.createLayout()
-        self.game_area_layout.setLayoutSizer(lambda: Mengine.getGameViewport().getHeight())
+        def getLayoutSize():
+            game_viewport = Mengine.getGameViewport()
+            viewport_height = game_viewport.getHeight()
+            return viewport_height
+
+        self.game_area_layout = Mengine.createLayout(getLayoutSize)
 
         layout_config = [
             ("Header", self.layout_metrics["header_height"]),
@@ -187,7 +191,7 @@ class GameArea(BaseEntity):
         if height_fn is None:
             Trace.msg_err("GameArea: There is no {!r} element".format(element_name))
 
-        self.game_area_layout.addLayoutElement(
+        self.game_area_layout.addElement(
             element_name,
             True,
             0.0,
@@ -197,7 +201,7 @@ class GameArea(BaseEntity):
         )
 
     def _addLayoutOnlyElement(self, element_name, element_height):
-        self.game_area_layout.addLayoutElement(
+        self.game_area_layout.addElement(
             element_name,
             True,
             0.0,
