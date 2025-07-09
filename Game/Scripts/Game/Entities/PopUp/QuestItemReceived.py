@@ -119,12 +119,12 @@ class QuestItemReceived(PopUpContent):
                 item_size = self.getItemSize()
                 return (item_size.x, item_size.y)
 
-            def setLayoutOffset(self, box, offset, size):
-                box_width, box_height = box.getSize()
+            def setLayoutOffset(self, layout_box, layout_offset, layout_size):
+                layout_box_width, layout_box_height = layout_box.getSize()
                 item_size = self.getItemSize()
                 self.item_sprite.setLocalPosition((
-                    offset[0] + size[0]/2 - box_width/2 - item_size.x/2,
-                    offset[1] + size[1]/2 - box_height/2 - item_size.y/2
+                    layout_offset[0] + layout_size[0] / 2 - layout_box_width / 2 - item_size.x / 2,
+                    layout_offset[1] + layout_size[1] / 2 - layout_box_height / 2 - item_size.y / 2
                 ))
 
         item_sprite_wrapper = ItemSpriteWrapper(self.item_sprite)
