@@ -1,6 +1,7 @@
 from Foundation.System import System
 from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
+from Foundation.Task.Capture import Capture
 from Game.Managers.GameManager import GameManager
 
 
@@ -78,8 +79,10 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelLives")
 
         with self.createTaskChain("SearchPanelLives", Repeat=True) as tc:
+            mouse_position_capture = Capture()
+
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
-                hotspot_click.addListener(Notificator.onLevelMissClicked)
+                hotspot_click.addListener(Notificator.onLevelMissClicked, Capture=mouse_position_capture)
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
 
             with tc.addNotifyRequest(Notificator.onLevelLivesDecrease, 1) as (response_lives_changed,):
@@ -89,8 +92,7 @@ class SystemGame(System):
                         popup = popup_object.entity
                         source.addNotify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
                     else:
-                        source.addPrint("MissClickEffect")
-                        source.addNotify(Notificator.onMissClickEffect)
+                        source.addNotify(Notificator.onMissClickEffect, mouse_position_capture)
 
                     return True
 

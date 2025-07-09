@@ -5,5 +5,6 @@
     
     <Settings>
         <Setting Name = "Test" Path = "Settings/Test.json"/>
+		<Setting Name = "MissClick" Path = "Settings/MissClick.json"/>
     </Settings>
 </Pak>

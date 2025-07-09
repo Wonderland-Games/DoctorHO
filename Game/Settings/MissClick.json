@@ -1,0 +1,8 @@
+{
+  "base_play_time": {
+    "value": 1000.0
+  },
+  "unfreeze_time": {
+    "value": 10000.0
+  }
+}

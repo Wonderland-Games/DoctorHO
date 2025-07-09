@@ -105,7 +105,8 @@ class MissClick(Initializer):
             if x != last_click_data["x"] or y != last_click_data["y"]:
                 return False
 
-            Notification.notify(Notificator.onLevelMissClicked)
+            miss_click_pos = Mengine.vec2f(x,y)
+            Notification.notify(Notificator.onLevelMissClicked, miss_click_pos)
 
         return False
 

@@ -1,4 +1,5 @@
 from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
+from Foundation.Task.Capture import Capture
 
 
 MOVIE_SHOW = "Movie2_MissClickEffect_Show"
@@ -11,40 +12,55 @@ class MissClick(BaseScopeEntity):
 
     def __init__(self):
         super(MissClick, self).__init__()
-        self.play_time = 1000.0 # ms
         self.x_factor = 1.0
-        self.freeze_time = 10000.0 # ms
 
-    # - BaseEntity -----------------------------------------------------------------------------------------------------
+    # - BaseEntity -----------------------------------------------------------
 
     def _onScopeActivate(self, source):
         super(MissClick, self)._onScopeActivate(source)
+        mouse_position_capture = Capture()
 
-        with source.addWaitListener(self.freeze_time, Notificator.onMissClickEffect) as (source_expire, source_effect):
+        with source.addWaitListener(SETTINGS.MissClick.unfreeze_time,
+                                    Notificator.onMissClickEffect,
+                                    Capture=mouse_position_capture) as (source_expire, source_effect):
             source_expire.addFunction(self._resetXFactor)
 
             source_effect.addFunction(self._increaseXFactor)
-
-            source_effect.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
-            source_effect.addScope(self._show)
-            source_effect.addScope(self._idle)
-            source_effect.addScope(self._hide)
-            source_effect.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
+            source_effect.addScope(self._playEffect, mouse_position_capture)
 
     def _onDeactivate(self):
         super(MissClick, self)._onDeactivate()
 
-        self.play_time = 0.0
         self.x_factor = 0.0
-        self.freeze_time = 0.0
 
-    # - MissClick ------------------------------------------------------------------------------------------------------
+    # - MissClick ------------------------------------------------------------
+
+    def _playEffect(self, source, capture):
+        position = self._extractPosition(capture)
+        play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
+
+        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
+        source.addScope(self._spawnEffect, MOVIE_SHOW, position)
+        source.addScope(self._spawnEffect, MOVIE_IDLE, position, wait_param=False, play_time_param=play_idle_time)
+        source.addScope(self._spawnEffect, MOVIE_HIDE, position)
+        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
 
     def _increaseXFactor(self):
         self.x_factor *= 2
 
     def _resetXFactor(self):
         self.x_factor = 1
+
+    def _spawnEffect(self, source, movie_name, position, wait_param=True, play_time_param=None):
+        movie_effect = self._createEffect(movie_name, position)
+        source.addPlay(movie_effect, Wait=wait_param)
+
+        if play_time_param:
+            source.addDelay(play_time_param)
+            source.addInterrupt(movie_effect)
+
+        source.addFunction(movie_effect.setEnable, False)
+        source.addFunction(movie_effect.getEntityNode().removeFromParent)
 
     def _createEffect(self, movie_name, position):
         movie_prototype = self.object.generateObjectUnique(movie_name, movie_name)
@@ -56,33 +72,11 @@ class MissClick(BaseScopeEntity):
 
         return movie_prototype
 
-    def _show(self, source):
-        position = self._getCurPos()
-        show_movie = self._createEffect(MOVIE_SHOW, position)
-        source.addPlay(show_movie, Loop=False)
-        source.addFunction(show_movie.setEnable, False)
-        source.addFunction(show_movie.getEntityNode().removeFromParent)
+    def _extractPosition(self, capture):
+        args = capture.getArgs()
 
-    def _idle(self, source):
-        position = self._getCurPos()
-        idle_movie = self._createEffect(MOVIE_IDLE, position)
+        if not args or not isinstance(args[0][0], Mengine.vec2f):
+            Trace.msg_err("MissClick._extractPosition: There is no argument position")
+            return Mengine.vec2f(0.0, 0.0)
 
-        source.addPlay(idle_movie, Wait=False, Loop=True)
-        play_idle_time = self.play_time * self.x_factor
-        source.addDelay(play_idle_time)
-        source.addInterrupt(idle_movie)
-
-        source.addFunction(idle_movie.setEnable, False)
-        source.addFunction(idle_movie.getEntityNode().removeFromParent)
-
-    def _hide(self, source):
-        position = self._getCurPos()
-        idle_movie = self._createEffect(MOVIE_HIDE, position)
-        source.addPlay(idle_movie, Loop=False)
-        source.addFunction(idle_movie.setEnable, False)
-        source.addFunction(idle_movie.getEntityNode().removeFromParent)
-
-    def _getCurPos(self):
-        arrow = Mengine.getArrow()
-        node = arrow.getNode()
-        return node.getWorldPosition()
+        return args[0][0]

@@ -12,7 +12,6 @@ class MissClickEffect(Initializer):
         super(MissClickEffect, self).__init__()
         self.game = None
         self.tcs = []
-        self.observers = []
         self.effects = []
         self.semaphore_free = Semaphore(True, "NoEffects")
 
@@ -20,18 +19,12 @@ class MissClickEffect(Initializer):
 
     def _onInitialize(self, game):
         self.game = game
-        self._setupObservers()
 
     def _onFinalize(self):
         super(MissClickEffect, self)._onFinalize()
         self._cleanUp()
 
     # - Tools ----------------------------------------------------------------------------------------------------------
-
-    def _addObserver(self, identity, callback, *args, **kwargs):
-        observer = Notification.addObserver(identity, callback, *args, **kwargs)
-        self.observers.append(observer)
-        return observer
 
     def _createTaskChain(self, **params):
         tc_name = "%s_%s" % (self.__class__.__name__, Mengine.getTimeMs())
@@ -44,44 +37,10 @@ class MissClickEffect(Initializer):
             tc.cancel()
         self.tcs = []
 
-        for observer in self.observers:
-            Notification.removeObserver(observer)
-        self.observers = []
-
         self._destroyEffects()
 
         self.semaphore_free = None
         self.game = None
-
-    # - Observers ------------------------------------------------------------------------------------------------------
-
-    def _setupObservers(self):
-        self._addObserver(Notificator.onLevelMissClicked, self._cbLevelMissClicked)
-        pass
-
-    def _cbLevelMissClicked(self):
-        '''
-        arrow = Mengine.getArrow()
-        node = arrow.getNode()
-        position = node.getWorldPosition()
-
-        effect = self._createEffect()
-        self._placeEffect(effect, position)
-        self._runEffect(effect)
-
-        miss_click_demon = DemonManager.getDemon("MissClick")
-        print("DemonMissClick")
-        for attr in dir(miss_click_demon):
-            if callable(getattr(miss_click_demon, attr)):
-                print(attr)
-        entity = miss_click_demon.getEntityNode()
-        print("EntityMisccClick")
-        for attr in dir(entity):
-            if callable(getattr(entity, attr)):
-                print(attr)
-        '''
-
-        return False
 
     # - Effect ---------------------------------------------------------------------------------------------------------
 
