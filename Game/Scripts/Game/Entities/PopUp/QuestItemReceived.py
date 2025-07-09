@@ -105,29 +105,28 @@ class QuestItemReceived(PopUpContent):
             current_pos_y += obj_half_size
 
     def _setupLayoutBox(self):
-        class ItemSpriteWrapper:
-            def __init__(self, item_sprite):
-                self.item_sprite = item_sprite
+        class SpriteWrapper:
+            def __init__(self, sprite):
+                self.sprite = sprite
 
-            def getItemSize(self):
-                item_size_unscaled = self.item_sprite.getSurfaceSize()
-                item_scale = self.item_sprite.getScale()
-                item_size = Mengine.vec2f(item_size_unscaled.x * item_scale.x, item_size_unscaled.y * item_scale.y)
-                return item_size
+            def getSpriteSize(self):
+                sprite_size_unscaled = self.sprite.getSurfaceSize()
+                sprite_scale = self.sprite.getScale()
+                sprite_size = (sprite_size_unscaled.x * sprite_scale.x, sprite_size_unscaled.y * sprite_scale.y)
+                return sprite_size
 
             def getLayoutSize(self):
-                item_size = self.getItemSize()
-                return (item_size.x, item_size.y)
+                return self.getSpriteSize()
 
             def setLayoutOffset(self, layout_box, layout_offset, layout_size):
                 layout_box_width, layout_box_height = layout_box.getSize()
-                item_size = self.getItemSize()
-                self.item_sprite.setLocalPosition((
-                    layout_offset[0] + layout_size[0] / 2 - layout_box_width / 2 - item_size.x / 2,
-                    layout_offset[1] + layout_size[1] / 2 - layout_box_height / 2 - item_size.y / 2
+                sprite_size = self.getSpriteSize()
+                self.sprite.setLocalPosition((
+                    layout_offset[0] + layout_size[0] / 2 - layout_box_width / 2 - sprite_size[0] / 2,
+                    layout_offset[1] + layout_size[1] / 2 - layout_box_height / 2 - sprite_size[1] / 2
                 ))
 
-        item_sprite_wrapper = ItemSpriteWrapper(self.item_sprite)
+        item_sprite_wrapper = SpriteWrapper(self.item_sprite)
 
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
             vertical.addPadding(1)
