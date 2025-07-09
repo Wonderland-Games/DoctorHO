@@ -1,4 +1,4 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Foundation.GroupManager import GroupManager
 
 
@@ -54,7 +54,8 @@ class QuestItemDescription(PopUpContent):
         self._setupPopUpTitle()
         self._setupItemDescriptionFull()
 
-        self._adjustSlotsPositions()
+        # self._adjustSlotsPositions()
+        self._setupLayoutBox()
 
     def _onFinalizeContent(self):
         super(QuestItemDescription, self)._onFinalizeContent()
@@ -139,7 +140,8 @@ class QuestItemDescription(PopUpContent):
         self.item_description_full = Mengine.createNode("TextField")
         self.item_description_full.setName(self.item_codename + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
-        self.item_description_full.setVerticalBottomAlign()
+        # self.item_description_full.setVerticalBottomAlign()    # deprecated method
+        self.item_description_full.setVerticalCenterAlign()
         self.item_description_full.setHorizontalCenterAlign()
 
         self.item_description_full.setJustify(True)
@@ -153,14 +155,14 @@ class QuestItemDescription(PopUpContent):
         slot.addChild(self.item_description_full)
 
         popup_content_size = self.pop_up_base.getContentSize()
-        sprite_size = self._getSpriteSize()
-        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
+        # sprite_size = self._getSpriteSize()
+        # slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))    # deprecated method
 
         self.item_description_full.setMaxLength(popup_content_size.x)
 
         self.item_description_full.enable()
 
-    def _adjustSlotsPositions(self):
+    def _adjustSlotsPositions(self):    # deprecated method
         content_size = self.pop_up_base.getContentSize()
         item_size_raw = self.item_sprite.getSurfaceSize()
         item_scale = self.item_sprite.getScale()
@@ -183,3 +185,55 @@ class QuestItemDescription(PopUpContent):
             slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
 
             current_pos_y += obj_half_size
+
+    def _setupLayoutBox(self):
+        class SpriteWrapper:
+            def __init__(self, sprite):
+                self.sprite = sprite
+
+            def getSpriteSize(self):
+                sprite_size_unscaled = self.sprite.getSurfaceSize()
+                sprite_scale = self.sprite.getScale()
+                sprite_size = (sprite_size_unscaled.x * sprite_scale.x, sprite_size_unscaled.y * sprite_scale.y)
+                return sprite_size
+
+            def getLayoutSize(self):
+                return self.getSpriteSize()
+
+            def setLayoutOffset(self, layout_box, layout_offset, layout_size):
+                layout_box_width, layout_box_height = layout_box.getSize()
+                sprite_size = self.getSpriteSize()
+                self.sprite.setLocalPosition((
+                    layout_offset[0] + layout_size[0] / 2 - layout_box_width / 2 - sprite_size[0] / 2,
+                    layout_offset[1] + layout_size[1] / 2 - layout_box_height / 2 - sprite_size[1] / 2
+                ))
+
+        item_sprite_wrapper = SpriteWrapper(self.item_sprite)
+
+        class TextWrapper:
+            def __init__(self, text):
+                self.text = text
+
+            def getTextSize(self):
+                # text_size = self.text.calcTotalTextSize()
+                text_size = self.text.getTextSize()
+                return (text_size.x, text_size.y)
+
+            def getLayoutSize(self):
+                return self.getTextSize()
+
+            def setLayoutOffset(self, layout_box, layout_offset, layout_size):
+                layout_box_width, layout_box_height = layout_box.getSize()
+                self.text.setLocalPosition((
+                    layout_offset[0] + layout_size[0] / 2 - layout_box_width / 2,
+                    layout_offset[1] + layout_size[1] / 2 - layout_box_height / 2
+                ))
+
+        item_description_full_wrapper = TextWrapper(self.item_description_full)
+
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_sprite_wrapper)
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_description_full_wrapper)
+            vertical.addPadding(1)
