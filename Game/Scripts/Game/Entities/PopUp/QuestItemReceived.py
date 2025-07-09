@@ -1,4 +1,4 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Foundation.GroupManager import GroupManager
 
 
@@ -29,7 +29,9 @@ class QuestItemReceived(PopUpContent):
         self._setupItem(content_args["ChapterId"], content_args["ItemName"])
         self._setupButton()
 
-        self._adjustSlotsPositions()
+        # self._adjustSlotsPositions()
+        self._setupLayoutBox()
+
         self._runTaskChains()
 
     def _onFinalizeContent(self):
@@ -77,7 +79,7 @@ class QuestItemReceived(PopUpContent):
 
         self._attachObjectToSlot(self.button, SLOT_BUTTON)
 
-    def _adjustSlotsPositions(self):
+    def _adjustSlotsPositions(self):     # deprecated method
         content_size = self.pop_up_base.getContentSize()
         item_size_raw = self.item_sprite.getSurfaceSize()
         item_scale = self.item_sprite.getScale()
@@ -101,6 +103,38 @@ class QuestItemReceived(PopUpContent):
             slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
 
             current_pos_y += obj_half_size
+
+    def _setupLayoutBox(self):
+        class ItemSpriteWrapper:
+            def __init__(self, item_sprite):
+                self.item_sprite = item_sprite
+
+            def getItemSize(self):
+                item_size_unscaled = self.item_sprite.getSurfaceSize()
+                item_scale = self.item_sprite.getScale()
+                item_size = Mengine.vec2f(item_size_unscaled.x * item_scale.x, item_size_unscaled.y * item_scale.y)
+                return item_size
+
+            def getLayoutSize(self):
+                item_size = self.getItemSize()
+                return (item_size.x, item_size.y)
+
+            def setLayoutOffset(self, box, offset, size):
+                box_width, box_height = box.getSize()
+                item_size = self.getItemSize()
+                self.item_sprite.setLocalPosition((
+                    offset[0] + size[0]/2 - box_width/2 - item_size.x/2,
+                    offset[1] + size[1]/2 - box_height/2 - item_size.y/2
+                ))
+
+        item_sprite_wrapper = ItemSpriteWrapper(self.item_sprite)
+
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_sprite_wrapper)
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.button)
+            vertical.addPadding(1)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
