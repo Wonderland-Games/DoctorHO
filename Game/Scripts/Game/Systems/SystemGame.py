@@ -202,6 +202,6 @@ class SystemGame(System):
             return (x, y)
             pass
         elif type == Notificator.onItemClick:
-            item, = capture.getArgs()
-            return (0.0, 0.0)
+            item, x, y = capture.getArgs()
+            return (x, y)
             pass
