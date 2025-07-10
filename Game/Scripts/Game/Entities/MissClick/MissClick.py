@@ -41,11 +41,11 @@ class MissClick(BaseScopeEntity):
         print(str(position))
         play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
 
-        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
+        source.addInteractive("Socket_Block", True)
         source.addScope(self._spawnEffect, MOVIE_SHOW, position)
         source.addScope(self._spawnEffect, MOVIE_IDLE, position, wait_param=False, play_time_param=play_idle_time)
         source.addScope(self._spawnEffect, MOVIE_HIDE, position)
-        source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=False)
+        source.addInteractive("Socket_Block", False)
 
     def _increaseXFactor(self):
         self.x_factor *= 2
