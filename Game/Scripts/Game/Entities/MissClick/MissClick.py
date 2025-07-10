@@ -18,13 +18,10 @@ class MissClick(BaseScopeEntity):
 
     def _onScopeActivate(self, source):
         super(MissClick, self)._onScopeActivate(source)
-        mouse_position_capture = Capture()
+        mouse_position_capture = Capture(None)
 
-        with source.addWaitListener(SETTINGS.MissClick.unfreeze_time,
-                                    Notificator.onMissClickEffect,
-                                    Capture=mouse_position_capture) as (source_expire, source_effect):
+        with source.addWaitListener(SETTINGS.MissClick.unfreeze_time, Notificator.onMissClickEffect, Capture=mouse_position_capture) as (source_expire, source_effect):
             source_expire.addFunction(self._resetXFactor)
-
             source_effect.addFunction(self._increaseXFactor)
             source_effect.addScope(self._playEffect, mouse_position_capture)
 

@@ -79,7 +79,7 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelLives")
 
         with self.createTaskChain("SearchPanelLives", Repeat=True) as tc:
-            mouse_position_capture = Capture()
+            mouse_position_capture = Capture(None)
 
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
                 hotspot_click.addListener(Notificator.onLevelMissClicked, Capture=mouse_position_capture)
@@ -90,7 +90,6 @@ class SystemGame(System):
                     position = self._extractPosition(mouse_position_capture)
                     print("__onMissClick")
                     print(str(position))
-                    source.addNotify(Notificator.onMissClickEffect, mouse_position_capture)
 
                 def __onLevelLivesChanged(source, lives_count):
                     if lives_count <= 0:
@@ -194,25 +193,15 @@ class SystemGame(System):
         source.addNotify(Notificator.onLevelLivesRestore)
 
     def _extractPosition(self, capture):
-        args = capture.getArgs()
-        default_pos = Mengine.vec2f(0.0, 0.0)
+        type = capture.getType()
 
-        if not args or not args[0]:
-            return default_pos
+        print(type)
 
-        target = args[0][0]
-        print("_extractPosition")
-        print(str(target))
-
-        if isinstance(target, Mengine.vec2f):
-            return args[0][0]
-
-        if target is not None and hasattr(target, 'getType') and target.getType() == 'ObjectItem':
-            entity = target.getEntity()
-
-            size = entity.getSize()
-            world_pos = entity.getWorldPosition()
-
-            return Mengine.vec2f(world_pos.x + size.x / 2.0, world_pos.y + size.y / 2.0)
-
-        return default_pos
+        if type == Notificator.onLevelMissClicked:
+            x, y = capture.getArgs()
+            return (x, y)
+            pass
+        elif type == Notificator.onItemClick:
+            item, = capture.getArgs()
+            return (0.0, 0.0)
+            pass
