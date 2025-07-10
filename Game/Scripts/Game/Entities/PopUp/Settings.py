@@ -109,11 +109,17 @@ class Settings(PopUpContent):
         self.setupObjectsSlotsAsTable(objects_list)
 
     def _setupLayoutBox(self):
+        checkbox_horizontal_height = 0.0
+        for checkbox in self.checkboxes.values():
+            checkbox_size = checkbox.getSize()
+            if checkbox_size.y > checkbox_horizontal_height:
+                checkbox_horizontal_height = checkbox_size.y
+
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
             vertical.addPadding(0.75)
 
             # add horizontal checkboxes
-            with vertical.addLayoutHorizontal(200.0) as horizontal:
+            with vertical.addLayoutHorizontal(checkbox_horizontal_height) as horizontal:
                 horizontal.addPadding(1)
                 horizontal.addFixedObject(self.checkboxes[SLOT_SOUND])
                 horizontal.addPadding(1)
