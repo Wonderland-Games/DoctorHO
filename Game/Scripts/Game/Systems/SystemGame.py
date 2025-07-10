@@ -83,16 +83,22 @@ class SystemGame(System):
 
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
                 hotspot_click.addListener(Notificator.onLevelMissClicked, Capture=mouse_position_capture)
-                unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
+                unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick, Capture=mouse_position_capture)
 
             with tc.addNotifyRequest(Notificator.onLevelLivesDecrease, 1) as (response_lives_changed,):
+                def __onMissClick(source):
+                    position = self._extractPosition(mouse_position_capture)
+                    print("__onMissClick")
+                    print(str(position))
+                    source.addNotify(Notificator.onMissClickEffect, mouse_position_capture)
+
                 def __onLevelLivesChanged(source, lives_count):
                     if lives_count <= 0:
                         popup_object = DemonManager.getDemon("PopUp")
                         popup = popup_object.entity
                         source.addNotify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
                     else:
-                        source.addNotify(Notificator.onMissClickEffect, mouse_position_capture)
+                        source.addScope(__onMissClick)
 
                     return True
 
@@ -186,3 +192,27 @@ class SystemGame(System):
             source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
 
         source.addNotify(Notificator.onLevelLivesRestore)
+
+    def _extractPosition(self, capture):
+        args = capture.getArgs()
+        default_pos = Mengine.vec2f(0.0, 0.0)
+
+        if not args or not args[0]:
+            return default_pos
+
+        target = args[0][0]
+        print("_extractPosition")
+        print(str(target))
+
+        if isinstance(target, Mengine.vec2f):
+            return args[0][0]
+
+        if target is not None and hasattr(target, 'getType') and target.getType() == 'ObjectItem':
+            entity = target.getEntity()
+
+            size = entity.getSize()
+            world_pos = entity.getWorldPosition()
+
+            return Mengine.vec2f(world_pos.x + size.x / 2.0, world_pos.y + size.y / 2.0)
+
+        return default_pos

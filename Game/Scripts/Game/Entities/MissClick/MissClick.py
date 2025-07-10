@@ -36,7 +36,9 @@ class MissClick(BaseScopeEntity):
     # - MissClick ------------------------------------------------------------
 
     def _playEffect(self, source, capture):
-        position = self._extractPosition(capture)
+        position = capture.getArgs()[0][0]
+        print("_playEffect")
+        print(str(position))
         play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
 
         source.addTask("TaskSetParam", ObjectName="Socket_Block", Param="Interactive", Value=True)
@@ -74,9 +76,22 @@ class MissClick(BaseScopeEntity):
 
     def _extractPosition(self, capture):
         args = capture.getArgs()
+        default_pos = Mengine.vec2f(0.0, 0.0)
 
-        if not args or not isinstance(args[0][0], Mengine.vec2f):
-            Trace.msg_err("MissClick._extractPosition: There is no argument position")
-            return Mengine.vec2f(0.0, 0.0)
+        if not args or not args[0]:
+            return default_pos
 
-        return args[0][0]
+        target = args[0][0]
+
+        if isinstance(target, Mengine.vec2f):
+            return args[0][0]
+
+        if target is not None and hasattr(target, 'getType') and target.getType() == 'ObjectItem':
+            entity = target.getEntity()
+
+            size = entity.getSize()
+            world_pos = entity.getWorldPosition()
+
+            return Mengine.vec2f(world_pos.x + size.x / 2.0, world_pos.y + size.y / 2.0)
+
+        return default_pos
