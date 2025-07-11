@@ -1,4 +1,4 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from Foundation.LanguagesManager import LanguagesManager
 from Foundation.TaskManager import TaskManager
@@ -22,7 +22,8 @@ class Languages(PopUpContent):
         super(Languages, self)._onInitializeContent()
 
         self._setupButtons()
-        self._setupSlotsPositions()
+        # self._setupSlotsPositions()
+        self._setupLayoutBox()
 
         self._runTaskChains()
 
@@ -57,6 +58,9 @@ class Languages(PopUpContent):
             objects_list.append({key: button})
 
         self.setupObjectsSlotsAsTable(objects_list, False)
+
+    def _setupLayoutBox(self):
+        pass
 
     # - TaskChain ------------------------------------------------------------
 
