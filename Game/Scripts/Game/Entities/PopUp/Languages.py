@@ -52,7 +52,7 @@ class Languages(PopUpContent):
             self._attachObjectToSlot(container, SLOT_BUTTONS)
             self.buttons_list[locale_name] = container
 
-    def _setupSlotsPositions(self):
+    def _setupSlotsPositions(self):     # deprecated method
         objects_list = []
         for (key, button) in self.buttons_list.items():
             objects_list.append({key: button})
@@ -60,7 +60,11 @@ class Languages(PopUpContent):
         self.setupObjectsSlotsAsTable(objects_list, False)
 
     def _setupLayoutBox(self):
-        pass
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            for button in self.buttons_list.values():
+                vertical.addFixedObject(button)
+                vertical.addPadding(1)
 
     # - TaskChain ------------------------------------------------------------
 
