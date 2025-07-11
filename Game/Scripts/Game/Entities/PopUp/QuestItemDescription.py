@@ -1,5 +1,6 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
-from UIKit.LayoutWrapper import LayoutWrapper
+from UIKit.LayoutWrapper.LayoutSpriteWrapper import LayoutSpriteWrapper
+from UIKit.LayoutWrapper.LayoutTextWrapper import LayoutTextWrapper
 from Foundation.GroupManager import GroupManager
 
 
@@ -188,8 +189,8 @@ class QuestItemDescription(PopUpContent):
             current_pos_y += obj_half_size
 
     def _setupLayoutBox(self):
-        item_sprite_wrapper = LayoutWrapper.SpriteWrapper(self.item_sprite)
-        item_description_full_wrapper = LayoutWrapper.TextWrapper(self.item_description_full)
+        item_sprite_wrapper = LayoutSpriteWrapper(self.item_sprite)
+        item_description_full_wrapper = LayoutTextWrapper(self.item_description_full)
 
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
             vertical.addPadding(1)
