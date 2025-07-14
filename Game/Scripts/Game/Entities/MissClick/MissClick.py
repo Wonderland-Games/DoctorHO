@@ -34,38 +34,35 @@ class MissClick(BaseScopeEntity):
 
     def _playEffect(self, source, capture):
         x_pos, y_pos = capture.getArgs()
-        position = Mengine.vec2f(x_pos, y_pos)
+        position = (x_pos, y_pos)
         play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
 
         source.addInteractive("Socket_Block", True)
         source.addScope(self._spawnEffect, MOVIE_SHOW, position)
-        source.addScope(self._spawnEffect, MOVIE_IDLE, position, wait_param=False, play_time_param=play_idle_time)
+        source.addScope(self._spawnEffectTime, MOVIE_IDLE, position, play_idle_time)
         source.addScope(self._spawnEffect, MOVIE_HIDE, position)
         source.addInteractive("Socket_Block", False)
 
     def _increaseXFactor(self):
-        self.x_factor *= 2
+        if self.x_factor < SETTINGS.MissClick.x_factor_limit:
+            self.x_factor += 1.0
+
 
     def _resetXFactor(self):
-        self.x_factor = 1
+        self.x_factor = 1.0
 
-    def _spawnEffect(self, source, movie_name, position, wait_param=True, play_time_param=None):
-        movie_effect = self._createEffect(movie_name, position)
-        source.addPlay(movie_effect, Wait=wait_param)
+    def _spawnEffectTime(self, source, movie_name, position, play_time):
+        movie_effect = self.object.generateObjectUnique(movie_name, movie_name, Enable=True, Position=position)
+        source.addPlay(movie_effect, Wait=False)
 
-        if play_time_param:
-            source.addDelay(play_time_param)
-            source.addInterrupt(movie_effect)
+        source.addDelay(play_time)
+        source.addInterrupt(movie_effect)
 
-        source.addFunction(movie_effect.setEnable, False)
         source.addFunction(movie_effect.getEntityNode().removeFromParent)
+        source.addFunction(movie_effect.onDestroy)
 
-    def _createEffect(self, movie_name, position):
-        movie_prototype = self.object.generateObjectUnique(movie_name, movie_name)
-        node = movie_prototype.getEntityNode()
-        self.object.getEntityNode().addChild(node)
-
-        movie_prototype.setEnable(True)
-        node.setWorldPosition(position)
-
-        return movie_prototype
+    def _spawnEffect(self, source, movie_name, position):
+        movie_effect = self.object.generateObjectUnique(movie_name, movie_name, Enable=True, Position=position)
+        source.addPlay(movie_effect)
+        source.addFunction(movie_effect.getEntityNode().removeFromParent)
+        source.addFunction(movie_effect.onDestroy)
