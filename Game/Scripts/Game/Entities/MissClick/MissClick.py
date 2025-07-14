@@ -33,9 +33,8 @@ class MissClick(BaseScopeEntity):
     # - MissClick ------------------------------------------------------------
 
     def _playEffect(self, source, capture):
-        position = capture.getArgs()[0][0]
-        print("_playEffect")
-        print(str(position))
+        x_pos, y_pos = capture.getArgs()
+        position = Mengine.vec2f(x_pos, y_pos)
         play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
 
         source.addInteractive("Socket_Block", True)
@@ -70,25 +69,3 @@ class MissClick(BaseScopeEntity):
         node.setWorldPosition(position)
 
         return movie_prototype
-
-    def _extractPosition(self, capture):
-        args = capture.getArgs()
-        default_pos = Mengine.vec2f(0.0, 0.0)
-
-        if not args or not args[0]:
-            return default_pos
-
-        target = args[0][0]
-
-        if isinstance(target, Mengine.vec2f):
-            return args[0][0]
-
-        if target is not None and hasattr(target, 'getType') and target.getType() == 'ObjectItem':
-            entity = target.getEntity()
-
-            size = entity.getSize()
-            world_pos = entity.getWorldPosition()
-
-            return Mengine.vec2f(world_pos.x + size.x / 2.0, world_pos.y + size.y / 2.0)
-
-        return default_pos

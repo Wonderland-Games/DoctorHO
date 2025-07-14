@@ -103,7 +103,6 @@ class MissClick(Initializer):
             if x != last_click_data["x"] or y != last_click_data["y"]:
                 return False
 
-            print("_onMissClickButtonEvent")
             Notification.notify(Notificator.onLevelMissClicked, x, y)
 
         return False

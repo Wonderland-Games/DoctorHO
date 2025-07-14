@@ -86,18 +86,14 @@ class SystemGame(System):
                 unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick, Capture=mouse_position_capture)
 
             with tc.addNotifyRequest(Notificator.onLevelLivesDecrease, 1) as (response_lives_changed,):
-                def __onMissClick(source):
-                    position = self._extractPosition(mouse_position_capture)
-                    print("__onMissClick")
-                    print(str(position))
-
                 def __onLevelLivesChanged(source, lives_count):
                     if lives_count <= 0:
                         popup_object = DemonManager.getDemon("PopUp")
                         popup = popup_object.entity
                         source.addNotify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
                     else:
-                        source.addScope(__onMissClick)
+                        x_pos, y_pos = self._extractPosition(mouse_position_capture)
+                        source.addNotify(Notificator.onMissClickEffect, x_pos, y_pos)
 
                     return True
 
@@ -195,13 +191,11 @@ class SystemGame(System):
     def _extractPosition(self, capture):
         type = capture.getType()
 
-        print(type)
-
         if type == Notificator.onLevelMissClicked:
             x, y = capture.getArgs()
             return (x, y)
-            pass
+
         elif type == Notificator.onItemClick:
             item, x, y = capture.getArgs()
             return (x, y)
-            pass
+
