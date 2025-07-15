@@ -83,27 +83,27 @@ class MissClick(Initializer):
 
         self.miss_click_hotspot.setEventListener(onHandleMouseButtonEvent=self._onMissClickButtonEvent)
 
-    def _onMissClickButtonEvent(self, touchId, x, y, button, pressure, isDown, isPressed):
+    def _onMissClickButtonEvent(self, context, event):
         last_click_data = self.miss_click_data
         self.miss_click_data = {
-            "x": x,
-            "y": y,
+            "x": event.x,
+            "y": event.y,
         }
 
         if self.game.search_panel.hint.hint_item is not None:
             return False
 
-        if touchId != Mengine.TC_TOUCH0:
+        if event.touchId != Mengine.TC_TOUCH0:
             return False
 
-        if button != 0 or isDown is True:
+        if event.button != 0 or event.isDown is True:
             return False
 
         if len(last_click_data) != 0:
-            if x != last_click_data["x"] or y != last_click_data["y"]:
+            if event.x != last_click_data["x"] or event.y != last_click_data["y"]:
                 return False
 
-            Notification.notify(Notificator.onLevelMissClicked, x, y)
+            Notification.notify(Notificator.onLevelMissClicked, event.x, event.y)
 
         return False
 
