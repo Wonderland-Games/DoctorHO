@@ -2,12 +2,12 @@ from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
 from Foundation.Task.Capture import Capture
 
 
-MOVIE_POSITION = "Movie2_MissClickEffect_"
-MOVIE_BACKGROUND = "Movie2_MissClickEffect_Background_"
-SHOW_SUFFIX = "Show"
-IDLE_SUFFIX = "Idle"
-HIDE_SUFFIX = "Hide"
-
+MOVIE_POSITION_SHOW = "Movie2_MissClickEffect_Show"
+MOVIE_POSITION_IDLE = "Movie2_MissClickEffect_Idle"
+MOVIE_POSITION_HIDE = "Movie2_MissClickEffect_Hide"
+MOVIE_BACKGROUND_SHOW = "Movie2_MissClickEffect_Background_Show"
+MOVIE_BACKGROUND_IDLE = "Movie2_MissClickEffect_Background_Idle"
+MOVIE_BACKGROUND_HIDE = "Movie2_MissClickEffect_Background_Hide"
 
 class MissClick(BaseScopeEntity):
     ENTITY_SCOPE_REPEAT = True
@@ -39,26 +39,22 @@ class MissClick(BaseScopeEntity):
         play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
 
         source.addInteractive("Socket_Block", True)
-        source.addScope(self._playEffect, SHOW_SUFFIX, position)
-        source.addScope(self._playEffectTime, IDLE_SUFFIX, position, play_idle_time)
-        source.addScope(self._playEffect, HIDE_SUFFIX, position)
+
+        with source.addParallelTask(2) as (position_source, background_source):
+            position_source.addScope(self._playEffectPosition, position, play_idle_time)
+            background_source.addScope(self._playEffectBackground, position, play_idle_time)
+
         source.addInteractive("Socket_Block", False)
 
-    def _playEffect(self, source, suffix, position):
-        position_movie_name = MOVIE_POSITION + suffix
-        background_movie_name = MOVIE_BACKGROUND + suffix
+    def _playEffectPosition(self, source, position, play_time):
+        source.addScope(self._spawnEffect, MOVIE_POSITION_SHOW, position)
+        source.addScope(self._spawnEffectTime, MOVIE_POSITION_IDLE, position, play_time)
+        source.addScope(self._spawnEffect, MOVIE_POSITION_HIDE, position)
 
-        with source.addParallelTask(2) as (position_source, background_source):
-            position_source.addScope(self._spawnEffect, position_movie_name, position)
-            background_source.addScope(self._spawnEffect, background_movie_name, position)
-
-    def _playEffectTime(self, source, suffix, position, play_time):
-        position_movie_name = MOVIE_POSITION + suffix
-        background_movie_name = MOVIE_BACKGROUND + suffix
-
-        with source.addParallelTask(2) as (position_source, background_source):
-            position_source.addScope(self._spawnEffectTime, position_movie_name, position, play_time)
-            background_source.addScope(self._spawnEffectTime, background_movie_name, position, play_time)
+    def _playEffectBackground(self, source, position, play_time):
+        source.addScope(self._spawnEffect, MOVIE_BACKGROUND_SHOW, position)
+        source.addScope(self._spawnEffectTime, MOVIE_BACKGROUND_IDLE, position, play_time)
+        source.addScope(self._spawnEffect, MOVIE_BACKGROUND_HIDE, position)
 
     def _increaseXFactor(self):
         if self.x_factor < SETTINGS.MissClick.x_factor_limit:
