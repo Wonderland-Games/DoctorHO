@@ -15,6 +15,9 @@ class GroupMissClick(Group):
             self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Show" , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Show"  )
             self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Idle", Play = True, Loop = True , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Idle"  )
             self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Hide" , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Hide"  )
+            self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Background_Show" , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Background_Show"  )
+            self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Background_Idle", Play = True, Loop = True , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Background_Idle"  )
+            self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect_Background_Hide" , ResourceMovie = "Movie2_MissClick", CompositionName = "MissClickEffect_Background_Hide"  )
             pass
         Demon_MissClick = self.getObject( "Demon_MissClick")
         setup_Demon_MissClick(Demon_MissClick)
