@@ -2,7 +2,6 @@ from UIKit.Systems.SystemUserInterface import SystemUserInterface as BaseSystem
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Foundation.GroupManager import GroupManager
 from Foundation.TaskManager import TaskManager
-from Foundation.Providers.DummyAdvertisement import DummyAdvertisement
 
 
 class SystemUI(BaseSystem):
@@ -31,8 +30,8 @@ class SystemUI(BaseSystem):
             banner_movie_height = 50.0
 
             # Dummy advertisement banner size
-            banner_width = DummyAdvertisement.getBannerWidth()
-            banner_height = DummyAdvertisement.getBannerHeight()
+            banner_width = AdjustableScreenUtils.getActualBannerWidth()
+            banner_height = AdjustableScreenUtils.getActualBannerHeight()
 
             # Set banner scale
             scale_factor_width = banner_width / banner_movie_width
