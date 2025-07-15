@@ -12,19 +12,19 @@ class SystemUI(BaseSystem):
         return True
 
     def _devAdjustBanner(self):
-        banner = GroupManager.getObject("Banner", "Movie2_Banner")
+        dummy_banner = GroupManager.getObject("DummyBanner", "Movie2_Banner")
 
         if _DEVELOPMENT is False or Mengine.hasOption("nobanner") is True:
-            banner.setEnable(False)
+            dummy_banner.setEnable(False)
             return
 
         def _setup():
-            if banner.isActive() is False:
+            if dummy_banner.isActive() is False:
                 Trace.msg_err("SystemUI._devAdjustBanner: Movie2_Banner entity is not active!!!!!")
                 return
 
             # Get banner node
-            banner_node = banner.getEntityNode()
+            banner_node = dummy_banner.getEntityNode()
 
             # Banner movie size (REMAKE HARDCODE TO SOMETHING MORE AUTOMATIC!)
             banner_movie_width = 320.0
@@ -51,7 +51,7 @@ class SystemUI(BaseSystem):
 
         with TaskManager.createTaskChain() as tc:
             tc.addListener(Notificator.onSceneInit, Filter=lambda scene: scene == "Lobby")
-            tc.addEnable(banner)
+            tc.addEnable(dummy_banner)
             tc.addFunction(_setup)
 
     def _setTexts(self):
