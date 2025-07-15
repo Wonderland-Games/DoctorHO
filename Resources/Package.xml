@@ -15,7 +15,7 @@
 		<Resource Path="Resources/Fade.bin" />
 		<Resource Path="Resources/FadeUI.bin" />
 		<Resource Path="Resources/BlockInput.bin" />
-		<Resource Path="Resources/Banner.bin" />
+		<Resource Path="Resources/DummyBanner.bin" />
 		
 		<Resource Path="Movies2/IconStore/IconStore.bin" />
 		<Resource Path="Resources/UIStore.bin" />

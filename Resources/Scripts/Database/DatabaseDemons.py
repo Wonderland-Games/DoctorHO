@@ -6,7 +6,6 @@ class DatabaseDemons(Database):
         self.addRecord(DemonName="Loading", GroupName="Loading", ObjectName="Demon_Loading")
         self.addRecord(DemonName="Lobby", GroupName="Lobby", ObjectName="Demon_Lobby")
         self.addRecord(DemonName="GameArea", GroupName="GameArea", ObjectName="Demon_GameArea")
-        self.addRecord(DemonName="MissClick", GroupName="MissClick", ObjectName="Demon_MissClick")
         self.addRecord(DemonName="AdvertisingScene", GroupName="Advertising", ObjectName="Demon_AdvertisingScene")
         self.addRecord(DemonName="QuestBackpack", GroupName="QuestBackpack", ObjectName="Demon_QuestBackpack")
         self.addRecord(DemonName="Cutscene", GroupName="Cutscene", ObjectName="Demon_Cutscene")
