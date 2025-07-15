@@ -230,7 +230,7 @@ class GameArea(BaseEntity):
 
         return False
 
-    def filterUnavailableItemClick(self, scene_item):
+    def filterUnavailableItemClick(self, scene_item, *args):
         # check if hint is activated
         hint_item = self.search_panel.hint.hint_item
         if hint_item is not None:

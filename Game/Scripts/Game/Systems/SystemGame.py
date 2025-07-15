@@ -1,6 +1,7 @@
 from Foundation.System import System
 from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
+from Foundation.Task.Capture import Capture
 from Game.Managers.GameManager import GameManager
 
 
@@ -33,7 +34,6 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
-        self.addObserver(Notificator.onLevelLivesChanged, self._onLevelLivesChanged)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
         self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
@@ -79,17 +79,25 @@ class SystemGame(System):
             self.removeTaskChain("SearchPanelLives")
 
         with self.createTaskChain("SearchPanelLives", Repeat=True) as tc:
+            mouse_position_capture = Capture(None)
+
             with tc.addRaceTask(2) as (hotspot_click, unavailable_item_click):
-                hotspot_click.addListener(Notificator.onLevelMissClicked)
-                unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick)
+                hotspot_click.addListener(Notificator.onLevelMissClicked, Capture=mouse_position_capture)
+                unavailable_item_click.addListener(Notificator.onItemClick, Filter=game.filterUnavailableItemClick, Capture=mouse_position_capture)
 
-            tc.addNotify(Notificator.onLevelLivesDecrease)
+            with tc.addNotifyRequest(Notificator.onLevelLivesDecrease, 1) as (response_lives_changed,):
+                def __onLevelLivesChanged(source, lives_count):
+                    if lives_count <= 0:
+                        popup_object = DemonManager.getDemon("PopUp")
+                        popup = popup_object.entity
+                        source.addNotify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
+                    else:
+                        x_pos, y_pos = self._extractPosition(mouse_position_capture)
+                        source.addNotify(Notificator.onMissClickEffect, x_pos, y_pos)
 
-        return False
+                    return True
 
-    def _onLevelLivesChanged(self, lives_count):
-        if lives_count <= 0:
-            Notification.notify(Notificator.onLevelEnd, False)
+                response_lives_changed.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
 
         return False
 
@@ -179,3 +187,15 @@ class SystemGame(System):
             source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
 
         source.addNotify(Notificator.onLevelLivesRestore)
+
+    def _extractPosition(self, capture):
+        type = capture.getType()
+
+        if type == Notificator.onLevelMissClicked:
+            x, y = capture.getArgs()
+            return (x, y)
+
+        elif type == Notificator.onItemClick:
+            item, x, y = capture.getArgs()
+            return (x, y)
+

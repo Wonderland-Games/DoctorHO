@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <DataBlock Name="UIStore">
-	<Resource Name="2f/91e7e9601f92c2c98b6a5a6cca07d7020f3de7.png" Type="ResourceImageDefault" Unique="0">
-		<File Path="Movies2/cache_images/2f/91e7e9601f92c2c98b6a5a6cca07d7020f3de7.png" MaxSize="237;237" Size="233;233" Offset="2;2" />
-	</Resource>
 	<Resource Name="c7/c877d2311344cd26ac3ffb5528580ef6f89d6a.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/c7/c877d2311344cd26ac3ffb5528580ef6f89d6a.png" MaxSize="200;210" />
 	</Resource>
@@ -100,9 +97,6 @@
 			<Layer Index="1" Name="Life_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1268.0;768.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="2" Name="Life_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="3" Name="Life_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1468.0;768.0;0.0;1.0" TrackMatte="0" />
-		</Composition>
-		<Composition Name="MissClickEffect" Duration="0.800000011920928955078125" FrameDuration="0.0333333350718021392822265625" Master="1">
-			<Layer Index="0" Name="MissClick.png" Type="Image" Matrix="0.75;0.0;0.0;0.0;0.0;0.75;0.0;0.0;0.0;0.0;1.0;0.0;1279.125;679.125;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
 		</Composition>
 		<Composition Name="SearchItemsCorner_Left" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-100.0;-99.99997711181640625;100.0;100.00006866455078125">
 			<Layer Index="0" Name="SearchItemsCornerLeft.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1268.0;663.0;0.0;1.0" TrackMatte="0" />

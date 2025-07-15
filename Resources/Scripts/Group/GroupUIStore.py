@@ -21,7 +21,6 @@ class GroupUIStore(Group):
         self.addPrototype( "Movie2", Name = "Movie2_Circle_S" , ResourceMovie = "Movie2_UIStore", CompositionName = "Circle_S"  )
         self.addPrototype( "Movie2", Name = "Movie2_Build_Version" , ResourceMovie = "Movie2_UIStore", CompositionName = "Build_Version"  )
         self.addPrototype( "Movie2", Name = "Movie2_Text" , ResourceMovie = "Movie2_UIStore", CompositionName = "Text"  )
-        self.addPrototype( "Movie2", Name = "Movie2_MissClickEffect" , ResourceMovie = "Movie2_UIStore", CompositionName = "MissClickEffect"  )
         self.addPrototype( "Movie2", Name = "Movie2_Square" , ResourceMovie = "Movie2_UIStore", CompositionName = "Square"  )
         self.addPrototype( "Movie2", Name = "Movie2_HintCounter" , ResourceMovie = "Movie2_UIStore", CompositionName = "HintCounter"  )
         self.addPrototype( "Movie2", Name = "Movie2_SearchItemsCorner_Left" , ResourceMovie = "Movie2_UIStore", CompositionName = "SearchItemsCorner_Left"  )
