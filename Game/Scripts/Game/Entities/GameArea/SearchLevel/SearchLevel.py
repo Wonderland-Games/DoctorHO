@@ -9,10 +9,10 @@ from Game.Managers.GameManager import GameManager
 class SearchLevel(Initializer):
     def __init__(self):
         super(SearchLevel, self).__init__()
+        self.game = None
         self.root = None
         self.virtual_area = None
         self.va_hotspot = None
-        self.game = None
         self.box_points = None
         self.items = []
 
