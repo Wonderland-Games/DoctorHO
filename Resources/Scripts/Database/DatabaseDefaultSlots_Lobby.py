@@ -15,7 +15,7 @@ class DatabaseDefaultSlots_Lobby(Database):
         self.addRecord(Slot="02_Moon", Type="Scene", Group="02_Moon", Enable=0)
         self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="Header", Type="Scene", Group="Header", Enable=1)
-        self.addRecord(Slot="Banner", Type="Scene", Group="Banner", Enable=1, Platform="PC")
+        self.addRecord(Slot="DummyBanner", Type="Scene", Group="DummyBanner", Enable=1, Platform="PC")
         self.addRecord(Slot="FadeUI", Type="Scene", Group="FadeUI", Enable=1)
         self.addRecord(Slot="PopUp", Type="Scene", Group="PopUp", Enable=0)
         self.addRecord(Slot="Fade", Type="Scene", Group="Fade", Enable=1)

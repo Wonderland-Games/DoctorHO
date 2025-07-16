@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<DataBlock Name="MissClick">
+	<Resource Name="Movie2_MissClick" Type="ResourceMovie2">
+		<File Path="Movies2/MissClick/MissClick.aez" />
+		<Composition Name="MissClickEffect_Background_Hide" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Deep Green Solid 1" Type="Solid" Color="1.0;1.0;1.0;0.5" TrackMatte="0" />
+		</Composition>
+		<Composition Name="MissClickEffect_Background_Idle" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Deep Green Solid 3" Type="Solid" Color="1.0;1.0;1.0;0.5" TrackMatte="0" />
+		</Composition>
+		<Composition Name="MissClickEffect_Background_Show" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Deep Green Solid 2" Type="Solid" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="MissClickEffect_Hide" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Dark Gray Solid 2" Type="Solid" Matrix="0.25;0.0;0.0;0.0;0.0;0.25;0.0;0.0;0.0;0.0;1.0;0.0;720.0;405.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="MissClickEffect_Idle" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Dark Gray Solid 3" Type="Solid" Matrix="0.25;0.0;0.0;0.0;0.0;0.25;0.0;0.0;0.0;0.0;1.0;0.0;720.0;405.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="MissClickEffect_Show" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Dark Gray Solid 1" Type="Solid" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

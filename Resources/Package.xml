@@ -6,6 +6,7 @@
 	<Resources>
 		<Resource Path="Resources/Loading.bin" />
 		<Resource Path="Resources/Lobby.bin" />
+		<Resource Path="Resources/MissClick.bin" />
 		<Resource Path="Resources/GameArea.bin" />
 		<Resource Path="Resources/Advertising.bin" />
 		<Resource Path="Resources/QuestBackpack.bin" />
@@ -14,7 +15,7 @@
 		<Resource Path="Resources/Fade.bin" />
 		<Resource Path="Resources/FadeUI.bin" />
 		<Resource Path="Resources/BlockInput.bin" />
-		<Resource Path="Resources/Banner.bin" />
+		<Resource Path="Resources/DummyBanner.bin" />
 		
 		<Resource Path="Movies2/IconStore/IconStore.bin" />
 		<Resource Path="Resources/UIStore.bin" />

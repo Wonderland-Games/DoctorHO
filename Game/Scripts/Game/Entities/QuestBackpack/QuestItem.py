@@ -100,14 +100,14 @@ class QuestItem(Initializer):
 
     # - Utils ----------------------------------------------------------------------------------------------------------
 
-    def _onClick(self, touchId, x, y, button, pressure, isDown, isPressed):
-        if touchId != Mengine.TC_TOUCH0:
+    def _onClick(self, context, event):
+        if event.touchId != Mengine.TC_TOUCH0:
             return False
 
-        if button != 0 or isDown is not False:
+        if event.button != 0 or event.isDown is not False:
             return False
 
-        quest_item_name = str(self.ref_item_entity.getName())
+        quest_item_name = self.ref_item_entity.getName()
         Notification.notify(Notificator.onQuestItemClicked, quest_item_name)
 
         return False

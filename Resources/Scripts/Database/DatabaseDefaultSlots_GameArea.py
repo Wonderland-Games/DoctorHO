@@ -14,7 +14,7 @@ class DatabaseDefaultSlots_GameArea(Database):
         self.addRecord(Slot="02_Venus", Type="Scene", Group="02_Venus", Enable=0)
         self.addRecord(Slot="02_Moon", Type="Scene", Group="02_Moon", Enable=0)
         self.addRecord(Slot="GameHeader", Type="Scene", Group="GameHeader", Enable=1)
-        self.addRecord(Slot="Banner", Type="Scene", Group="Banner", Enable=1, Platform="PC")
+        self.addRecord(Slot="DummyBanner", Type="Scene", Group="DummyBanner", Enable=1, Platform="PC")
         self.addRecord(Slot="FadeUI", Type="Scene", Group="FadeUI", Enable=1)
         self.addRecord(Slot="PopUp", Type="Scene", Group="PopUp", Enable=0)
         self.addRecord(Slot="Fade", Type="Scene", Group="Fade", Enable=1)

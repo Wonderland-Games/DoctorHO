@@ -17,7 +17,7 @@ class DatabaseGroups(Database):
         self.addRecord(GroupName="PopUp")
         self.addRecord(GroupName="Header")
         self.addRecord(GroupName="GameHeader")
-        self.addRecord(GroupName="Banner")
+        self.addRecord(GroupName="DummyBanner")
         self.addRecord(GroupName="LevelCards")
         self.addRecord(GroupName="QuestItemStore")
         self.addRecord(GroupName="01_AncientEgypt")
