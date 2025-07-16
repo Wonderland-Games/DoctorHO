@@ -210,7 +210,7 @@ class SearchPanel(Initializer):
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
         return Mengine.vec2f(panel_size.x, panel_size.y)
 
-    def getFullSize(self):
+    def getSizeFull(self):
         panel_size = self.getSize()
         hint_size = self.hint.getSize()
         return Mengine.vec2f(panel_size.x, panel_size.y + hint_size.y/2)

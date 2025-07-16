@@ -2,8 +2,8 @@ from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Managers.GameManager import GameManager
+from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 
 
 class SearchLevel(Initializer):
@@ -15,6 +15,7 @@ class SearchLevel(Initializer):
         self.va_hotspot = None
         self.box_points = None
         self.items = []
+        self.miss_click = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -25,6 +26,8 @@ class SearchLevel(Initializer):
         self._initVirtualArea()
 
         self._createRoot()
+
+        self._setupMissClick()
         self._setupVirtualArea()
         self._attachScene()
         self._fillItems()
@@ -49,6 +52,10 @@ class SearchLevel(Initializer):
             Mengine.destroyNode(self.va_hotspot)
             self.va_hotspot = None
 
+        if self.miss_click is not None:
+            self.miss_click.onFinalize()
+            self.miss_click = None
+
     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
@@ -61,6 +68,13 @@ class SearchLevel(Initializer):
     def attachTo(self, node):
         self.root.removeFromParent()
         node.addChild(self.root)
+
+    # - Miss Click -----------------------------------------------------------------------------------------------------
+
+    def _setupMissClick(self):
+        self.miss_click = MissClick()
+        self.miss_click.onInitialize(self.game, self.box_points)
+        self.miss_click.attachTo(self.root)
 
     # - VirtualArea ----------------------------------------------------------------------------------------------------
 
