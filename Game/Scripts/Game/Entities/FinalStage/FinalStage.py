@@ -1,5 +1,7 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
+from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
@@ -14,8 +16,8 @@ class FinalStage(BaseEntity):
         self.content = None
         self.tcs = []
         self.miss_click = None
-        self.search_level = None
-        self.search_panel = None
+        self.drop_level = None
+        self.drop_panel = None
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -48,76 +50,76 @@ class FinalStage(BaseEntity):
     def _onActivate(self):
         super(FinalStage, self)._onActivate()
 
-        '''
-        self._initSearchPanel()
-        self._initSearchLevel()
+        self._initDropPanel()
+        self._initDropLevel()
 
-        self.search_panel.onInitialize2()
+        self.drop_panel.onInitialize2()
 
-        self._attachSearchLevel()
-        self._attachSearchPanel()
+        self._attachDropLevel()
+        self._attachDropPanel()
 
         self._runTaskChains()
+
+        '''
         self._handleCheats()
         '''
 
     def _onDeactivate(self):
         super(FinalStage, self)._onDeactivate()
-        '''
+
         for tc in self.tcs:
             tc.cancel()
         self.tcs = []
 
-        if self.search_panel is not None:
-            self.search_panel.onFinalize()
-            self.search_panel = None
+        if self.drop_panel is not None:
+            self.drop_panel.onFinalize()
+            self.drop_panel = None
 
-        if self.search_level is not None:
-            self.search_level.onFinalize()
-            self.search_level = None
+        if self.drop_level is not None:
+            self.drop_level.onFinalize()
+            self.drop_level = None
 
-        '''
 
-    # - SearchLevel ----------------------------------------------------------------------------------------------------
+    # - DropLevel ----------------------------------------------------------------------------------------------------
 
-    def _initSearchLevel(self):
-        search_panel_size = self.search_panel.getSize()
+    def _initDropLevel(self):
+        drop_panel_size = self.drop_panel.getSize()
         _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
 
         frame_begin_x = viewport.begin.x
         frame_begin_y = viewport.begin.y + header_height
         frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height - search_panel_size.y
+        frame_end_y = viewport.end.y - banner_height - drop_panel_size.y
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
-        self.search_level = SearchLevel()
-        self.search_level.onInitialize(self, frame_points)
+        self.drop_level = DropLevel()
+        self.drop_level.onInitialize(self, frame_points)
 
-    def _attachSearchLevel(self):
+    def _attachDropLevel(self):
         _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
 
-        search_level_size = self.search_level.getSize()
-        pos_y = viewport.begin.y + header_height + search_level_size.y / 2
+        drop_level_size = self.drop_level.getSize()
+        pos_y = viewport.begin.y + header_height + drop_level_size.y / 2
 
-        search_level_slot = self.content.getMovieSlot(SLOT_DROP_LEVEL)
-        search_level_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
-        self.search_level.attachTo(search_level_slot)
+        drop_level_slot = self.content.getMovieSlot(SLOT_DROP_LEVEL)
+        drop_level_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
+        self.drop_level.attachTo(drop_level_slot)
 
-    # - SearchPanel ----------------------------------------------------------------------------------------------------
+    # - DropPanel ----------------------------------------------------------------------------------------------------
 
-    def _initSearchPanel(self):
-        self.search_panel = SearchPanel()
-        self.search_panel.onInitialize(self)
+    def _initDropPanel(self):
+        self.drop_panel = DropPanel()
+        self.drop_panel.onInitialize(self)
 
-    def _attachSearchPanel(self):
+    def _attachDropPanel(self):
         _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
 
-        search_panel_size = self.search_panel.getSize()
-        pos_y = game_height - banner_height - search_panel_size.y / 2
+        drop_panel_size = self.drop_panel.getSize()
+        pos_y = game_height - banner_height - drop_panel_size.y / 2
 
-        search_panel_slot = self.content.getMovieSlot(SLOT_DROP_PANEL)
-        search_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
-        self.search_panel.attachTo(search_panel_slot)
+        drop_panel_slot = self.content.getMovieSlot(SLOT_DROP_PANEL)
+        drop_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
+        self.drop_panel.attachTo(drop_panel_slot)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -126,3 +128,6 @@ class FinalStage(BaseEntity):
         tc = TaskManager.createTaskChain(Name=tc_base+"_"+name, **params)
         self.tcs.append(tc)
         return tc
+
+    def _runTaskChains(self):
+        Notification.notify(Notificator.onLevelStart, self)
