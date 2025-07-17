@@ -4,6 +4,10 @@ from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Managers.GameManager import GameManager
 from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+
+
+HARDCODED_LEVEL_HEIGHT = 1536.0
 
 
 class SearchLevel(Initializer):
@@ -17,15 +21,21 @@ class SearchLevel(Initializer):
         self.items = []
         self.miss_click = None
 
+        self.level_group = None
+        self.level_size = None
+
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, box_points):
+    def _onInitialize(self, game):
         self.game = game
-        self.box_points = box_points
-
-        self._initVirtualArea()
 
         self._createRoot()
+
+        self._defineLevelGroup()
+        self._calculateSize()
+        self._defineBoxBoints()
+
+        self._initVirtualArea()
 
         self._setupMissClick()
         self._setupVirtualArea()
@@ -34,10 +44,6 @@ class SearchLevel(Initializer):
         return True
 
     def _onFinalize(self):
-        self.game = None
-        self.box_points = None
-        self.items = []
-
         if self.root is not None:
             self.root.removeFromParent()
             Mengine.destroyNode(self.root)
@@ -55,6 +61,13 @@ class SearchLevel(Initializer):
         if self.miss_click is not None:
             self.miss_click.onFinalize()
             self.miss_click = None
+
+        self.game = None
+        self.box_points = None
+        self.items = []
+
+        self.level_group = None
+        self.level_size = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -132,23 +145,47 @@ class SearchLevel(Initializer):
 
     # - Scene ----------------------------------------------------------------------------------------------------------
 
-    def _attachScene(self):
+    def _defineLevelGroup(self):
         level_id = GameManager.getCurrentGameParam("LevelId")
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
-        level_group = GroupManager.getGroup(level_group_name)
+        self.level_group = GroupManager.getGroup(level_group_name)
 
-        scene = level_group.getScene()
+    def _calculateSize(self):
+        level_group_main_layer = self.level_group.getMainLayer()
+        level_group_main_layer_size = level_group_main_layer.getSize()
+
+        game_width = AdjustableScreenUtils.getGameWidth()
+        # game_height = AdjustableScreenUtils.getGameHeight()
+
+        self.level_size = Mengine.vec2f(
+            min(game_width,  level_group_main_layer_size.x),
+            # min(game_height, level_group_main_layer_size.y)
+            HARDCODED_LEVEL_HEIGHT  # hardcoded for now, because of the game design
+        )
+
+    def _defineBoxBoints(self):
+        self.box_points = Mengine.vec4f(0, 0, self.level_size.x, self.level_size.y)
+
+    def _attachScene(self):
+        scene = self.level_group.getScene()
         scene_node = scene.getParent()
+
         self.virtual_area.add_node(scene_node)
-        self.virtual_area.update_target()
+
+        level_size = self.getSize()
+        scene_main_layer = self.level_group.getMainLayer()
+        scene_size = scene_main_layer.getSize()
+
+        offset_x = (level_size.x - scene_size.x) / 2
+        offset_y = (level_size.y - scene_size.y) / 2
+
+        scene_node.setLocalPosition(Mengine.vec2f(offset_x, offset_y))
 
         scene.enable()
 
     def getSize(self):
-        box_width = self.box_points.z - self.box_points.x
-        box_height = self.box_points.w - self.box_points.y
-        return Mengine.vec2f(box_width, box_height)
+        return self.level_size
 
     # - Items ----------------------------------------------------------------------------------------------------------
 
