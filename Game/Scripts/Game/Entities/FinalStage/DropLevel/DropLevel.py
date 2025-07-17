@@ -119,7 +119,7 @@ class DropLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
-        level_id = "FinalStage"
+        level_id = "01_FinalStage"
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
         level_group = GroupManager.getGroup(level_group_name)

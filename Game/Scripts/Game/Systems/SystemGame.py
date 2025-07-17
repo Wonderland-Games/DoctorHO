@@ -33,7 +33,7 @@ class SystemGame(System):
     def _onRun(self):
         super(SystemGame, self)._onRun()
 
-        self.addObserver(Notificator.onLevelStart, self._onLevelStart)
+        self.addObserver(Notificator.onLevelStart, self._onLevelStartTemp)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
         self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
@@ -44,6 +44,9 @@ class SystemGame(System):
         pass
 
     # - Observers ------------------------------------------------------------------------------------------------------
+    def _onLevelStartTemp(self, game):
+        print("_onLevelStartTemp")
+        pass
 
     def _onLevelStart(self, game):
         # pick items from level

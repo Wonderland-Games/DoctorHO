@@ -178,7 +178,7 @@ class GameArea(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        Notification.notify(Notificator.onLevelStart, self)
+        #Notification.notify(Notificator.onLevelStart, self)
 
         # TEST SETTINGS FEATURE
         with self._createTaskChain("TestColorSettings", Repeat=True) as tc:

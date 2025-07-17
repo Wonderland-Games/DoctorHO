@@ -8,42 +8,46 @@
         <Resource Path="Resources/Lobby.bin" />
         <Resource Path="Resources/MissClick.bin" />
         <Resource Path="Resources/GameArea.bin" />
+        <Resource Path="Resources/FinalStage.bin" />
         <Resource Path="Resources/Advertising.bin" />
         <Resource Path="Resources/QuestBackpack.bin" />
         <Resource Path="Resources/Cutscene.bin" />
-        
+
         <Resource Path="Resources/Fade.bin" />
         <Resource Path="Resources/FadeUI.bin" />
         <Resource Path="Resources/BlockInput.bin" />
         <Resource Path="Resources/DummyBanner.bin" />
-        
+
         <Resource Path="Movies2/IconStore/IconStore.bin" />
         <Resource Path="Resources/UIStore.bin" />
-        
+
         <Resource Path="Resources/Background.bin" />
         <Resource Path="Resources/PopUp.bin" />
         <Resource Path="Resources/Header.bin" />
         <Resource Path="Resources/GameHeader.bin" />
-        
-		<Resource Path="Resources/LevelCards_Ancient.bin" />
-		<Resource Path="Resources/QuestItemStore_Ancient.bin" />
+
+        <Resource Path="Resources/LevelCards.bin" />
+        <Resource Path="Resources/QuestItemStore.bin" />
+
+        <Resource Path="Resources/LevelCards_Ancient.bin" />
+        <Resource Path="Resources/QuestItemStore_Ancient.bin" />
+        <Resource Path="Resources/LevelCards_SolarSystem.bin" />
+        <Resource Path="Resources/QuestItemStore_SolarSystem.bin" />
+
         <Resource Path="Resources/01_AncientEgypt.bin" />
         <Resource Path="Resources/01_AncientGreece.bin" />
         <Resource Path="Resources/01_AncientRome.bin" />
-		
-		<Resource Path="Resources/LevelCards_SolarSystem.bin" />
-		<Resource Path="Resources/QuestItemStore_SolarSystem.bin" />
         <Resource Path="Resources/02_Europa.bin" />
         <Resource Path="Resources/02_Mars.bin" />
         <Resource Path="Resources/02_Titan.bin" />
         <Resource Path="Resources/02_Venus.bin" />
         <Resource Path="Resources/02_Moon.bin" />
-        
+        <Resource Path="Resources/01_FinalStage.bin" />
+
         <Resource Path="Resources/Intro.bin" />
         <Resource Path="Resources/Cutscene_01.bin" />
         <Resource Path="Resources/Cutscene_02.bin" />
-        
+
         <Resource Path="Resources/LevelZones.bin" />
-        
     </Resources>
 </Pak>

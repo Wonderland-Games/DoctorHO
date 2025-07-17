@@ -4,7 +4,7 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
-MOVIE_PANEL = "Movie2_SearchPanel"
+MOVIE_PANEL = "Movie2_DropPanel"
 ITEMS_NODE_MOVE_TIME = 300.0
 PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
 
@@ -30,7 +30,7 @@ class DropPanel(Initializer):
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game):
-        super(SearchPanel, self)._onInitialize()
+        super(DropPanel, self)._onInitialize()
         self.game = game
 
         self._initVirtualArea()

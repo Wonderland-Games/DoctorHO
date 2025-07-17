@@ -64,6 +64,7 @@ def onInitialize():
         "Loading",
         "Lobby",
         "GameArea",
+        "FinalStage",
         "MissClick",
         {"name": "AdvertisingScene", "override": True},
         "QuestBackpack",
