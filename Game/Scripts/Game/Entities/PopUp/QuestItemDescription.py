@@ -55,8 +55,6 @@ class QuestItemDescription(PopUpContent):
         # self._setupItemName()
         self._setupPopUpTitle()
         self._setupItemDescriptionFull()
-
-        # self._adjustSlotsPositions()
         self._setupLayoutBox()
 
     def _onFinalizeContent(self):
@@ -142,7 +140,6 @@ class QuestItemDescription(PopUpContent):
         self.item_description_full = Mengine.createNode("TextField")
         self.item_description_full.setName(self.item_codename + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
-        # self.item_description_full.setVerticalBottomAlign()    # deprecated method
         self.item_description_full.setVerticalCenterAlign()
         self.item_description_full.setHorizontalCenterAlign()
 
@@ -157,36 +154,10 @@ class QuestItemDescription(PopUpContent):
         slot.addChild(self.item_description_full)
 
         popup_content_size = self.pop_up_base.getContentSize()
-        # sprite_size = self._getSpriteSize()
-        # slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))    # deprecated method
 
         self.item_description_full.setMaxLength(popup_content_size.x)
 
         self.item_description_full.enable()
-
-    def _adjustSlotsPositions(self):    # deprecated method
-        content_size = self.pop_up_base.getContentSize()
-        item_size_raw = self.item_sprite.getSurfaceSize()
-        item_scale = self.item_sprite.getScale()
-        item_size = Mengine.vec2f(item_size_raw.x * item_scale.x, item_size_raw.y * item_scale.y)
-        available_size_y = content_size.y - item_size.y  # - button_size.y
-
-        slots_data = {
-            SLOT_ITEM_SPRITE: item_size.y / 2,
-            # SLOT_BUTTON: button_size.y / 2,
-        }
-        offset_between_slots = available_size_y / (len(slots_data) + 1)
-        current_pos_y = -content_size.y / 2
-
-        for slot_name, obj_half_size in slots_data.items():
-            slot = self.content.getMovieSlot(slot_name)
-
-            current_pos_y += offset_between_slots
-            current_pos_y += obj_half_size
-
-            slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
-
-            current_pos_y += obj_half_size
 
     def _setupLayoutBox(self):
         item_sprite_wrapper = LayoutSpriteWrapper(self.item_sprite)

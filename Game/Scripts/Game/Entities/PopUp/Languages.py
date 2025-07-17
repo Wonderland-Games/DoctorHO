@@ -22,7 +22,6 @@ class Languages(PopUpContent):
         super(Languages, self)._onInitializeContent()
 
         self._setupButtons()
-        # self._setupSlotsPositions()
         self._setupLayoutBox()
 
         self._runTaskChains()
@@ -51,13 +50,6 @@ class Languages(PopUpContent):
 
             self._attachObjectToSlot(container, SLOT_BUTTONS)
             self.buttons_list[locale_name] = container
-
-    def _setupSlotsPositions(self):     # deprecated method
-        objects_list = []
-        for (key, button) in self.buttons_list.items():
-            objects_list.append({key: button})
-
-        self.setupObjectsSlotsAsTable(objects_list, False)
 
     def _setupLayoutBox(self):
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:

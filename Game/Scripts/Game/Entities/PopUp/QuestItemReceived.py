@@ -29,8 +29,6 @@ class QuestItemReceived(PopUpContent):
 
         self._setupItem(content_args["ChapterId"], content_args["ItemName"])
         self._setupButton()
-
-        # self._adjustSlotsPositions()
         self._setupLayoutBox()
 
         self._runTaskChains()
@@ -79,31 +77,6 @@ class QuestItemReceived(PopUpContent):
             return
 
         self._attachObjectToSlot(self.button, SLOT_BUTTON)
-
-    def _adjustSlotsPositions(self):     # deprecated method
-        content_size = self.pop_up_base.getContentSize()
-        item_size_raw = self.item_sprite.getSurfaceSize()
-        item_scale = self.item_sprite.getScale()
-        item_size = Mengine.vec2f(item_size_raw.x * item_scale.x, item_size_raw.y * item_scale.y)
-        button_size = self.button.getSize()
-        available_size_y = content_size.y - item_size.y - button_size.y
-
-        slots_data = {
-            SLOT_ITEM: item_size.y / 2,
-            SLOT_BUTTON: button_size.y / 2,
-        }
-        offset_between_slots = available_size_y / (len(slots_data) + 1)
-        current_pos_y = -content_size.y / 2
-
-        for slot_name, obj_half_size in slots_data.items():
-            slot = self.content.getMovieSlot(slot_name)
-
-            current_pos_y += offset_between_slots
-            current_pos_y += obj_half_size
-
-            slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
-
-            current_pos_y += obj_half_size
 
     def _setupLayoutBox(self):
         item_sprite_wrapper = LayoutSpriteWrapper(self.item_sprite)

@@ -24,7 +24,6 @@ class LevelLost(PopUpContent):
 
         self._setupIcon()
         self._setupButtons()
-        # self._setupSlotsPositions()
         self._setupLayoutBox()
 
         self._runTaskChains()
@@ -59,14 +58,6 @@ class LevelLost(PopUpContent):
 
             self._attachObjectToSlot(container, name)
             self.buttons[name] = container
-
-    def _setupSlotsPositions(self):     # deprecated method
-        objects_list = []
-        objects_list.append({SLOT_ICON: self.icon})
-        for (key, button) in self.buttons.items():
-            objects_list.append({key: button})
-
-        self.setupObjectsSlotsAsTable(objects_list)
 
     def _setupLayoutBox(self):
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:

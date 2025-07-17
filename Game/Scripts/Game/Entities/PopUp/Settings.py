@@ -27,7 +27,6 @@ class Settings(PopUpContent):
 
         self._setupCheckBoxes()
         self._setupButtons()
-        # self._setupSlotsPositions()
         self._setupLayoutBox()
 
         self._runTaskChains()
@@ -94,19 +93,6 @@ class Settings(PopUpContent):
 
             self._attachObjectToSlot(container, name)
             self.buttons[name] = container
-
-    def _setupSlotsPositions(self):     # deprecated method
-        objects_list = []
-
-        # add checkboxes to objects list
-        if len(self.checkboxes) > 0:
-            objects_list.append(self.checkboxes)
-
-        # add buttons to objects list
-        for (key, button) in self.buttons.items():
-            objects_list.append({key: button})
-
-        self.setupObjectsSlotsAsTable(objects_list)
 
     def _setupLayoutBox(self):
         checkbox_slots = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
