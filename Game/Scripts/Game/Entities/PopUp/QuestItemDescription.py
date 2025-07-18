@@ -92,7 +92,7 @@ class QuestItemDescription(PopUpContent):
         sprite_size = self._getSpriteSize()
         popup_content_size = self.pop_up_base.getContentSize()
         # changing pos not working on slot somehow, so lets try change item sprite pos instead
-        self.item_sprite.setLocalPosition(Mengine.vec2f(
+        self.item_sprite.setLocalPosition((
             -sprite_size.x / 2,
             -popup_content_size.y / 2
         ))
@@ -128,7 +128,7 @@ class QuestItemDescription(PopUpContent):
 
         popup_content_size = self.pop_up_base.getContentSize()
         sprite_size = self._getSpriteSize()
-        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
+        slot.setLocalPosition((0, -popup_content_size.y / 2 + sprite_size.y))
 
         self.item_name.enable()
 

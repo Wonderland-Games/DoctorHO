@@ -121,7 +121,7 @@ class SearchLevel(Initializer):
             (self.box_points.z, self.box_points.w),
             (self.box_points.x, self.box_points.w)
         ]
-        hotspot_polygon_center = Mengine.vec2f(
+        hotspot_polygon_center = (
             -((self.box_points.z - self.box_points.x) / 2 + self.box_points.x),
             -((self.box_points.w - self.box_points.y) / 2 + self.box_points.y)
         )
@@ -180,7 +180,7 @@ class SearchLevel(Initializer):
         offset_x = (level_size.x - scene_size.x) / 2
         offset_y = (level_size.y - scene_size.y) / 2
 
-        scene_node.setLocalPosition(Mengine.vec2f(offset_x, offset_y))
+        scene_node.setLocalPosition((offset_x, offset_y))
 
         scene.enable()
 

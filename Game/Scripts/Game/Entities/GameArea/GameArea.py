@@ -132,7 +132,7 @@ class GameArea(BaseEntity):
         def _setSearchLevelPos(layout_box, layout_offset, layout_size):
             game_center = AdjustableScreenUtils.getGameCenter()
             search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
-            search_level_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset[1] + layout_size[1]/2))
+            search_level_slot.setWorldPosition((game_center.x, layout_offset[1] + layout_size[1]/2))
 
         # SEARCH PANEL
         def _getSearchPanelSize():
@@ -142,7 +142,7 @@ class GameArea(BaseEntity):
         def _setSearchPanelPos(layout_box, layout_offset, layout_size):
             game_center = AdjustableScreenUtils.getGameCenter()
             search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
-            search_panel_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset[1] + layout_size[1]/2))
+            search_panel_slot.setWorldPosition((game_center.x, layout_offset[1] + layout_size[1]/2))
 
         # BANNER
         def _getBannerSize():

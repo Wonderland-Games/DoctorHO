@@ -69,7 +69,7 @@ class QuestItemReceived(PopUpContent):
         slot.addChild(self.item_sprite)
 
         item_sprite_center = self.item_sprite.getLocalImageCenter()
-        self.item_sprite.setLocalPosition(Mengine.vec2f(-item_sprite_center.x * scale_perc, -item_sprite_center.y * scale_perc))
+        self.item_sprite.setLocalPosition((-item_sprite_center.x * scale_perc, -item_sprite_center.y * scale_perc))
 
     def _setupButton(self):
         self.button = self._generateContainter(SLOT_BUTTON)
