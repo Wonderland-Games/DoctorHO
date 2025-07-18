@@ -27,7 +27,7 @@ class DropLevel(Initializer):
         self._createRoot()
         self._setupVirtualArea()
         self._attachScene()
-        self._fillItems()
+
         return True
 
     def _onFinalize(self):
@@ -119,13 +119,16 @@ class DropLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
+        '''
         level_id = "01_FinalStage"
         level_params = GameManager.getLevelParams(level_id)
         level_group_name = level_params.GroupName
-        level_group = GroupManager.getGroup(level_group_name)
+        '''
+        level_group = GroupManager.getGroup("01_FinalStage")
 
         scene = level_group.getScene()
         scene_node = scene.getParent()
+
         self.virtual_area.add_node(scene_node)
         self.virtual_area.update_target()
 
