@@ -328,7 +328,7 @@ class GameArea(BaseEntity):
         source.addFunction(self.search_level.virtual_area.freeze, True)
 
         source.addScope(self.search_panel.hint.hint_effect.show, hint_item_transformation)
-        source.addListener(Notificator.onItemClick, Filter=lambda item: item == self.search_panel.hint.hint_item)
+        source.addTask("TaskItemClick", Item=self.search_panel.hint.hint_item, AutoEnable=False)
         source.addScope(self.search_panel.hint.hint_effect.hide, hint_item_transformation)
 
         source.addFunction(self.search_panel.hint.cleanHintItem)
