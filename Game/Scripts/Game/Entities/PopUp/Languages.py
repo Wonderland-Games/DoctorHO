@@ -1,4 +1,4 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from Foundation.LanguagesManager import LanguagesManager
 from Foundation.TaskManager import TaskManager
@@ -22,7 +22,7 @@ class Languages(PopUpContent):
         super(Languages, self)._onInitializeContent()
 
         self._setupButtons()
-        self._setupSlotsPositions()
+        self._setupLayoutBox()
 
         self._runTaskChains()
 
@@ -51,12 +51,12 @@ class Languages(PopUpContent):
             self._attachObjectToSlot(container, SLOT_BUTTONS)
             self.buttons_list[locale_name] = container
 
-    def _setupSlotsPositions(self):
-        objects_list = []
-        for (key, button) in self.buttons_list.items():
-            objects_list.append({key: button})
-
-        self.setupObjectsSlotsAsTable(objects_list, False)
+    def _setupLayoutBox(self):
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            for button in self.buttons_list.values():
+                vertical.addFixedObject(button)
+                vertical.addPadding(1)
 
     # - TaskChain ------------------------------------------------------------
 

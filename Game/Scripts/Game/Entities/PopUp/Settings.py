@@ -1,4 +1,4 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Game.Managers.GameManager import GameManager
 
 
@@ -27,7 +27,7 @@ class Settings(PopUpContent):
 
         self._setupCheckBoxes()
         self._setupButtons()
-        self._setupSlotsPositions()
+        self._setupLayoutBox()
 
         self._runTaskChains()
 
@@ -94,13 +94,47 @@ class Settings(PopUpContent):
             self._attachObjectToSlot(container, name)
             self.buttons[name] = container
 
-    def _setupSlotsPositions(self):
-        objects_list = []
-        objects_list.append(self.checkboxes)
-        for (key, button) in self.buttons.items():
-            objects_list.append({key: button})
+    def _setupLayoutBox(self):
+        checkbox_slots = [SLOT_SOUND, SLOT_MUSIC, SLOT_VIBRATION]
 
-        self.setupObjectsSlotsAsTable(objects_list)
+        # calculate the maximum height of horizontal checkboxes
+        checkbox_horizontal_height = 0.0
+        for checkbox_slot in checkbox_slots:
+            checkbox = self.checkboxes.get(checkbox_slot)
+            checkbox_size = checkbox.getSize()
+            if checkbox_size.y > checkbox_horizontal_height:
+                checkbox_horizontal_height = checkbox_size.y
+
+        button_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
+        if SLOT_LOBBY in self.buttons.keys():
+            button_slots.append(SLOT_LOBBY)
+
+        # setup layout
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            # top padding
+            vertical.addPadding(0.75)
+
+            # add horizontal checkboxes
+            with vertical.addLayoutHorizontal(checkbox_horizontal_height) as horizontal:
+                horizontal.addPadding(1)
+                for checkbox_slot in checkbox_slots:
+                    checkbox = self.checkboxes.get(checkbox_slot)
+                    horizontal.addFixedObject(checkbox)
+                    horizontal.addPadding(1)
+
+            # padding between checkboxes and buttons
+            vertical.addPadding(1.75)
+
+            # add vertical buttons
+            for index, button_slot in enumerate(button_slots):
+                button = self.buttons.get(button_slot)
+                vertical.addFixedObject(button)
+
+                if index != len(button_slots) - 1:
+                    vertical.addPadding(1)
+                else:
+                    # bot padding
+                    vertical.addPadding(1.5)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 

@@ -1,4 +1,5 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
+from UIKit.LayoutWrapper.LayoutSpriteWrapper import LayoutSpriteWrapper
 from Foundation.GroupManager import GroupManager
 
 
@@ -28,8 +29,8 @@ class QuestItemReceived(PopUpContent):
 
         self._setupItem(content_args["ChapterId"], content_args["ItemName"])
         self._setupButton()
+        self._setupLayoutBox()
 
-        self._adjustSlotsPositions()
         self._runTaskChains()
 
     def _onFinalizeContent(self):
@@ -68,7 +69,7 @@ class QuestItemReceived(PopUpContent):
         slot.addChild(self.item_sprite)
 
         item_sprite_center = self.item_sprite.getLocalImageCenter()
-        self.item_sprite.setLocalPosition(Mengine.vec2f(-item_sprite_center.x * scale_perc, -item_sprite_center.y * scale_perc))
+        self.item_sprite.setLocalPosition((-item_sprite_center.x * scale_perc, -item_sprite_center.y * scale_perc))
 
     def _setupButton(self):
         self.button = self._generateContainter(SLOT_BUTTON)
@@ -77,30 +78,15 @@ class QuestItemReceived(PopUpContent):
 
         self._attachObjectToSlot(self.button, SLOT_BUTTON)
 
-    def _adjustSlotsPositions(self):
-        content_size = self.pop_up_base.getContentSize()
-        item_size_raw = self.item_sprite.getSurfaceSize()
-        item_scale = self.item_sprite.getScale()
-        item_size = Mengine.vec2f(item_size_raw.x * item_scale.x, item_size_raw.y * item_scale.y)
-        button_size = self.button.getSize()
-        available_size_y = content_size.y - item_size.y - button_size.y
+    def _setupLayoutBox(self):
+        item_sprite_wrapper = LayoutSpriteWrapper(self.item_sprite)
 
-        slots_data = {
-            SLOT_ITEM: item_size.y / 2,
-            SLOT_BUTTON: button_size.y / 2,
-        }
-        offset_between_slots = available_size_y / (len(slots_data) + 1)
-        current_pos_y = -content_size.y / 2
-
-        for slot_name, obj_half_size in slots_data.items():
-            slot = self.content.getMovieSlot(slot_name)
-
-            current_pos_y += offset_between_slots
-            current_pos_y += obj_half_size
-
-            slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
-
-            current_pos_y += obj_half_size
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_sprite_wrapper)
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.button)
+            vertical.addPadding(1)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 

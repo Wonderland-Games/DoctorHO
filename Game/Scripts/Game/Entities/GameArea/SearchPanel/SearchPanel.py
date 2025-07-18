@@ -4,7 +4,6 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
 from Game.Entities.GameArea.SearchPanel.Hint.HintAd import HintAd
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
@@ -47,6 +46,7 @@ class SearchPanel(Initializer):
         self._initVirtualArea()
 
         self._createRoot()
+        self._createHint()
         self._attachPanel()
 
         return True
@@ -163,7 +163,7 @@ class SearchPanel(Initializer):
             (va_end_x, va_end_y),
             (va_begin_x, va_end_y)
         ]
-        hotspot_polygon_center = Mengine.vec2f(
+        hotspot_polygon_center = (
             panel_size.x / -2,
             panel_size.y / 2 - item_size.y
         )
@@ -205,33 +205,30 @@ class SearchPanel(Initializer):
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
 
-    def getBounds(self):
-        panel_bounds = self.movie_panel.getCompositionBounds()
-        return panel_bounds
-
     def getSize(self):
-        game_width, _, _, _ = AdjustableScreenUtils.getMainSizes()
-        panel_bounds = self.getBounds()
+        panel_bounds = self.movie_panel.getCompositionBounds()
         panel_size = Utils.getBoundingBoxSize(panel_bounds)
+        return Mengine.vec2f(panel_size.x, panel_size.y)
 
-        # panel_width = game_width
-        panel_width = panel_size.x
-
-        return Mengine.vec2f(panel_width, panel_size.y)
+    def getSizeFull(self):
+        panel_size = self.getSize()
+        hint_size = self.hint.getSize()
+        return Mengine.vec2f(panel_size.x, panel_size.y + hint_size.y/2)
 
     # - Hint -----------------------------------------------------------------------------------------------------------
 
-    def _setupHint(self):
+    def _createHint(self):
         self.hint = Hint()
         self.hint.onInitialize(self.game)
         self.hint.attachTo(self.root)
 
+    def _setupHint(self):
         panel_size = self.getSize()
         hint_size = self.hint.getSize()
         hint_node = self.hint.getRoot()
 
         hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
-        hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
+        hint_node.setLocalPosition((0, hint_pos_y))
 
     def destroyHint(self):
         if self.hint is not None:
@@ -250,7 +247,7 @@ class SearchPanel(Initializer):
         hint_node = self.hint_ad.getRoot()
 
         hint_pos_y = -panel_size.y / 2 + hint_size.y / 2
-        hint_node.setLocalPosition(Mengine.vec2f(0, hint_pos_y))
+        hint_node.setLocalPosition((0, hint_pos_y))
 
     def destroyHintAd(self):
         if self.hint_ad is not None:
@@ -309,12 +306,12 @@ class SearchPanel(Initializer):
             corner_size = Utils.getBoundingBoxSize(corner_bb)
 
             if corner_type is "Left":
-                corner_pos = Mengine.vec2f(
+                corner_pos = (
                     va_hotspot_pos.x + corner_size.x / 2,
                     va_hotspot_pos.y + corner_size.y / 2
                 )
             else:
-                corner_pos = Mengine.vec2f(
+                corner_pos = (
                     -va_hotspot_pos.x - corner_size.x / 2,
                     va_hotspot_pos.y + corner_size.y / 2
                 )
@@ -346,10 +343,10 @@ class SearchPanel(Initializer):
         border_node = Mengine.createNode("Interender")
         self.virtual_area.add_node(border_node)
 
-        border_node.setLocalPosition(Mengine.vec2f(0, 0))
+        border_node.setLocalPosition((0, 0))
         range_left_top = Mengine.getNodeScreenAdaptPosition(border_node)
 
-        border_node.setLocalPosition(Mengine.vec2f(va_hotspot_size.x, va_hotspot_size.y))
+        border_node.setLocalPosition((va_hotspot_size.x, va_hotspot_size.y))
         range_right_bot = Mengine.getNodeScreenAdaptPosition(border_node)
 
         self.va_range_points = (range_left_top, range_right_bot)
@@ -382,7 +379,7 @@ class SearchPanel(Initializer):
         self.root.addChild(self.items_scale_node)
 
         va_hotspot_pos = self.va_hotspot.getLocalPosition()
-        self.items_scale_node.setLocalPosition(Mengine.vec2f(0, va_hotspot_pos.y))
+        self.items_scale_node.setLocalPosition((0, va_hotspot_pos.y))
 
         coeff = 1.0
         for item in self.items:
@@ -426,7 +423,7 @@ class SearchPanel(Initializer):
 
         panel_size = self.getSize()
         self.items_counter.attachTo(self.root)
-        self.items_counter.setLocalPosition(Mengine.vec2f((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.25))
+        self.items_counter.setLocalPosition(((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.25))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 

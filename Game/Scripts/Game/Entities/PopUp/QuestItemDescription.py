@@ -1,4 +1,6 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
+from UIKit.LayoutWrapper.LayoutSpriteWrapper import LayoutSpriteWrapper
+from UIKit.LayoutWrapper.LayoutTextWrapper import LayoutTextWrapper
 from Foundation.GroupManager import GroupManager
 
 
@@ -53,8 +55,7 @@ class QuestItemDescription(PopUpContent):
         # self._setupItemName()
         self._setupPopUpTitle()
         self._setupItemDescriptionFull()
-
-        self._adjustSlotsPositions()
+        self._setupLayoutBox()
 
     def _onFinalizeContent(self):
         super(QuestItemDescription, self)._onFinalizeContent()
@@ -91,7 +92,7 @@ class QuestItemDescription(PopUpContent):
         sprite_size = self._getSpriteSize()
         popup_content_size = self.pop_up_base.getContentSize()
         # changing pos not working on slot somehow, so lets try change item sprite pos instead
-        self.item_sprite.setLocalPosition(Mengine.vec2f(
+        self.item_sprite.setLocalPosition((
             -sprite_size.x / 2,
             -popup_content_size.y / 2
         ))
@@ -127,7 +128,7 @@ class QuestItemDescription(PopUpContent):
 
         popup_content_size = self.pop_up_base.getContentSize()
         sprite_size = self._getSpriteSize()
-        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
+        slot.setLocalPosition((0, -popup_content_size.y / 2 + sprite_size.y))
 
         self.item_name.enable()
 
@@ -139,7 +140,7 @@ class QuestItemDescription(PopUpContent):
         self.item_description_full = Mengine.createNode("TextField")
         self.item_description_full.setName(self.item_codename + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
-        self.item_description_full.setVerticalBottomAlign()
+        self.item_description_full.setVerticalCenterAlign()
         self.item_description_full.setHorizontalCenterAlign()
 
         self.item_description_full.setJustify(True)
@@ -153,33 +154,18 @@ class QuestItemDescription(PopUpContent):
         slot.addChild(self.item_description_full)
 
         popup_content_size = self.pop_up_base.getContentSize()
-        sprite_size = self._getSpriteSize()
-        slot.setLocalPosition(Mengine.vec2f(0, -popup_content_size.y / 2 + sprite_size.y))
 
         self.item_description_full.setMaxLength(popup_content_size.x)
 
         self.item_description_full.enable()
 
-    def _adjustSlotsPositions(self):
-        content_size = self.pop_up_base.getContentSize()
-        item_size_raw = self.item_sprite.getSurfaceSize()
-        item_scale = self.item_sprite.getScale()
-        item_size = Mengine.vec2f(item_size_raw.x * item_scale.x, item_size_raw.y * item_scale.y)
-        available_size_y = content_size.y - item_size.y  # - button_size.y
+    def _setupLayoutBox(self):
+        item_sprite_wrapper = LayoutSpriteWrapper(self.item_sprite)
+        item_description_full_wrapper = LayoutTextWrapper(self.item_description_full)
 
-        slots_data = {
-            SLOT_ITEM_SPRITE: item_size.y / 2,
-            # SLOT_BUTTON: button_size.y / 2,
-        }
-        offset_between_slots = available_size_y / (len(slots_data) + 1)
-        current_pos_y = -content_size.y / 2
-
-        for slot_name, obj_half_size in slots_data.items():
-            slot = self.content.getMovieSlot(slot_name)
-
-            current_pos_y += offset_between_slots
-            current_pos_y += obj_half_size
-
-            slot.setLocalPosition(Mengine.vec2f(0, current_pos_y))
-
-            current_pos_y += obj_half_size
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_sprite_wrapper)
+            vertical.addPadding(1)
+            vertical.addFixedObject(item_description_full_wrapper)
+            vertical.addPadding(1)

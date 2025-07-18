@@ -1,9 +1,9 @@
-from UIKit.Entities.PopUp.PopUpContent import PopUpContent
+from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Game.Managers.GameManager import GameManager
 
 
 SLOT_ICON = "Icon"
-SLOT_AD = "Ad"
+SLOT_ADVERT = "Ad"
 SLOT_RESTART = "Restart"
 SLOT_LOBBY = "Lobby"
 
@@ -24,7 +24,7 @@ class LevelLost(PopUpContent):
 
         self._setupIcon()
         self._setupButtons()
-        self._setupSlotsPositions()
+        self._setupLayoutBox()
 
         self._runTaskChains()
 
@@ -49,7 +49,7 @@ class LevelLost(PopUpContent):
         self._attachObjectToSlot(self.icon, SLOT_ICON)
 
     def _setupButtons(self):
-        buttons = [SLOT_AD, SLOT_RESTART, SLOT_LOBBY]
+        buttons = [SLOT_ADVERT, SLOT_RESTART, SLOT_LOBBY]
 
         for name in buttons:
             container = self._generateContainter(name)
@@ -59,20 +59,24 @@ class LevelLost(PopUpContent):
             self._attachObjectToSlot(container, name)
             self.buttons[name] = container
 
-    def _setupSlotsPositions(self):
-        objects_list = []
-        objects_list.append({SLOT_ICON: self.icon})
-        for (key, button) in self.buttons.items():
-            objects_list.append({key: button})
-
-        self.setupObjectsSlotsAsTable(objects_list)
+    def _setupLayoutBox(self):
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.icon)
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.buttons[SLOT_ADVERT])
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.buttons[SLOT_RESTART])
+            vertical.addPadding(1)
+            vertical.addFixedObject(self.buttons[SLOT_LOBBY])
+            vertical.addPadding(1)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def _runTaskChains(self):
-        button_ad = self.buttons.get(SLOT_AD)
+        button_ad = self.buttons.get(SLOT_ADVERT)
         if button_ad is not None:
-            with self._createTaskChain(SLOT_AD) as tc:
+            with self._createTaskChain(SLOT_ADVERT) as tc:
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_ad.movie)
                 tc.addScope(self._scopeAdvertisement)
 
