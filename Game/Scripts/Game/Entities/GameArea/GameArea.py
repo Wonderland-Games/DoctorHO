@@ -3,6 +3,8 @@ from Foundation.TaskManager import TaskManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+from Foundation.LayoutBox import LayoutBox
+from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -23,7 +25,7 @@ class GameArea(BaseEntity):
         self.tcs = []
         self.search_level = None
         self.search_panel = None
-        self.layout = None
+        self.layout_box = None
 
     # - Object ---------------------------------------------------------------------------------------------------------
 
@@ -70,7 +72,7 @@ class GameArea(BaseEntity):
 
         self.search_panel.onInitialize2()
 
-        self._setupLayout()
+        self._setupLayoutBox()
 
         self._runTaskChains()
         self._handleCheats()
@@ -82,9 +84,9 @@ class GameArea(BaseEntity):
             tc.cancel()
         self.tcs = []
 
-        if self.layout is not None:
-            Mengine.destroyLayout(self.layout)
-            self.layout = None
+        if self.layout_box is not None:
+            self.layout_box.finalize()
+            self.layout_box = None
 
         if self.search_panel is not None:
             self.search_panel.onFinalize()
@@ -116,37 +118,52 @@ class GameArea(BaseEntity):
 
     # - Layout ---------------------------------------------------------------------------------------------------------
 
-    def _setupLayout(self):
-        self.layout = Mengine.createLayout(AdjustableScreenUtils.getGameHeight)
+    def _setupLayoutBox(self):
+        # HEADER
+        def _getHeaderSize():
+            header_size = AdjustableScreenUtils.getHeaderSize()
+            return (header_size.x, header_size.y)
 
-        def _getPaddingHeight():
-            return 1.0
-
-        def _getSearchLevelHeight():
+        # SEARCH LEVEL
+        def _getSearchLevelSize():
             search_level_size = self.search_level.getSize()
-            return search_level_size.y
+            return (search_level_size.x, search_level_size.y)
 
-        def _setSearchLevelPos(layout_offset, layout_size):
+        def _setSearchLevelPos(layout_box, layout_offset, layout_size):
             game_center = AdjustableScreenUtils.getGameCenter()
             search_level_slot = self.content.getMovieSlot(SLOT_SEARCH_LEVEL)
-            search_level_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset + layout_size / 2))
+            search_level_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset[1] + layout_size[1]/2))
 
-        def _getSearchPanelHeight():
+        # SEARCH PANEL
+        def _getSearchPanelSize():
             search_panel_size = self.search_panel.getSizeFull()
-            return search_panel_size.y
+            return (search_panel_size.x, search_panel_size.y)
 
-        def _setSearchPanelPos(layout_offset, layout_size):
+        def _setSearchPanelPos(layout_box, layout_offset, layout_size):
             game_center = AdjustableScreenUtils.getGameCenter()
             search_panel_slot = self.content.getMovieSlot(SLOT_SEARCH_PANEL)
-            search_panel_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset + layout_size/2))
+            search_panel_slot.setWorldPosition(Mengine.vec2f(game_center.x, layout_offset[1] + layout_size[1]/2))
 
-        self.layout.addElement(Mengine.LET_FIXED, AdjustableScreenUtils.getHeaderHeight, None)
-        self.layout.addElement(Mengine.LET_PAD, _getPaddingHeight, None)
-        self.layout.addElement(Mengine.LET_FIXED, _getSearchLevelHeight, _setSearchLevelPos)
-        self.layout.addElement(Mengine.LET_PAD, _getPaddingHeight, None)
-        self.layout.addElement(Mengine.LET_FIXED, _getSearchPanelHeight, _setSearchPanelPos)
-        self.layout.addElement(Mengine.LET_PAD, _getPaddingHeight, None)
-        self.layout.addElement(Mengine.LET_FIXED, AdjustableScreenUtils.getBannerHeight, None)
+        # BANNER
+        def _getBannerSize():
+            banner_width = AdjustableScreenUtils.getActualBannerWidth()
+            banner_height = AdjustableScreenUtils.getActualBannerHeight()
+            return (banner_width, banner_height)
+
+        # LAYOUT BOX
+        def _getLayoutBoxSize():
+            return AdjustableScreenUtils.getGameWidth(), AdjustableScreenUtils.getGameHeight()
+
+        self.layout_box = LayoutBox(_getLayoutBoxSize)
+
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getHeaderSize, None))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getSearchLevelSize, _setSearchLevelPos))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getSearchPanelSize, _setSearchPanelPos))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
