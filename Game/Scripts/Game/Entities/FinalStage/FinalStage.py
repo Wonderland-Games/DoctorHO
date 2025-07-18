@@ -5,6 +5,7 @@ from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
+MOVIE_CONTENT = "Movie2_Content"
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
 
@@ -49,6 +50,8 @@ class FinalStage(BaseEntity):
 
     def _onActivate(self):
         super(FinalStage, self)._onActivate()
+
+        self.content = self.object.getObject(MOVIE_CONTENT)
 
         self._initDropPanel()
         self._initDropLevel()
@@ -130,4 +133,5 @@ class FinalStage(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        Notification.notify(Notificator.onLevelStart, self)
+        #Notification.notify(Notificator.onLevelStart, self)
+        pass

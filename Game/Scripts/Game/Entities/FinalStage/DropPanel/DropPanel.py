@@ -41,14 +41,14 @@ class DropPanel(Initializer):
         return True
 
     def onInitialize2(self):
-        self._initItems()
+        #self._initItems()
 
-        self._setupItemsCounter()
+        #self._setupItemsCounter()
 
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
 
-        self._setupItemsCorners()
+        #self._setupItemsCorners()
 
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
@@ -129,8 +129,9 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        item = self.items[0]
-        item_size = item.getSize()
+        #item = self.items[0]
+        #item_size = item.getSize()
+        item_size = Mengine.vec2f(400.0, 200.0)
         panel_size = self.getSize()
 
         va_begin_x = 0
@@ -166,13 +167,15 @@ class DropPanel(Initializer):
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
-
+        '''
         for item in self.items:
             item_size = item.getSize()
             content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
         content_size_x -= ITEMS_OFFSET_BETWEEN
+        '''
 
         panel_size = self.getSize()
+        print(str(panel_size))
         if content_size_x <= panel_size.x:
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
         else:
