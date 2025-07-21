@@ -67,13 +67,7 @@ class DropLevel(Initializer):
         return tc
 
     def _runTaskChains(self):
-        level_group = GroupManager.getGroup("01_FinalStage")
-
-        scene = level_group.getScene()
-
-        scene.enable()
-
-        Movie = level_group.getObject("01_FinalStage", MOVIE_CLICK)
+        Movie = GroupManager.getObject("01_FinalStage", MOVIE_CLICK)
         with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
             tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=True)
             tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
