@@ -5,7 +5,6 @@ class DatabaseDefaultSlots_FinalStage(Database):
         super(DatabaseDefaultSlots_FinalStage, self).__init__()
         self.addRecord(Slot="Background", Type="Scene", Group="Background", Enable=1)
         self.addRecord(Slot="FinalStage", Type="Scene", Group="FinalStage", Enable=1)
-        self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="01_FinalStage", Type="Scene", Group="01_FinalStage", Enable=0)
         self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="Header", Type="Scene", Group="GameHeader", Enable=1)

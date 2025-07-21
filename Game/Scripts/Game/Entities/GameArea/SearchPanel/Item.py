@@ -17,7 +17,6 @@ class Item(Initializer):
     def __init__(self):
         super(Item, self).__init__()
         self._root = None
-        self.game = None
         self.panel = None
         self.item_obj = None
         self.sprite_node = None
@@ -26,8 +25,7 @@ class Item(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, panel, item_obj):
-        self.game = game
+    def _onInitialize(self, panel, item_obj):
         self.panel = panel
         self.item_obj = item_obj
 
@@ -60,7 +58,6 @@ class Item(Initializer):
             self._root = None
 
         self.item_obj = None
-        self.game = None
         self.panel = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
@@ -80,10 +77,6 @@ class Item(Initializer):
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
-        '''
-        panel_pos = self.game.search_panel.getRoot().getWorldPosition()
-        panel_size = self.game.search_panel.getSize()
-        '''
         panel_pos = self.panel.getRoot().getWorldPosition()
         panel_size = self.panel.getSize()
 

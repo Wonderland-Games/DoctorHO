@@ -4,10 +4,6 @@ from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Foundation.TaskManager import TaskManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
-from Game.Managers.GameManager import GameManager
-
-
-MOVIE_CLICK = "Movie2_Armor"
 
 
 class DropLevel(Initializer):
@@ -17,14 +13,12 @@ class DropLevel(Initializer):
         self.root = None
         self.virtual_area = None
         self.va_hotspot = None
-        self.game = None
         self.box_points = None
         self.items = []
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, box_points):
-        self.game = game
+    def _onInitialize(self, box_points):
         self.box_points = box_points
 
         self._initVirtualArea()
@@ -38,7 +32,6 @@ class DropLevel(Initializer):
         return True
 
     def _onFinalize(self):
-        self.game = None
         self.box_points = None
         self.items = []
 
@@ -67,11 +60,6 @@ class DropLevel(Initializer):
         return tc
 
     def _runTaskChains(self):
-        Movie = GroupManager.getObject("01_FinalStage", MOVIE_CLICK)
-        with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
-            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=True)
-            tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
-
         pass
 
     # - Root -----------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@ from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
-from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
 MOVIE_PANEL = "Movie2_DropPanel"
@@ -14,64 +13,42 @@ ITEMS_OFFSET_BETWEEN = 25.0
 class DropPanel(Initializer):
     def __init__(self):
         super(DropPanel, self).__init__()
-        self.game = None
         self.virtual_area = None
         self.va_hotspot = None
         self.root = None
         self.movie_panel = None
-        self.lives_counter = None
-        self.items_counter = None
+        self.quest_items = []
         self.items = []
         self.removing_items = []
         self.items_node = None
-        self.items_scale_node = None
         self.va_range_points = None
-        self.movie_items_corners = {}
         self.semaphore_allow_panel_items_move = None
-
-        self.chapter_quest_items = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game):
+    def _onInitialize(self, movie_panel, quest_items):
         super(DropPanel, self)._onInitialize()
-        self.game = game
+
+        self.movie_panel = movie_panel
+        self.quest_items = quest_items
 
         self._initVirtualArea()
 
         self._createRoot()
         self._attachPanel()
 
-        return True
-
-    def onInitialize2(self):
         self._initItems()
-
-        #self._setupItemsCounter()
 
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
 
-        #self._setupItemsCorners()
-
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
 
+        return True
+
     def _onFinalize(self):
         super(DropPanel, self)._onFinalize()
-
-        if self.lives_counter is not None:
-            self.lives_counter.onFinalize()
-            self.lives_counter = None
-
-        if self.items_counter is not None:
-            self.items_counter.onFinalize()
-            self.items_counter = None
-
-        for corner in self.movie_items_corners.values():
-            if corner is not None:
-                corner.onDestroy()
-        self.movie_items_corners = {}
 
         for item in self.items:
             item.onFinalize()
@@ -80,10 +57,6 @@ class DropPanel(Initializer):
         if self.items_node is not None:
             Mengine.destroyNode(self.items_node)
             self.items_node = None
-
-        if self.items_scale_node is not None:
-            Mengine.destroyNode(self.items_scale_node)
-            self.items_scale_node = None
 
         if self.root is not None:
             Mengine.destroyNode(self.root)
@@ -99,6 +72,7 @@ class DropPanel(Initializer):
             self.va_hotspot = None
 
         self.movie_panel = None
+        self.quest_items = []
         self.va_range_points = None
         self.removing_items = []
         self.semaphore_allow_panel_items_move = None
@@ -186,7 +160,6 @@ class DropPanel(Initializer):
     # - Panel ----------------------------------------------------------------------------------------------------------
 
     def _attachPanel(self):
-        self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
         self.movie_panel.setInteractive(True)
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
@@ -214,14 +187,13 @@ class DropPanel(Initializer):
         self.virtual_area.add_node(self.items_node)
 
         # init items
-        for i, item_obj in enumerate(self.game.quest_items):
+        for i, item_obj in enumerate(self.quest_items):
             item = Item()
-            item.onInitialize(self.game, self, item_obj)
+            item.onInitialize(self, item_obj)
             item.attachTo(self.items_node)
             self.items.append(item)
 
         items_node_pos = self._calcItemsNodeLocalPosition(self.items[0])
-        print(str(items_node_pos))
         self.items_node.setLocalPosition(items_node_pos)
 
         # set items local position
@@ -245,32 +217,3 @@ class DropPanel(Initializer):
 
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
-
-    def _setupItemsCorners(self):
-        corner_types = ["Left", "Right"]
-
-        for corner_type in corner_types:
-            corner = PrototypeManager.generateObjectUnique(PROTOTYPE_ITEMS_CORNER, PROTOTYPE_ITEMS_CORNER,
-                                                           Size=corner_type)
-            corner.setEnable(True)
-
-            corner_node = corner.getEntityNode()
-            self.root.addChild(corner_node)
-
-            va_hotspot_pos = self.va_hotspot.getLocalPosition()
-            corner_bb = corner.getCompositionBounds()
-            corner_size = Utils.getBoundingBoxSize(corner_bb)
-
-            if corner_type is "Left":
-                corner_pos = Mengine.vec2f(
-                    va_hotspot_pos.x + corner_size.x / 2,
-                    va_hotspot_pos.y + corner_size.y / 2
-                )
-            else:
-                corner_pos = Mengine.vec2f(
-                    -va_hotspot_pos.x - corner_size.x / 2,
-                    va_hotspot_pos.y + corner_size.y / 2
-                )
-            corner_node.setLocalPosition(corner_pos)
-
-            self.movie_items_corners[corner_type] = corner
