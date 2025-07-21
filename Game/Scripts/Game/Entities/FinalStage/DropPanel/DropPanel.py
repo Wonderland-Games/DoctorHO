@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
+from Game.Entities.GameArea.SearchPanel.Item import Item
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
@@ -7,6 +8,7 @@ from UIKit.Managers.PrototypeManager import PrototypeManager
 MOVIE_PANEL = "Movie2_DropPanel"
 ITEMS_NODE_MOVE_TIME = 300.0
 PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
+ITEMS_OFFSET_BETWEEN = 25.0
 
 
 class DropPanel(Initializer):
@@ -27,6 +29,8 @@ class DropPanel(Initializer):
         self.movie_items_corners = {}
         self.semaphore_allow_panel_items_move = None
 
+        self.chapter_quest_items = None
+
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, game):
@@ -41,7 +45,7 @@ class DropPanel(Initializer):
         return True
 
     def onInitialize2(self):
-        #self._initItems()
+        self._initItems()
 
         #self._setupItemsCounter()
 
@@ -167,15 +171,13 @@ class DropPanel(Initializer):
 
     def _calcVirtualAreaContentSize(self):
         content_size_x = 0
-        '''
+
         for item in self.items:
             item_size = item.getSize()
             content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
         content_size_x -= ITEMS_OFFSET_BETWEEN
-        '''
 
         panel_size = self.getSize()
-        print(str(panel_size))
         if content_size_x <= panel_size.x:
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
         else:
@@ -212,19 +214,37 @@ class DropPanel(Initializer):
         self.virtual_area.add_node(self.items_node)
 
         # init items
-        for i, item_obj in enumerate(self.game.search_level.items):
+        for i, item_obj in enumerate(self.game.quest_items):
             item = Item()
-            item.onInitialize(self.game, item_obj)
+            item.onInitialize(self.game, self, item_obj)
             item.attachTo(self.items_node)
             self.items.append(item)
 
         items_node_pos = self._calcItemsNodeLocalPosition(self.items[0])
+        print(str(items_node_pos))
         self.items_node.setLocalPosition(items_node_pos)
 
         # set items local position
         for i, item in enumerate(self.items):
             item_pos = self._calcItemLocalPosition(i, item)
             item.setLocalPositionX(item_pos.x)
+
+    def _calcItemsNodeLocalPosition(self, item):
+        item_size = item.getSize()
+        items_count = len(self.items)
+
+        items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
+        items_node_pos_y = item_size.y / 2
+
+        items_node_pos = Mengine.vec2f(items_node_pos_x, items_node_pos_y)
+        return items_node_pos
+
+    def _calcItemLocalPosition(self, i, item):
+        items_node_pos = self._calcItemsNodeLocalPosition(item)
+        item_size = item.getSize()
+
+        item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
+        return item_pos
 
     def _setupItemsCorners(self):
         corner_types = ["Left", "Right"]

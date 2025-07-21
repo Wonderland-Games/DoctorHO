@@ -7,6 +7,7 @@ class DatabaseDefaultSlots_FinalStage(Database):
         self.addRecord(Slot="FinalStage", Type="Scene", Group="FinalStage", Enable=1)
         self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="01_FinalStage", Type="Scene", Group="01_FinalStage", Enable=0)
+        self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="Header", Type="Scene", Group="GameHeader", Enable=1)
         self.addRecord(Slot="MissClick", Type="Scene", Group="MissClick")
         self.addRecord(Slot="DummyBanner", Type="Scene", Group="DummyBanner", Enable=1, Platform="PC")

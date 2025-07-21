@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<DataBlock Name="01_FinalStage">
+	<Resource Name="79/cbc84a4385f3ee624035ef6f9939af05749ba7.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/79/cbc84a4385f3ee624035ef6f9939af05749ba7.png" MaxSize="167;203" />
+	</Resource>
+	<Resource Name="Movie2_01_FinalStage" Type="ResourceMovie2">
+		<File Path="Movies2/01_FinalStage/01_FinalStage.aez" />
+		<Composition Name="Armor" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="click" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1024.0;1024.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_Armor.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;940.5;922.5;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

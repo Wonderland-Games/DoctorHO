@@ -1,13 +1,18 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Foundation.GroupManager import GroupManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
+from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
+QUEST_ITEM_STORE_GROUP = "QuestItemStore"
+QUEST_ITEM_NAME = "Item_{}_{}"
+MOVIE_CLICK = "Movie2_Armor"
 
 
 class FinalStage(BaseEntity):
@@ -19,6 +24,7 @@ class FinalStage(BaseEntity):
         self.miss_click = None
         self.drop_level = None
         self.drop_panel = None
+        self.quest_items = []
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -53,6 +59,8 @@ class FinalStage(BaseEntity):
 
         self.content = self.object.getObject(MOVIE_CONTENT)
 
+        self._setupChapterQuestItems()
+
         self._initDropPanel()
         self._initDropLevel()
 
@@ -82,6 +90,7 @@ class FinalStage(BaseEntity):
             self.drop_level.onFinalize()
             self.drop_level = None
 
+        self.quest_items = []
 
     # - DropLevel ----------------------------------------------------------------------------------------------------
 
@@ -133,5 +142,24 @@ class FinalStage(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        #Notification.notify(Notificator.onLevelStart, self)
+        #Notification.notify
+
         pass
+
+    def _setupChapterQuestItems(self):
+        # get current chapter data
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+
+        chapter_quests_params = GameManager.getQuestParamsByChapter(chapter_id)
+        for i, quest_param in enumerate(chapter_quests_params):
+            quest_param_item_name = quest_param.QuestItem.replace("Item_", "")
+            quest_item_name = QUEST_ITEM_NAME.format(chapter_id, quest_param_item_name)
+
+            quest_item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
+            quest_item_object = quest_item_store_group.getObject(quest_item_name)
+
+            self.quest_items.append(quest_item_object)
+
+            print(quest_item_name)
