@@ -2,13 +2,18 @@ from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
+from Foundation.TaskManager import TaskManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Managers.GameManager import GameManager
+
+
+MOVIE_CLICK = "Movie2_Armor"
 
 
 class DropLevel(Initializer):
     def __init__(self):
         super(DropLevel, self).__init__()
+        self.tcs = []
         self.root = None
         self.virtual_area = None
         self.va_hotspot = None
@@ -28,12 +33,18 @@ class DropLevel(Initializer):
         self._setupVirtualArea()
         self._attachScene()
 
+        self._runTaskChains()
+
         return True
 
     def _onFinalize(self):
         self.game = None
         self.box_points = None
         self.items = []
+
+        for tc in self.tcs:
+            tc.cancel()
+        self.tcs = []
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -48,6 +59,26 @@ class DropLevel(Initializer):
             self.va_hotspot.removeFromParent()
             Mengine.destroyNode(self.va_hotspot)
             self.va_hotspot = None
+
+    def _createTaskChain(self, name, **params):
+        tc_base = self.__class__.__name__
+        tc = TaskManager.createTaskChain(Name=tc_base+"_"+name, **params)
+        self.tcs.append(tc)
+        return tc
+
+    def _runTaskChains(self):
+        level_group = GroupManager.getGroup("01_FinalStage")
+
+        scene = level_group.getScene()
+
+        scene.enable()
+
+        Movie = level_group.getObject("01_FinalStage", MOVIE_CLICK)
+        with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
+            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=True)
+            tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
+
+        pass
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
