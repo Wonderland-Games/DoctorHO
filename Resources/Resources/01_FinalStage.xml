@@ -2,10 +2,5 @@
     <Resource Name = "01_FinalStage/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
         <File Path = "Art/01_FinalStage/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
     </Resource>
-    <Resource Name = "01_FinalStage/Layer2D_Main/Item_Armor/_Item_Armor[Full]" Type = "ResourceImageDefault">
-        <File Path = "Art/01_FinalStage/Layer2D_Main/Item_Armor/Item_Armor[Full].png" Codec = "pngImage" MaxSize = "167;203"/>
-    </Resource>
-    <Resource Name = "01_FinalStage/Layer2D_Main/Item_Armor/_Item_Armor[Pick]" Type = "ResourceHIT">
-        <File Path = "Art/01_FinalStage/Layer2D_Main/Item_Armor/Item_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
-    </Resource>
+    <Include Path = "Movies2/01_FinalStage/01_FinalStage.bin"/>
 </DataBlock>
