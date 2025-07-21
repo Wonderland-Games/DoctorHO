@@ -11,6 +11,6 @@ class Group01_FinalStage(Group):
     def _onLoader(self):
         self.createLayer( "Layer2D_Main", Type = "Layer2D", Size = (2048, 2048), Main = True )
         self.createObject( "Sprite", Name = "Sprite_Background", SpriteResourceName = "01_FinalStage/Layer2D_Main/Sprite_Background/Sprite_Background" )
-        self.createObject( "Item", Name = "Item_Armor", Position = (938,666), SpriteResourceNameFull = "01_FinalStage/Layer2D_Main/Item_Armor/_Item_Armor[Full]" , HotspotImageResourceName = "01_FinalStage/Layer2D_Main/Item_Armor/_Item_Armor[Pick]", PickOffset = (0, 0) )
+        self.createObject( "Movie2", Name = "Movie2_Armor" , ResourceMovie = "Movie2_01_FinalStage", CompositionName = "Armor"  )
         pass
     pass

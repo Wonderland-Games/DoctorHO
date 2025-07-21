@@ -18,6 +18,7 @@ class Item(Initializer):
         super(Item, self).__init__()
         self._root = None
         self.game = None
+        self.panel = None
         self.item_obj = None
         self.sprite_node = None
         self.sprite = None
@@ -25,8 +26,9 @@ class Item(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, item_obj):
+    def _onInitialize(self, game, panel, item_obj):
         self.game = game
+        self.panel = panel
         self.item_obj = item_obj
 
         self._createRoot()
@@ -59,6 +61,7 @@ class Item(Initializer):
 
         self.item_obj = None
         self.game = None
+        self.panel = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -77,8 +80,12 @@ class Item(Initializer):
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
+        '''
         panel_pos = self.game.search_panel.getRoot().getWorldPosition()
         panel_size = self.game.search_panel.getSize()
+        '''
+        panel_pos = self.panel.getRoot().getWorldPosition()
+        panel_size = self.panel.getSize()
 
         world_position_x = (panel_pos.x - panel_size.x/2) + panel_size.x * node_screen_position.x
         world_position_y = (panel_pos.y - panel_size.y/2) + panel_size.y * node_screen_position.y
@@ -110,6 +117,11 @@ class Item(Initializer):
         self._root.addChild(self.sprite_node)
 
     def _createSprite(self):
+        if self.item_obj.getEntity() is None:
+            print("Item entity is None")
+        else:
+            print(str(self.item_obj.getEntity()))
+
         self.sprite = self.item_obj.getEntity().generatePure()
         self.sprite_node.addChild(self.sprite)
 
