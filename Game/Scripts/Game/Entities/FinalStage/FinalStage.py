@@ -8,11 +8,15 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_CONTENT = "Movie2_Content"
+MOVIE_PANEL = "Movie2_DropPanel"
+MOVIE_CLICK = "Movie2_Armor"
+
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
+
 QUEST_ITEM_STORE_GROUP = "QuestItemStore"
 QUEST_ITEM_NAME = "Item_{}_{}"
-MOVIE_CLICK = "Movie2_Armor"
+
 
 
 class FinalStage(BaseEntity):
@@ -64,8 +68,6 @@ class FinalStage(BaseEntity):
         self._initDropPanel()
         self._initDropLevel()
 
-        self.drop_panel.onInitialize2()
-
         self._attachDropLevel()
         self._attachDropPanel()
 
@@ -105,7 +107,7 @@ class FinalStage(BaseEntity):
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
         self.drop_level = DropLevel()
-        self.drop_level.onInitialize(self, frame_points)
+        self.drop_level.onInitialize(frame_points)
 
     def _attachDropLevel(self):
         _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -121,7 +123,8 @@ class FinalStage(BaseEntity):
 
     def _initDropPanel(self):
         self.drop_panel = DropPanel()
-        self.drop_panel.onInitialize(self)
+        movie_panel = self.object.getObject(MOVIE_PANEL)
+        self.drop_panel.onInitialize(movie_panel, self.quest_items)
 
     def _attachDropPanel(self):
         _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -142,7 +145,14 @@ class FinalStage(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        #Notification.notify
+        with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
+            group = GroupManager.getGroup("01_FinalStage")
+
+            Movie = group.getObject(MOVIE_CLICK)
+
+            tc.addEnable(Movie)
+            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=True)
+            tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
 
         pass
 
@@ -152,6 +162,7 @@ class FinalStage(BaseEntity):
         current_chapter_data = player_game_data.getCurrentChapterData()
         chapter_id = current_chapter_data.getChapterId()
 
+        print(chapter_id)
         chapter_quests_params = GameManager.getQuestParamsByChapter(chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
             quest_param_item_name = quest_param.QuestItem.replace("Item_", "")
