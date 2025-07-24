@@ -22,6 +22,7 @@ class Item(Initializer):
         self.sprite_node = None
         self.sprite = None
         self.box = None
+        self.socket_node = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ class Item(Initializer):
         self._createBox()
         self._createSpriteNode()
         self._createSprite()
+        self._createHotSpotPolygon()
         self._scaleSprite()
         self._positionSprite()
 
@@ -56,6 +58,11 @@ class Item(Initializer):
             self._root.removeFromParent()
             Mengine.destroyNode(self._root)
             self._root = None
+
+        if self.socket_node is not None:
+            self.socket_node.removeFromParent()
+            Mengine.destroyNode(self.socket_node)
+            self.socket_node = None
 
         self.item_obj = None
         self.panel = None
@@ -112,6 +119,20 @@ class Item(Initializer):
     def _createSprite(self):
         self.sprite = self.item_obj.getEntity().generatePure()
         self.sprite_node.addChild(self.sprite)
+
+    def _createHotSpotPolygon(self):
+        self.socket_node = Mengine.createNode("HotSpotPolygon")
+        self.socket_node.setName("Socket_{}".format(self.item_obj.getName()))
+
+        width, height = self.getSize()[0], self.getSize()[1]
+        hw, hh = width / 2, height / 2
+
+        self.socket_node.setPolygon([
+            (-hw, -hh), (hw, -hh),
+            (hw, hh), (-hw, hh),
+        ])
+
+        self.sprite_node.addChild(self.socket_node)
 
     def _scaleSprite(self):
         if self.box is None:
