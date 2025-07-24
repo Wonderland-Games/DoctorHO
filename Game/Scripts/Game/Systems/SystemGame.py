@@ -107,16 +107,18 @@ class SystemGame(System):
         if self.existTaskChain("FinalStageItemsPick") is True:
             self.removeTaskChain("FinalStageItemsPick")
 
-        item = final_stage.drop_panel.items[0].item_obj
+        #item = final_stage.drop_panel.items[0].item_obj
 
         with self.createTaskChain("FinalStageItemsPick") as tc:
-            for item, parallel in tc.addParallelTaskList(final_stage.quest_items):
-                parallel.addTask("TaskItemClick", Item=item, Filter=final_stage.filterItemClick)
-                parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item.getName()))
-                parallel.addTask("TaskAppendParam", Object=final_stage.object, Param="FoundItems", Value=item)
-                parallel.addFunction(final_stage.quest_items.remove, item)
-                parallel.addFunction(final_stage.drop_panel.addRemovingItem, item)
-                parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item)
+            for item, parallel in tc.addParallelTaskList(final_stage.drop_panel.items):
+                item_obj = item.item_obj
+                parallel.addTask("TaskNodeSocketClick", Socket=item.socket_node, isDown=True)
+                #, Filter=final_stage.filterItemClick
+                parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item))
+                #parallel.addTask("TaskAppendParam", Object=final_stage.object, Param="FoundItems", Value=item.item_obj)
+                parallel.addFunction(final_stage.quest_items.remove, item_obj)
+                parallel.addFunction(final_stage.drop_panel.addRemovingItem, item_obj)
+                parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
 
         return False
 
@@ -155,6 +157,9 @@ class SystemGame(System):
 
         if self.existTaskChain("SearchPanelLives") is True:
             self.removeTaskChain("SearchPanelLives")
+
+        if self.existTaskChain("FinalStageItemsPick") is True:
+            self.removeTaskChain("FinalStageItemsPick")
 
     def _onCallRewardedAd(self, reward):
         tc_name = "GameRewardedAd"

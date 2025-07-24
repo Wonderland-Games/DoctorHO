@@ -45,6 +45,8 @@ class DropPanel(Initializer):
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
 
+        print("ContentSize:", self.virtual_area.get_content_size())
+        print("ItemsNodePos:", self.items_node.getLocalPosition())
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
 
@@ -112,13 +114,13 @@ class DropPanel(Initializer):
 
         item = self.items[0]
         item_size = item.getSize()
-        #item_size = Mengine.vec2f(400.0, 200.0)
         panel_size = self.getSize()
 
         va_begin_x = 0
         va_begin_y = 0
         va_end_x = panel_size.x
         va_end_y = item_size.y
+        print(str(panel_size.x),str(item_size.y))
 
         hotspot_polygon = [
             (va_begin_x, va_begin_y),
@@ -147,16 +149,17 @@ class DropPanel(Initializer):
         virtual_area_node.setLocalPosition(hotspot_polygon_center)
 
     def _calcVirtualAreaContentSize(self):
-        content_size_x = 0
+        if not self.items:
+            return
 
-        for item in self.items:
-            item_size = item.getSize()
-            content_size_x += item_size.x + ITEMS_OFFSET_BETWEEN
-        content_size_x -= ITEMS_OFFSET_BETWEEN
-
+        content_size_x = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
         panel_size = self.getSize()
+
+        center_panel_pos = Mengine.vec2f(panel_size.x / 2, self.items[0].getSize().y / 2)
+
         if content_size_x <= panel_size.x:
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
+            self.items_node.setLocalPosition(center_panel_pos)
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
@@ -197,37 +200,30 @@ class DropPanel(Initializer):
             item.attachTo(self.items_node)
             self.items.append(item)
 
-        items_node_pos = self._calcItemsNodeLocalPosition(self.items[0])
+        items_node_pos = self._calcItemsNodeLocalPosition()
         self.items_node.setLocalPosition(items_node_pos)
 
         # set items local position
         for i, item in enumerate(self.items):
-            item.item_obj.setEnable(True)
-            item_pos = self._calcItemLocalPosition(i, item)
+            item_pos = self._calcItemLocalPosition(i)
             item.setLocalPositionX(item_pos.x)
 
     def addRemovingItem(self, item_obj):
-        for item in self.quest_items:
+        for item in self.items:
             if item.item_obj is item_obj:
-                self.removing_items.append(item)
+                self.removing_items.append(item_obj)
                 break
 
-        print("Removing items", [removing_item.item_obj.getName() for removing_item in self.removing_items if
-                                 removing_item.item_obj is not None])
+    def _calcItemsNodeLocalPosition(self):
+        content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
+        content_height = self.items[0].getSize().y
 
-    def _calcItemsNodeLocalPosition(self, item):
-        item_size = item.getSize()
-        items_count = len(self.items)
+        return Mengine.vec2f(content_width / 2, content_height / 2)
 
-        items_node_pos_x = ((items_count * item_size.x) + ((items_count - 1) * ITEMS_OFFSET_BETWEEN)) / 2
-        items_node_pos_y = item_size.y / 2
 
-        items_node_pos = Mengine.vec2f(items_node_pos_x, items_node_pos_y)
-        return items_node_pos
-
-    def _calcItemLocalPosition(self, i, item):
-        items_node_pos = self._calcItemsNodeLocalPosition(item)
-        item_size = item.getSize()
+    def _calcItemLocalPosition(self, i):
+        items_node_pos = self._calcItemsNodeLocalPosition()
+        item_size = self.items[0].getSize()
 
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
@@ -235,7 +231,7 @@ class DropPanel(Initializer):
     def playRemovePanelItemAnim(self, source, item_obj):
         # find item by object
         item_to_remove = None
-        for item in self.quest_items:
+        for item in self.items:
             if item.item_obj is not item_obj:
                 continue
 
@@ -243,8 +239,8 @@ class DropPanel(Initializer):
             break
 
         # remove item
-        self.removing_items.remove(item_to_remove)
-        self.quest_items.remove(item_to_remove)
+        self.removing_items.remove(item_obj)
+        self.items.remove(item_to_remove)
         # self.items_counter.incItemsCount()
 
         # play destroy panel item anim
@@ -259,10 +255,10 @@ class DropPanel(Initializer):
         source.addPrint(" * START ITEMS MOVE ANIM")
 
         # move items in parallel with condition of sides
-        for (i, item), tc in source.addParallelTaskList(enumerate(self.quest_items)):
+        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
             item_node = item.getRoot()
-            items_node_pos = self._calcItemsNodeLocalPosition(item)
-            item_pos = self._calcItemLocalPosition(i, item)
+            items_node_pos = self._calcItemsNodeLocalPosition()
+            item_pos = self._calcItemLocalPosition(i)
 
             with tc.addParallelTask(2) as(tc_item, tc_items_node):
                 tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
