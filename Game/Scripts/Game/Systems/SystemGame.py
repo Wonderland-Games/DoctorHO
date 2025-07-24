@@ -34,6 +34,7 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
+        self.addObserver(Notificator.onFinalStageStart, self._onFinalStageStart)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
         self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
@@ -100,6 +101,25 @@ class SystemGame(System):
                 response_lives_changed.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
 
         return False
+
+    def _onFinalStageStart(self, final_stage):
+        # pick items from level
+        if self.existTaskChain("FinalStageItemsPick") is True:
+            self.removeTaskChain("FinalStageItemsPick")
+
+        item = final_stage.drop_panel.items[0].item_obj
+
+        with self.createTaskChain("FinalStageItemsPick") as tc:
+            for item, parallel in tc.addParallelTaskList(final_stage.quest_items):
+                parallel.addTask("TaskItemClick", Item=item, Filter=final_stage.filterItemClick)
+                parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item.getName()))
+                parallel.addTask("TaskAppendParam", Object=final_stage.object, Param="FoundItems", Value=item)
+                parallel.addFunction(final_stage.quest_items.remove, item)
+                parallel.addFunction(final_stage.drop_panel.addRemovingItem, item)
+                parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item)
+
+        return False
+
 
     def _onLevelEnd(self, is_win):
         popup_object = DemonManager.getDemon("PopUp")

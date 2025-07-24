@@ -5,9 +5,12 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_PANEL = "Movie2_DropPanel"
-ITEMS_NODE_MOVE_TIME = 300.0
 PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
+
 ITEMS_OFFSET_BETWEEN = 25.0
+ITEMS_NODE_MOVE_TIME = 300.0
+ITEMS_MOVE_TIME = 300.0
+ITEMS_MOVE_EASING = "easyCubicInOut"
 
 
 class DropPanel(Initializer):
@@ -107,9 +110,9 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        #item = self.items[0]
-        #item_size = item.getSize()
-        item_size = Mengine.vec2f(400.0, 200.0)
+        item = self.items[0]
+        item_size = item.getSize()
+        #item_size = Mengine.vec2f(400.0, 200.0)
         panel_size = self.getSize()
 
         va_begin_x = 0
@@ -164,6 +167,7 @@ class DropPanel(Initializer):
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
 
+
     def getBounds(self):
         panel_bounds = self.movie_panel.getCompositionBounds()
         return panel_bounds
@@ -198,8 +202,18 @@ class DropPanel(Initializer):
 
         # set items local position
         for i, item in enumerate(self.items):
+            item.item_obj.setEnable(True)
             item_pos = self._calcItemLocalPosition(i, item)
             item.setLocalPositionX(item_pos.x)
+
+    def addRemovingItem(self, item_obj):
+        for item in self.quest_items:
+            if item.item_obj is item_obj:
+                self.removing_items.append(item)
+                break
+
+        print("Removing items", [removing_item.item_obj.getName() for removing_item in self.removing_items if
+                                 removing_item.item_obj is not None])
 
     def _calcItemsNodeLocalPosition(self, item):
         item_size = item.getSize()
@@ -217,3 +231,47 @@ class DropPanel(Initializer):
 
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
+
+    def playRemovePanelItemAnim(self, source, item_obj):
+        # find item by object
+        item_to_remove = None
+        for item in self.quest_items:
+            if item.item_obj is not item_obj:
+                continue
+
+            item_to_remove = item
+            break
+
+        # remove item
+        self.removing_items.remove(item_to_remove)
+        self.quest_items.remove(item_to_remove)
+        # self.items_counter.incItemsCount()
+
+        # play destroy panel item anim
+        source.addScope(item_to_remove.playItemDestroyAnim)
+        source.addFunction(item_to_remove.onFinalize)
+
+        # re-calc VA content size
+        source.addFunction(self._calcVirtualAreaContentSize)
+
+        # block other movements of items
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
+        source.addPrint(" * START ITEMS MOVE ANIM")
+
+        # move items in parallel with condition of sides
+        for (i, item), tc in source.addParallelTaskList(enumerate(self.quest_items)):
+            item_node = item.getRoot()
+            items_node_pos = self._calcItemsNodeLocalPosition(item)
+            item_pos = self._calcItemLocalPosition(i, item)
+
+            with tc.addParallelTask(2) as(tc_item, tc_items_node):
+                tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+                with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+                    move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+
+        # fix VA after removing 1 item and moving all items
+        source.addFunction(self.virtual_area.update_target)
+
+        # allow other movements of items
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
+        source.addPrint(" * END ITEMS MOVE ANIM")

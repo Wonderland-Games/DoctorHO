@@ -110,11 +110,6 @@ class Item(Initializer):
         self._root.addChild(self.sprite_node)
 
     def _createSprite(self):
-        if self.item_obj.getEntity() is None:
-            print("Item entity is None")
-        else:
-            print(str(self.item_obj.getEntity()))
-
         self.sprite = self.item_obj.getEntity().generatePure()
         self.sprite_node.addChild(self.sprite)
 
