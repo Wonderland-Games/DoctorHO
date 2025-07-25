@@ -192,8 +192,6 @@ class Item(Initializer):
     def playItemCreateAnim(self, source):
         source.addPrint(" * START CREATE ITEM ANIM")
 
-        #source.addTask("TaskNodeScaleTo", Node=self.sprite_node, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
-
         with source.addParallelTask(2) as (scale, alpha):
             scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_CREATE_SCALE_TO, Time=ITEM_CREATE_SCALE_TIME)
             alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_CREATE_ALPHA_TO, Time=ITEM_CREATE_ALPHA_TIME)

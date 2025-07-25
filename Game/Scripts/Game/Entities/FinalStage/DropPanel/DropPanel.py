@@ -284,6 +284,9 @@ class DropPanel(Initializer):
         source.addPrint(" * END ITEMS MOVE ANIM")
 
     def playAddPanelItemAnim(self, source):
+        if self.drop_item is None or self.drop_item_num is None:
+            return
+
         # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS ADD ANIM")
@@ -294,6 +297,7 @@ class DropPanel(Initializer):
         new_item.onInitialize(self, self.drop_item)
         new_item.attachTo(self.items_node)
         '''
+
         self.items.insert(self.drop_item_num, self.drop_item)
 
         source.addScope(self.drop_item.setItemVisible, False)

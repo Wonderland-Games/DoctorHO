@@ -110,12 +110,13 @@ class SystemGame(System):
         items_to_click = list(final_stage.drop_panel.items)
 
         with self.createTaskChain("FinalStageItemsPick", Repeat=True) as tc:
-            for item, parallel in tc.addParallelTaskList(items_to_click):
+            #for item, parallel in tc.addParallelTaskList(items_to_click):
+            for item, parallel in tc.addRaceTaskList(items_to_click):
                 item_obj = item.item_obj
                 item_socket = item.getSocket()
                 parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
                 parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item))
-                parallel.addFunction(final_stage.quest_items.remove, item_obj)
+                #parallel.addFunction(final_stage.quest_items.remove, item_obj)
                 parallel.addFunction(final_stage.drop_panel.addRemovingItem, item_obj)
                 parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
                 parallel.addTask("TaskMouseButtonClickEnd", isDown=False, Filter=final_stage.drop_panel.onButtonClickEnd)
