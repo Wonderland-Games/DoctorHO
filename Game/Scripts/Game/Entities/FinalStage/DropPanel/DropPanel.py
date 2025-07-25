@@ -26,6 +26,10 @@ class DropPanel(Initializer):
         self.items_node = None
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
+        self.drop_item = None
+        self.drop_item_pos = None
+        self.drop_item_num = None
+        self.drop_mouse_pos = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -45,8 +49,6 @@ class DropPanel(Initializer):
         self._setupVirtualArea()
         self._calcVirtualAreaContentSize()
 
-        print("ContentSize:", self.virtual_area.get_content_size())
-        print("ItemsNodePos:", self.items_node.getLocalPosition())
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
 
@@ -81,6 +83,10 @@ class DropPanel(Initializer):
         self.va_range_points = None
         self.removing_items = []
         self.semaphore_allow_panel_items_move = None
+        self.drop_item = None
+        self.drop_item_pos = None
+        self.drop_item_num = None
+        self.drop_mouse_pos = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -231,12 +237,17 @@ class DropPanel(Initializer):
     def playRemovePanelItemAnim(self, source, item_obj):
         # find item by object
         item_to_remove = None
-        for item in self.items:
+
+        for i, item in enumerate(self.items):
             if item.item_obj is not item_obj:
                 continue
 
+            self.drop_item_num = i
             item_to_remove = item
             break
+
+        self.drop_item = item_to_remove
+        self.drop_item_pos = item_to_remove.getLocalPosition()
 
         # remove item
         self.removing_items.remove(item_obj)
@@ -245,7 +256,7 @@ class DropPanel(Initializer):
 
         # play destroy panel item anim
         source.addScope(item_to_remove.playItemDestroyAnim)
-        source.addFunction(item_to_remove.onFinalize)
+        #source.addFunction(item_to_remove.onFinalize)
 
         # re-calc VA content size
         source.addFunction(self._calcVirtualAreaContentSize)
@@ -271,3 +282,66 @@ class DropPanel(Initializer):
         # allow other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         source.addPrint(" * END ITEMS MOVE ANIM")
+
+    def playAddPanelItemAnim(self, source):
+        # block other movements of items
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
+        source.addPrint(" * START ITEMS ADD ANIM")
+
+        # Create new Item
+        '''
+        new_item = Item()
+        new_item.onInitialize(self, self.drop_item)
+        new_item.attachTo(self.items_node)
+        '''
+        self.items.insert(self.drop_item_num, self.drop_item)
+
+        source.addScope(self.drop_item.setItemVisible, False)
+
+        # re-calc VA content size
+        source.addFunction(self._calcVirtualAreaContentSize)
+
+        # move elements to right from insert position
+        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
+            item_node = item.getRoot()
+            item_pos = self._calcItemLocalPosition(i)
+
+            tc.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+
+        # Re-calculate items_node position
+        items_node_pos = self._calcItemsNodeLocalPosition()
+        with source.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+            move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME,
+                         Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+
+        # play add item animation
+        source.addScope(self.drop_item.playItemCreateAnim)
+
+        # Update VA
+        source.addFunction(self.virtual_area.update_target)
+
+        # Unblock other item movements
+        source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
+        # Clear variables
+        self.drop_item = None
+        self.drop_item_pos = None
+        self.drop_item_num = None
+        self.drop_mouse_pos = None # Is need it here?
+        source.addPrint(" * END ITEMS ADD ANIM")
+
+    def onButtonClickEnd(self, touch_id, x, y, button, is_down):
+        self.drop_mouse_pos = Mengine.vec2f(x,y)
+
+        return True
+
+    def validateDropPos(self, source):
+        source.addScope(self.playAddPanelItemAnim)
+
+    def itemDropSuccess(self):
+        pass
+
+    def itemDropFail(self):
+        pass
+
+    def addItem(self, item):
+        pass
