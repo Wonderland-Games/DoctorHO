@@ -1,3 +1,4 @@
+from Foundation.ArrowManager import ArrowManager
 from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
@@ -11,6 +12,15 @@ ITEM_REMOVE_SCALE_DOWN_TO = Mengine.vec3f(0.0, 0.0, 0.0)
 ITEM_REMOVE_SCALE_DOWN_TIME = 200.0
 ITEM_REMOVE_ALPHA_TO = 0.0
 ITEM_REMOVE_ALPHA_TIME = 150.0
+ITEM_ADD_ALPHA_TO = 1.0
+
+ITEM_CREATE_SCALE_FROM = Mengine.vec3f(0.0, 0.0, 0.0)
+ITEM_CREATE_SCALE_TO = Mengine.vec3f(1.0, 1.0, 1.0)
+ITEM_CREATE_SCALE_TIME = 200.0
+
+ITEM_CREATE_ALPHA_FROM = 0.0
+ITEM_CREATE_ALPHA_TO = 1.0
+ITEM_CREATE_ALPHA_TIME = 150.0
 
 
 class Item(Initializer):
@@ -81,6 +91,9 @@ class Item(Initializer):
     def getRoot(self):
         return self._root
 
+    def getSocket(self):
+        return self.socket_node
+
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
@@ -96,6 +109,9 @@ class Item(Initializer):
     def setLocalPositionX(self, position):
         curr_position = self._root.getLocalPosition()
         self._root.setLocalPosition(Mengine.vec2f(position, curr_position.y))
+
+    def getLocalPosition(self):
+        return self._root.getLocalPosition()
 
     # - Box ------------------------------------------------------------------------------------------------------------
 
@@ -172,3 +188,28 @@ class Item(Initializer):
             alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
 
         source.addPrint(" * END REMOVE ITEM ANIM")
+
+    def playItemCreateAnim(self, source):
+        source.addPrint(" * START CREATE ITEM ANIM")
+
+        #source.addTask("TaskNodeScaleTo", Node=self.sprite_node, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
+
+        with source.addParallelTask(2) as (scale, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_CREATE_SCALE_TO, Time=ITEM_CREATE_SCALE_TIME)
+            alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_CREATE_ALPHA_TO, Time=ITEM_CREATE_ALPHA_TIME)
+
+        source.addPrint(" * END CREATE ITEM ANIM")
+
+    def setItemVisible(self, source, visible):
+        item_alpha = 0.0
+
+        if visible is True:
+            item_alpha = 1.0
+
+        source.addTask("TaskNodeAlphaTo", Node=self._root, To=item_alpha, Time=0.001)
+
+    def _attachToCursor(self):
+        arrow = Mengine.getArrow()
+        arrow_node = arrow.getNode()
+        ArrowManager.attachArrow(self._root)
+        arrow_node.addChildFront(self._root)
