@@ -124,7 +124,7 @@ class FinalStage(BaseEntity):
     def _initDropPanel(self):
         self.drop_panel = DropPanel()
         movie_panel = self.object.getObject(MOVIE_PANEL)
-        self.drop_panel.onInitialize(movie_panel, self.quest_items)
+        self.drop_panel.onInitialize(self, movie_panel, self.quest_items)
 
     def _attachDropPanel(self):
         _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
