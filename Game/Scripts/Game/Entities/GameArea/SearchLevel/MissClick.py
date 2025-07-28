@@ -86,8 +86,8 @@ class MissClick(Initializer):
     def _onMissClickButtonEvent(self, context, event):
         last_click_data = self.miss_click_data
         self.miss_click_data = {
-            "x": event.x,
-            "y": event.y,
+            "x": event.position.world.x,
+            "y": event.position.world.y,
         }
 
         if self.game.search_panel.hint.hint_item is not None:
@@ -100,10 +100,10 @@ class MissClick(Initializer):
             return False
 
         if len(last_click_data) != 0:
-            if event.x != last_click_data["x"] or event.y != last_click_data["y"]:
+            if event.position.world.x != last_click_data["x"] or event.position.world.y != last_click_data["y"]:
                 return False
 
-            Notification.notify(Notificator.onLevelMissClicked, event.x, event.y)
+            Notification.notify(Notificator.onLevelMissClicked, event.position.world.x, event.position.world.y)
 
         return False
 
