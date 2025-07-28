@@ -1,3 +1,4 @@
+from Foundation.ArrowManager import ArrowManager
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Entities.GameArea.SearchPanel.Item import Item
@@ -11,11 +12,14 @@ ITEMS_OFFSET_BETWEEN = 25.0
 ITEMS_NODE_MOVE_TIME = 300.0
 ITEMS_MOVE_TIME = 300.0
 ITEMS_MOVE_EASING = "easyCubicInOut"
+SCENE_ITEM_MOVE_EASING = "easyCubicIn"
+SCENE_ITEM_MOVE_TIME = 1000.0
 
 
 class DropPanel(Initializer):
     def __init__(self):
         super(DropPanel, self).__init__()
+        self.final_stage = None
         self.virtual_area = None
         self.va_hotspot = None
         self.root = None
@@ -30,11 +34,13 @@ class DropPanel(Initializer):
         self.drop_item_pos = None
         self.drop_item_num = None
         self.drop_mouse_pos = None
+        self.attach_item = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, movie_panel, quest_items):
+    def _onInitialize(self, final_stage, movie_panel, quest_items):
         super(DropPanel, self)._onInitialize()
+        self.final_stage = final_stage
 
         self.movie_panel = movie_panel
         self.quest_items = quest_items
@@ -87,6 +93,7 @@ class DropPanel(Initializer):
         self.drop_item_pos = None
         self.drop_item_num = None
         self.drop_mouse_pos = None
+        self.attach_item = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -215,9 +222,13 @@ class DropPanel(Initializer):
             item.setLocalPositionX(item_pos.x)
 
     def addRemovingItem(self, item_obj):
-        for item in self.items:
+        # TODO maybe it's not needed rename function and delete removing_items
+        for i, item in enumerate(self.items):
             if item.item_obj is item_obj:
                 self.removing_items.append(item_obj)
+                self.drop_item = item
+                self.drop_item_num = i
+                self.drop_item_pos = self.drop_item.getLocalPosition()
                 break
 
     def _calcItemsNodeLocalPosition(self):
@@ -238,16 +249,13 @@ class DropPanel(Initializer):
         # find item by object
         item_to_remove = None
 
+        # TODO maybe it's not needed
         for i, item in enumerate(self.items):
             if item.item_obj is not item_obj:
                 continue
 
-            self.drop_item_num = i
             item_to_remove = item
             break
-
-        self.drop_item = item_to_remove
-        self.drop_item_pos = item_to_remove.getLocalPosition()
 
         # remove item
         self.removing_items.remove(item_obj)
@@ -283,9 +291,18 @@ class DropPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         source.addPrint(" * END ITEMS MOVE ANIM")
 
+    def returnDropItem(self):
+        self.items.insert(self.drop_item_num, self.drop_item)
+        self.drop_item.attachTo(self.items_node)
+
     def playAddPanelItemAnim(self, source):
         if self.drop_item is None or self.drop_item_num is None:
             return
+
+        source.addTask("TaskRemoveArrowAttach")
+        source.addFunction(self.attach_item.onFinalize)
+        #remove_item_root = self.drop_item.getRoot()
+        #remove_item_root.removeFromParent()
 
         # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
@@ -297,8 +314,10 @@ class DropPanel(Initializer):
         new_item.onInitialize(self, self.drop_item)
         new_item.attachTo(self.items_node)
         '''
-
+        '''
         self.items.insert(self.drop_item_num, self.drop_item)
+        self.drop_item.attachTo(self.items_node)
+        '''
 
         source.addScope(self.drop_item.setItemVisible, False)
 
@@ -333,13 +352,57 @@ class DropPanel(Initializer):
         self.drop_mouse_pos = None # Is need it here?
         source.addPrint(" * END ITEMS ADD ANIM")
 
+    def moveLevelItemToPanelItem(self, source):
+        # generate level item pure sprite
+        item_entity = self.attach_item.item_obj.getEntity()
+        item_pure = item_entity.generatePure()
+        item_pure.enable()
+
+        # create moving node
+        item_moving_node = Mengine.createNode("Interender")
+        item_moving_node.setName("BezierFollow")
+        item_moving_node.setScreenPosition(self.drop_mouse_pos, 0.0)
+
+        item_moving_node.addChild(item_pure)
+        self.final_stage.addChild(item_moving_node)
+
+        # find panel item by object
+        panel_item = None
+        for item in self.items:
+            if item.item_obj is not self.drop_item.item_obj:
+                continue
+
+            panel_item = item
+            break
+
+        panel_item_sprite = self.drop_item.getSprite()
+
+        source.addFunction(self.attach_item.item_obj.setEnable, True)
+        source.addPrint(" * START SCENE ITEM ANIM")
+
+        source.addTask("TaskNodeBezier2ScreenFollow",
+                       Node=item_moving_node,
+                       Easing=SCENE_ITEM_MOVE_EASING,
+                       Follow=panel_item_sprite,
+                       Time=SCENE_ITEM_MOVE_TIME)
+
+        source.addPrint(" * END SCENE ITEM ANIM")
+
+        source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
+        source.addTask("TaskNodeDestroy", Node=item_pure)
+        source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
+        source.addTask("TaskNodeDestroy", Node=item_moving_node)
+
     def onButtonClickEnd(self, touch_id, x, y, button, is_down):
         self.drop_mouse_pos = Mengine.vec2f(x,y)
 
         return True
 
     def validateDropPos(self, source):
-        source.addScope(self.playAddPanelItemAnim)
+        source.addFunction(self.returnDropItem)
+        with source.addParallelTask(2) as (moving_item, add_item):
+            moving_item.addScope(self.moveLevelItemToPanelItem)
+            add_item.addScope(self.playAddPanelItemAnim)
 
     def itemDropSuccess(self):
         pass
@@ -349,3 +412,14 @@ class DropPanel(Initializer):
 
     def addItem(self, item):
         pass
+
+    def attachToCursor(self):
+        arrow = Mengine.getArrow()
+        arrow_node = arrow.getNode()
+
+        self.attach_item = Item()
+        self.attach_item.onInitialize(self, self.drop_item.item_obj, False)
+        attach_item_root = self.attach_item.getRoot()
+
+        ArrowManager.attachArrow(attach_item_root)
+        arrow_node.addChildFront(attach_item_root)
