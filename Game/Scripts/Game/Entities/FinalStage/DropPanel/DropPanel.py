@@ -299,8 +299,6 @@ class DropPanel(Initializer):
         if self.drop_item is None or self.drop_item_num is None:
             return
 
-        source.addTask("TaskRemoveArrowAttach")
-        source.addFunction(self.attach_item.onFinalize)
         #remove_item_root = self.drop_item.getRoot()
         #remove_item_root.removeFromParent()
 
@@ -353,15 +351,28 @@ class DropPanel(Initializer):
         source.addPrint(" * END ITEMS ADD ANIM")
 
     def moveLevelItemToPanelItem(self, source):
+        source.addTask("TaskRemoveArrowAttach")
         # generate level item pure sprite
+
         item_entity = self.attach_item.item_obj.getEntity()
         item_pure = item_entity.generatePure()
+        scale_perc = self.attach_item._getSpriteScale()
+        item_pure.setScale(Mengine.vec2f(scale_perc, scale_perc))
         item_pure.enable()
 
         # create moving node
         item_moving_node = Mengine.createNode("Interender")
         item_moving_node.setName("BezierFollow")
-        item_moving_node.setScreenPosition(self.drop_mouse_pos, 0.0)
+
+        sprite_size = self.attach_item.getSize()
+
+        #moving_node_pos = Mengine.vec2f(self.drop_mouse_pos.x - sprite_size.x / 2.0, self.drop_mouse_pos.y - sprite_size.y / 2.0)
+        attach_sprite_pos = self.attach_item.sprite_node.getWorldPosition()
+        moving_node_pos = Mengine.vec2f(attach_sprite_pos.x - sprite_size.x / 2.0, attach_sprite_pos.y - sprite_size.y / 2.0)
+        print("moving_node_pos:{}".format(str(moving_node_pos)))
+        print("attach_node_pos:{}".format(str(self.attach_item.sprite_node.getWorldPosition())))
+        #item_moving_node.setScreenPosition(norm_mouse_pos, 0.0)
+        item_moving_node.setWorldPosition(moving_node_pos)
 
         item_moving_node.addChild(item_pure)
         self.final_stage.addChild(item_moving_node)
@@ -376,8 +387,9 @@ class DropPanel(Initializer):
             break
 
         panel_item_sprite = self.drop_item.getSprite()
+        source.addFunction(self.attach_item.onFinalize)
 
-        source.addFunction(self.attach_item.item_obj.setEnable, True)
+        source.addFunction(self.attach_item.item_obj.setEnable, False)
         source.addPrint(" * START SCENE ITEM ANIM")
 
         source.addTask("TaskNodeBezier2ScreenFollow",
@@ -392,6 +404,7 @@ class DropPanel(Initializer):
         source.addTask("TaskNodeDestroy", Node=item_pure)
         source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
         source.addTask("TaskNodeDestroy", Node=item_moving_node)
+
 
     def onButtonClickEnd(self, touch_id, x, y, button, is_down):
         self.drop_mouse_pos = Mengine.vec2f(x,y)
