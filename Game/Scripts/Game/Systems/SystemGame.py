@@ -118,6 +118,7 @@ class SystemGame(System):
                 parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item))
                 #parallel.addFunction(final_stage.quest_items.remove, item_obj)
                 parallel.addFunction(final_stage.drop_panel.addRemovingItem, item_obj)
+                parallel.addFunction(final_stage.drop_panel.attachToCursor)
                 parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
                 parallel.addTask("TaskMouseButtonClickEnd", isDown=False, Filter=final_stage.drop_panel.onButtonClickEnd)
                 parallel.addScope(final_stage.drop_panel.validateDropPos)

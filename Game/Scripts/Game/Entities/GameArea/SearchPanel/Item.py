@@ -1,4 +1,3 @@
-from Foundation.ArrowManager import ArrowManager
 from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
@@ -36,17 +35,21 @@ class Item(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, panel, item_obj):
+    def _onInitialize(self, panel, item_obj, with_box=True):
         self.panel = panel
         self.item_obj = item_obj
 
         self._createRoot()
         self._createBox()
+
         self._createSpriteNode()
         self._createSprite()
         self._createHotSpotPolygon()
         self._scaleSprite()
         self._positionSprite()
+
+        if with_box is False:
+            self.box.setAlpha(0.0)
 
     def _onFinalize(self):
         if self.sprite is not None:
@@ -154,6 +157,8 @@ class Item(Initializer):
         if self.box is None:
             return
 
+        # TODO maybe here need scale item HotSpotPolygon
+
         box_size = self.getSize()
         box_size_max = max(box_size.x, box_size.y)
 
@@ -205,9 +210,3 @@ class Item(Initializer):
             item_alpha = 1.0
 
         source.addTask("TaskNodeAlphaTo", Node=self._root, To=item_alpha, Time=0.001)
-
-    def _attachToCursor(self):
-        arrow = Mengine.getArrow()
-        arrow_node = arrow.getNode()
-        ArrowManager.attachArrow(self._root)
-        arrow_node.addChildFront(self._root)
