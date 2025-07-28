@@ -153,19 +153,24 @@ class Item(Initializer):
 
         self.sprite_node.addChild(self.socket_node)
 
-    def _scaleSprite(self):
-        if self.box is None:
-            return
-
-        # TODO maybe here need scale item HotSpotPolygon
-
+    def _getSpriteScale(self):
         box_size = self.getSize()
         box_size_max = max(box_size.x, box_size.y)
 
         sprite_size = self.sprite.getSurfaceSize()
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
-        scale_perc = (box_size_max/sprite_size_max) * ITEM_SCALE_MULTIPLIER
+        scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
+
+        return scale_perc
+
+    def _scaleSprite(self):
+        if self.box is None:
+            return
+
+        # TODO maybe here need scale item HotSpotPolygon
+
+        scale_perc = self._getSpriteScale()
         self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
 
     def getSpriteScale(self):
