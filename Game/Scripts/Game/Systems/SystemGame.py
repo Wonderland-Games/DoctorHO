@@ -119,8 +119,11 @@ class SystemGame(System):
                 #parallel.addFunction(final_stage.quest_items.remove, item_obj)
                 parallel.addFunction(final_stage.drop_panel.addRemovingItem, item_obj)
                 parallel.addFunction(final_stage.drop_panel.attachToCursor)
+                #TODO scale to normal size 1,1,1 0.25 seconds and do it parallel TaskMouseButtonClick
                 parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
-                parallel.addTask("TaskMouseButtonClickEnd", isDown=False, Filter=final_stage.drop_panel.onButtonClickEnd)
+                with parallel.addParallelTask(2) as (scale, click):
+                    scale.addScope(final_stage.drop_panel.scaleAttachItem)
+                    click.addTask("TaskMouseButtonClick", isDown=False)
                 parallel.addScope(final_stage.drop_panel.validateDropPos)
 
         return False

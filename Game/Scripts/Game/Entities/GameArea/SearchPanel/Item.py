@@ -32,6 +32,7 @@ class Item(Initializer):
         self.sprite = None
         self.box = None
         self.socket_node = None
+        self.default_scale = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -79,6 +80,7 @@ class Item(Initializer):
 
         self.item_obj = None
         self.panel = None
+        self.default_scale = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -153,7 +155,12 @@ class Item(Initializer):
 
         self.sprite_node.addChild(self.socket_node)
 
-    def _getSpriteScale(self):
+    def _scaleSprite(self):
+        if self.box is None:
+            return
+
+        # TODO maybe here need scale item HotSpotPolygon
+
         box_size = self.getSize()
         box_size_max = max(box_size.x, box_size.y)
 
@@ -161,20 +168,14 @@ class Item(Initializer):
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
         scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
-
-        return scale_perc
-
-    def _scaleSprite(self):
-        if self.box is None:
-            return
-
-        # TODO maybe here need scale item HotSpotPolygon
-
-        scale_perc = self._getSpriteScale()
+        self.default_scale = scale_perc
         self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
 
     def getSpriteScale(self):
         return self.sprite.getWorldScale()
+
+    def getDefaultSpriteScale(self):
+        return self.default_scale
 
     def getSprite(self):
         return self.sprite
@@ -214,4 +215,4 @@ class Item(Initializer):
         if visible is True:
             item_alpha = 1.0
 
-        source.addTask("TaskNodeAlphaTo", Node=self._root, To=item_alpha, Time=0.001)
+        source.addTask("TaskNodeAlphaTo", Node=self.sprite, To=item_alpha, Time=0.001)

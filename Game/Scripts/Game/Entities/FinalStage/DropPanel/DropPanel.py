@@ -6,7 +6,6 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_PANEL = "Movie2_DropPanel"
-PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
 
 ITEMS_OFFSET_BETWEEN = 25.0
 ITEMS_NODE_MOVE_TIME = 300.0
@@ -14,6 +13,8 @@ ITEMS_MOVE_TIME = 300.0
 ITEMS_MOVE_EASING = "easyCubicInOut"
 SCENE_ITEM_MOVE_EASING = "easyCubicIn"
 SCENE_ITEM_MOVE_TIME = 1000.0
+SCENE_ITEM_SCALE_EASING = "easyBackOut"
+SCENE_ITEM_SCALE_TIME = 1000.0
 
 
 class DropPanel(Initializer):
@@ -31,9 +32,7 @@ class DropPanel(Initializer):
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
         self.drop_item = None
-        self.drop_item_pos = None
         self.drop_item_num = None
-        self.drop_mouse_pos = None
         self.attach_item = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
@@ -90,9 +89,7 @@ class DropPanel(Initializer):
         self.removing_items = []
         self.semaphore_allow_panel_items_move = None
         self.drop_item = None
-        self.drop_item_pos = None
         self.drop_item_num = None
-        self.drop_mouse_pos = None
         self.attach_item = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
@@ -133,7 +130,6 @@ class DropPanel(Initializer):
         va_begin_y = 0
         va_end_x = panel_size.x
         va_end_y = item_size.y
-        print(str(panel_size.x),str(item_size.y))
 
         hotspot_polygon = [
             (va_begin_x, va_begin_y),
@@ -228,7 +224,6 @@ class DropPanel(Initializer):
                 self.removing_items.append(item_obj)
                 self.drop_item = item
                 self.drop_item_num = i
-                self.drop_item_pos = self.drop_item.getLocalPosition()
                 break
 
     def _calcItemsNodeLocalPosition(self):
@@ -260,7 +255,6 @@ class DropPanel(Initializer):
         # remove item
         self.removing_items.remove(item_obj)
         self.items.remove(item_to_remove)
-        # self.items_counter.incItemsCount()
 
         # play destroy panel item anim
         source.addScope(item_to_remove.playItemDestroyAnim)
@@ -296,27 +290,15 @@ class DropPanel(Initializer):
         self.drop_item.attachTo(self.items_node)
 
     def playAddPanelItemAnim(self, source):
+        # TODO check maybe remove validation
         if self.drop_item is None or self.drop_item_num is None:
             return
-
-        #remove_item_root = self.drop_item.getRoot()
-        #remove_item_root.removeFromParent()
 
         # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS ADD ANIM")
 
         # Create new Item
-        '''
-        new_item = Item()
-        new_item.onInitialize(self, self.drop_item)
-        new_item.attachTo(self.items_node)
-        '''
-        '''
-        self.items.insert(self.drop_item_num, self.drop_item)
-        self.drop_item.attachTo(self.items_node)
-        '''
-
         source.addScope(self.drop_item.setItemVisible, False)
 
         # re-calc VA content size
@@ -327,27 +309,34 @@ class DropPanel(Initializer):
             item_node = item.getRoot()
             item_pos = self._calcItemLocalPosition(i)
 
-            tc.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
+            tc.addTask("TaskNodeMoveTo",
+                       Node=item_node,
+                       Time=ITEMS_MOVE_TIME,
+                       Easing=ITEMS_MOVE_EASING,
+                       To=item_pos)
 
         # Re-calculate items_node position
         items_node_pos = self._calcItemsNodeLocalPosition()
         with source.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
-            move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME,
-                         Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+            move.addTask("TaskNodeMoveTo",
+                         Node=self.items_node,
+                         Time=ITEMS_NODE_MOVE_TIME,
+                         Easing=ITEMS_MOVE_EASING,
+                         To=items_node_pos)
 
         # play add item animation
-        source.addScope(self.drop_item.playItemCreateAnim)
+        #source.addScope(self.drop_item.playItemCreateAnim)
 
         # Update VA
         source.addFunction(self.virtual_area.update_target)
+
+        source.addScope(self.drop_item.setItemVisible, True)
 
         # Unblock other item movements
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         # Clear variables
         self.drop_item = None
-        self.drop_item_pos = None
         self.drop_item_num = None
-        self.drop_mouse_pos = None # Is need it here?
         source.addPrint(" * END ITEMS ADD ANIM")
 
     def moveLevelItemToPanelItem(self, source):
@@ -356,60 +345,47 @@ class DropPanel(Initializer):
 
         item_entity = self.attach_item.item_obj.getEntity()
         item_pure = item_entity.generatePure()
-        scale_perc = self.attach_item._getSpriteScale()
-        item_pure.setScale(Mengine.vec2f(scale_perc, scale_perc))
         item_pure.enable()
 
         # create moving node
         item_moving_node = Mengine.createNode("Interender")
         item_moving_node.setName("BezierFollow")
 
-        sprite_size = self.attach_item.getSize()
-
-        #moving_node_pos = Mengine.vec2f(self.drop_mouse_pos.x - sprite_size.x / 2.0, self.drop_mouse_pos.y - sprite_size.y / 2.0)
-        attach_sprite_pos = self.attach_item.sprite_node.getWorldPosition()
-        moving_node_pos = Mengine.vec2f(attach_sprite_pos.x - sprite_size.x / 2.0, attach_sprite_pos.y - sprite_size.y / 2.0)
-        print("moving_node_pos:{}".format(str(moving_node_pos)))
-        print("attach_node_pos:{}".format(str(self.attach_item.sprite_node.getWorldPosition())))
-        #item_moving_node.setScreenPosition(norm_mouse_pos, 0.0)
-        item_moving_node.setWorldPosition(moving_node_pos)
+        item_moving_node.setWorldPosition(self.attach_item.sprite_node.getWorldPosition())
 
         item_moving_node.addChild(item_pure)
         self.final_stage.addChild(item_moving_node)
 
-        # find panel item by object
-        panel_item = None
-        for item in self.items:
-            if item.item_obj is not self.drop_item.item_obj:
-                continue
-
-            panel_item = item
-            break
+        scale_from = self.attach_item.getSpriteScale()
+        scale_to = Mengine.vec3f(self.drop_item.getDefaultSpriteScale(), self.drop_item.getDefaultSpriteScale(), 1.0)
 
         panel_item_sprite = self.drop_item.getSprite()
+
         source.addFunction(self.attach_item.onFinalize)
-
         source.addFunction(self.attach_item.item_obj.setEnable, False)
-        source.addPrint(" * START SCENE ITEM ANIM")
 
-        source.addTask("TaskNodeBezier2ScreenFollow",
-                       Node=item_moving_node,
-                       Easing=SCENE_ITEM_MOVE_EASING,
-                       Follow=panel_item_sprite,
-                       Time=SCENE_ITEM_MOVE_TIME)
+        source.addPrint(" * START BEZIER ITEM ANIM")
 
-        source.addPrint(" * END SCENE ITEM ANIM")
+        with source.addParallelTask(2) as (scale, move):
+            scale.addTask("TaskNodeScaleTo",
+                          Node=item_moving_node,
+                          Easing=SCENE_ITEM_SCALE_EASING,
+                          From=scale_from,
+                          To=scale_to,
+                          Time=SCENE_ITEM_SCALE_TIME)
+
+            move.addTask("TaskNodeBezier2ScreenFollow",
+                           Node=item_moving_node,
+                           Easing=SCENE_ITEM_MOVE_EASING,
+                           Follow=panel_item_sprite,
+                           Time=SCENE_ITEM_MOVE_TIME)
+
+        source.addPrint(" * END BEZIER ITEM ANIM")
 
         source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
         source.addTask("TaskNodeDestroy", Node=item_pure)
         source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
         source.addTask("TaskNodeDestroy", Node=item_moving_node)
-
-
-    def onButtonClickEnd(self, touch_id, x, y, button, is_down):
-        self.drop_mouse_pos = Mengine.vec2f(x,y)
-
-        return True
 
     def validateDropPos(self, source):
         source.addFunction(self.returnDropItem)
@@ -436,3 +412,15 @@ class DropPanel(Initializer):
 
         ArrowManager.attachArrow(attach_item_root)
         arrow_node.addChildFront(attach_item_root)
+
+    def scaleAttachItem(self, source):
+        item_node = self.attach_item.sprite
+        scale_from = self.attach_item.getSpriteScale()
+        scale_to = Mengine.vec3f(1.0, 1.0, 1.0)
+
+        source.addTask("TaskNodeScaleTo",
+                      Node=item_node,
+                      Easing=SCENE_ITEM_SCALE_EASING,
+                      From=scale_from,
+                      To=scale_to,
+                      Time=10.0)
