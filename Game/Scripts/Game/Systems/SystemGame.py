@@ -34,7 +34,6 @@ class SystemGame(System):
         super(SystemGame, self)._onRun()
 
         self.addObserver(Notificator.onLevelStart, self._onLevelStart)
-        self.addObserver(Notificator.onFinalStageStart, self._onFinalStageStart)
         self.addObserver(Notificator.onLevelEnd, self._onLevelEnd)
         self.addObserver(Notificator.onCallRewardedAd, self._onCallRewardedAd)
 
@@ -101,33 +100,6 @@ class SystemGame(System):
                 response_lives_changed.addScopeListener(Notificator.onLevelLivesChanged, __onLevelLivesChanged)
 
         return False
-
-    def _onFinalStageStart(self, final_stage):
-        # pick items from level
-        if self.existTaskChain("FinalStageItemsPick") is True:
-            self.removeTaskChain("FinalStageItemsPick")
-
-        items_to_click = list(final_stage.drop_panel.items)
-
-        with self.createTaskChain("FinalStageItemsPick", Repeat=True) as tc:
-            #for item, parallel in tc.addParallelTaskList(items_to_click):
-            for item, parallel in tc.addRaceTaskList(items_to_click):
-                item_obj = item.item_obj
-                item_socket = item.getSocket()
-                parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
-                parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item))
-                #parallel.addFunction(final_stage.quest_items.remove, item_obj)
-                parallel.addFunction(final_stage.drop_panel.findRemovingItem, item_obj)
-                parallel.addFunction(final_stage.drop_panel.attachToCursor)
-                #TODO scale to normal size 1,1,1 0.25 seconds and do it parallel TaskMouseButtonClick
-                parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
-                with parallel.addParallelTask(2) as (scale, click):
-                    scale.addScope(final_stage.drop_panel.scaleAttachItem)
-                    click.addTask("TaskMouseButtonClick", isDown=False)
-                parallel.addScope(final_stage.drop_panel.validateDropPos)
-
-        return False
-
 
     def _onLevelEnd(self, is_win):
         popup_object = DemonManager.getDemon("PopUp")

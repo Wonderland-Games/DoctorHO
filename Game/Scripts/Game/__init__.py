@@ -32,8 +32,6 @@ def onInitialize():
 
         "onLevelStart",
         "onLevelEnd",
-        "onFinalStageStart",
-        "onFinalStageEnd",
         "onDropFail",
         "onDropSuccess",
         "onLevelMissClicked",

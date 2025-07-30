@@ -322,13 +322,11 @@ class DropPanel(Initializer):
         # Update VA
         source.addFunction(self.virtual_area.update_target)
 
-        source.addScope(self.drop_item.setItemVisible, True)
-
         # Unblock other item movements
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         # Clear variables
-        self.drop_item = None
-        self.drop_item_num = None
+        # self.drop_item = None
+        # self.drop_item_num = None
         source.addPrint(" * END ITEMS ADD ANIM")
 
     def moveLevelItemToPanelItem(self, source):
@@ -384,6 +382,7 @@ class DropPanel(Initializer):
         with source.addParallelTask(2) as (moving_item, add_item):
             moving_item.addScope(self.moveLevelItemToPanelItem)
             add_item.addScope(self.playAddPanelItemAnim)
+        source.addScope(self.drop_item.setItemVisible, True)
 
     def itemDropSuccess(self):
         pass
@@ -415,4 +414,4 @@ class DropPanel(Initializer):
                       Easing=SCENE_ITEM_SCALE_EASING,
                       From=scale_from,
                       To=scale_to,
-                      Time=10.0)
+                      Time=1000.0)

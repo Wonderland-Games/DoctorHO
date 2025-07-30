@@ -145,7 +145,24 @@ class FinalStage(BaseEntity):
         return tc
 
     def _runTaskChains(self):
-        Notification.notify(Notificator.onFinalStageStart, self)
+        items_to_click = list(self.drop_panel.items)
+
+        with self._createTaskChain("ItemsPick", Repeat=True) as tc:
+            # for item, parallel in tc.addParallelTaskList(items_to_click):
+            for item, parallel in tc.addRaceTaskList(items_to_click):
+                item_obj = item.item_obj
+                item_socket = item.getSocket()
+                parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
+                parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item_obj.getName()))
+                # parallel.addFunction(final_stage.quest_items.remove, item_obj)
+                parallel.addFunction(self.drop_panel.findRemovingItem, item_obj)
+                parallel.addFunction(self.drop_panel.attachToCursor)
+
+                with parallel.addParallelTask(2) as (scale, click):
+                    scale.addScope(self.drop_panel.playRemovePanelItemAnim, item_obj)
+                    scale.addScope(self.drop_panel.scaleAttachItem)
+                    click.addTask("TaskMouseButtonClick", isDown=False)
+                parallel.addScope(self.drop_panel.validateDropPos)
 
         with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
             group = GroupManager.getGroup("01_FinalStage")
