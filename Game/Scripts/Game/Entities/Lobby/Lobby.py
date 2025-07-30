@@ -127,7 +127,6 @@ class Lobby(BaseEntity):
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
             #tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
             tc.addNotify(Notificator.onChangeScene, "FinalStage")
-            #tc.addNotify(Notificator.onFinalStageStart)
 
 
     def _scopePlay(self, source, level_id):
