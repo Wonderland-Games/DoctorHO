@@ -27,7 +27,6 @@ class DropPanel(Initializer):
         self.movie_panel = None
         self.quest_items = []
         self.items = []
-        self.removing_items = []
         self.items_node = None
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
@@ -86,7 +85,6 @@ class DropPanel(Initializer):
         self.movie_panel = None
         self.quest_items = []
         self.va_range_points = None
-        self.removing_items = []
         self.semaphore_allow_panel_items_move = None
         self.drop_item = None
         self.drop_item_num = None
@@ -217,11 +215,9 @@ class DropPanel(Initializer):
             item_pos = self._calcItemLocalPosition(i)
             item.setLocalPositionX(item_pos.x)
 
-    def addRemovingItem(self, item_obj):
-        # TODO maybe it's not needed rename function and delete removing_items
+    def findRemovingItem(self, item_obj):
         for i, item in enumerate(self.items):
             if item.item_obj is item_obj:
-                self.removing_items.append(item_obj)
                 self.drop_item = item
                 self.drop_item_num = i
                 break
@@ -241,49 +237,45 @@ class DropPanel(Initializer):
         return item_pos
 
     def playRemovePanelItemAnim(self, source, item_obj):
-        # find item by object
-        item_to_remove = None
-
-        # TODO maybe it's not needed
-        for i, item in enumerate(self.items):
-            if item.item_obj is not item_obj:
-                continue
-
-            item_to_remove = item
-            break
-
         # remove item
-        self.removing_items.remove(item_obj)
-        self.items.remove(item_to_remove)
+        del self.items[self.drop_item_num]
 
         # play destroy panel item anim
-        source.addScope(item_to_remove.playItemDestroyAnim)
-        #source.addFunction(item_to_remove.onFinalize)
+        source.addScope(self.drop_item.playItemDestroyAnim)
 
         # re-calc VA content size
         source.addFunction(self._calcVirtualAreaContentSize)
 
         # block other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
-        source.addPrint(" * START ITEMS MOVE ANIM")
+        source.addPrint(" * START ITEMS REMOVE ANIM")
 
         # move items in parallel with condition of sides
         for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
             item_node = item.getRoot()
-            items_node_pos = self._calcItemsNodeLocalPosition()
             item_pos = self._calcItemLocalPosition(i)
 
-            with tc.addParallelTask(2) as(tc_item, tc_items_node):
-                tc_item.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=item_pos)
-                with tc_items_node.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
-                    move.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_NODE_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=items_node_pos)
+            tc.addTask("TaskNodeMoveTo",
+                       Node=item_node,
+                       Time=ITEMS_MOVE_TIME,
+                       Easing=ITEMS_MOVE_EASING,
+                       To=item_pos)
+
+        # Re-calculate item_node position if needed
+        items_node_pos = self._calcItemsNodeLocalPosition()
+        with source.addIfTask(lambda: items_node_pos.x >= self.virtual_area.get_content_size()[3]) as (move, _):
+            move.addTask("TaskNodeMoveTo",
+                         Node=self.items_node,
+                         Time=ITEMS_NODE_MOVE_TIME,
+                         Easing=ITEMS_MOVE_EASING,
+                         To=items_node_pos)
 
         # fix VA after removing 1 item and moving all items
         source.addFunction(self.virtual_area.update_target)
 
         # allow other movements of items
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
-        source.addPrint(" * END ITEMS MOVE ANIM")
+        source.addPrint(" * END ITEMS REMOVE ANIM")
 
     def returnDropItem(self):
         self.items.insert(self.drop_item_num, self.drop_item)
@@ -305,11 +297,11 @@ class DropPanel(Initializer):
         source.addFunction(self._calcVirtualAreaContentSize)
 
         # move elements to right from insert position
-        for (i, item), tc in source.addParallelTaskList(enumerate(self.items)):
+        for (i, item), parallel in source.addParallelTaskList(enumerate(self.items)):
             item_node = item.getRoot()
             item_pos = self._calcItemLocalPosition(i)
 
-            tc.addTask("TaskNodeMoveTo",
+            parallel.addTask("TaskNodeMoveTo",
                        Node=item_node,
                        Time=ITEMS_MOVE_TIME,
                        Easing=ITEMS_MOVE_EASING,
@@ -325,7 +317,7 @@ class DropPanel(Initializer):
                          To=items_node_pos)
 
         # play add item animation
-        #source.addScope(self.drop_item.playItemCreateAnim)
+        source.addScope(self.drop_item.playItemCreateAnim)
 
         # Update VA
         source.addFunction(self.virtual_area.update_target)
@@ -357,7 +349,7 @@ class DropPanel(Initializer):
         self.final_stage.addChild(item_moving_node)
 
         scale_from = self.attach_item.getSpriteScale()
-        scale_to = Mengine.vec3f(self.drop_item.getDefaultSpriteScale(), self.drop_item.getDefaultSpriteScale(), 1.0)
+        scale_to = (self.drop_item.getDefaultSpriteScale(), self.drop_item.getDefaultSpriteScale(), 1.0)
 
         panel_item_sprite = self.drop_item.getSprite()
 
@@ -416,7 +408,7 @@ class DropPanel(Initializer):
     def scaleAttachItem(self, source):
         item_node = self.attach_item.sprite
         scale_from = self.attach_item.getSpriteScale()
-        scale_to = Mengine.vec3f(1.0, 1.0, 1.0)
+        scale_to = (1.0, 1.0, 1.0)
 
         source.addTask("TaskNodeScaleTo",
                       Node=item_node,
