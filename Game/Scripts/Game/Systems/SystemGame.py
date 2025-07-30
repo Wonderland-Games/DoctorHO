@@ -117,7 +117,7 @@ class SystemGame(System):
                 parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
                 parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item))
                 #parallel.addFunction(final_stage.quest_items.remove, item_obj)
-                parallel.addFunction(final_stage.drop_panel.addRemovingItem, item_obj)
+                parallel.addFunction(final_stage.drop_panel.findRemovingItem, item_obj)
                 parallel.addFunction(final_stage.drop_panel.attachToCursor)
                 #TODO scale to normal size 1,1,1 0.25 seconds and do it parallel TaskMouseButtonClick
                 parallel.addScope(final_stage.drop_panel.playRemovePanelItemAnim, item_obj)
