@@ -176,13 +176,3 @@ class FinalStage(BaseEntity):
             self.quest_items.append(quest_item_object)
 
             print(quest_item_name)
-
-    def filterItemClick(self, clicked_item):
-        print("FinalStage.filterItemClick")
-        print(clicked_item)
-
-        for item in self.quest_items:
-            if item.item_obj is clicked_item:
-                return True
-
-        return False
