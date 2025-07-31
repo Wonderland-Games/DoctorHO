@@ -142,6 +142,7 @@
         "RenderMaxObject": 16000,
         "RenderMaxQuadBatch": 4000,
         "FxcPath": "fxc.exe",
+		"FFMPEGPath": "c:/ffmpeg/bin/ffmpeg.exe",
         "AntifreezeMonitorSeconds": 10
     },
 	
