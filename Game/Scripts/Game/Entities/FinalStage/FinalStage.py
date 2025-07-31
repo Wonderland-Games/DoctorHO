@@ -1,8 +1,10 @@
+from Foundation.ArrowManager import ArrowManager
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.GroupManager import GroupManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
+from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
@@ -17,6 +19,9 @@ SLOT_DROP_PANEL = "drop_panel"
 QUEST_ITEM_STORE_GROUP = "QuestItemStore"
 QUEST_ITEM_NAME = "Item_{}_{}"
 
+SCENE_ANIMATION_TIME = 1000.0
+SCENE_MOVE_EASING = "easyCubicIn"
+SCENE_SCALE_EASING = "easyBackOut"
 
 
 class FinalStage(BaseEntity):
@@ -29,6 +34,7 @@ class FinalStage(BaseEntity):
         self.drop_level = None
         self.drop_panel = None
         self.quest_items = []
+        self.attach_item = None
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -93,6 +99,9 @@ class FinalStage(BaseEntity):
             self.drop_level = None
 
         self.quest_items = []
+        if self.attach_item is not None:
+            self.attach_item.onFinalize()
+            self.attach_item = None
 
     # - DropLevel ----------------------------------------------------------------------------------------------------
 
@@ -124,7 +133,7 @@ class FinalStage(BaseEntity):
     def _initDropPanel(self):
         self.drop_panel = DropPanel()
         movie_panel = self.object.getObject(MOVIE_PANEL)
-        self.drop_panel.onInitialize(self, movie_panel, self.quest_items)
+        self.drop_panel.onInitialize(movie_panel, self.quest_items)
 
     def _attachDropPanel(self):
         _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -148,21 +157,21 @@ class FinalStage(BaseEntity):
         items_to_click = list(self.drop_panel.items)
 
         with self._createTaskChain("ItemsPick", Repeat=True) as tc:
-            # for item, parallel in tc.addParallelTaskList(items_to_click):
             for item, parallel in tc.addRaceTaskList(items_to_click):
                 item_obj = item.item_obj
                 item_socket = item.getSocket()
                 parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
                 parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item_obj.getName()))
-                # parallel.addFunction(final_stage.quest_items.remove, item_obj)
+                parallel.addFunction(self.quest_items.remove, item_obj)
                 parallel.addFunction(self.drop_panel.findRemovingItem, item_obj)
-                parallel.addFunction(self.drop_panel.attachToCursor)
+                parallel.addFunction(self._attachToCursor)
 
                 with parallel.addParallelTask(2) as (scale, click):
-                    scale.addScope(self.drop_panel.playRemovePanelItemAnim, item_obj)
-                    scale.addScope(self.drop_panel.scaleAttachItem)
+                    scale.addScope(self.drop_panel.playRemovePanelItemAnim)
+                    scale.addScope(self._scaleAttachItem)
                     click.addTask("TaskMouseButtonClick", isDown=False)
-                parallel.addScope(self.drop_panel.validateDropPos)
+
+                parallel.addScope(self._playReturnItemToPanelAnimation)
 
         with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
             group = GroupManager.getGroup("01_FinalStage")
@@ -170,7 +179,7 @@ class FinalStage(BaseEntity):
             Movie = group.getObject(MOVIE_CLICK)
 
             tc.addEnable(Movie)
-            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=True)
+            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=False)
             tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
 
         pass
@@ -193,3 +202,88 @@ class FinalStage(BaseEntity):
             self.quest_items.append(quest_item_object)
 
             print(quest_item_name)
+
+    def _attachToCursor(self):
+        arrow = Mengine.getArrow()
+        arrow_node = arrow.getNode()
+        drop_item =  self.drop_panel.getDropItem()
+        self.attach_item = Item()
+        self.attach_item.onInitialize(self, drop_item.item_obj, False)
+        attach_item_root = self.attach_item.getRoot()
+
+        ArrowManager.attachArrow(attach_item_root)
+        arrow_node.addChildFront(attach_item_root)
+
+    def _scaleAttachItem(self, source):
+        item_node = self.attach_item.sprite
+        scale_from = self.attach_item.getSpriteScale()
+        scale_to = (1.0, 1.0, 1.0)
+
+        source.addTask("TaskNodeScaleTo",
+                      Node=item_node,
+                      Easing=SCENE_SCALE_EASING,
+                      From=scale_from,
+                      To=scale_to,
+                      Time=SCENE_ANIMATION_TIME)
+
+    def _moveLevelItemToPanelItem(self, source):
+        source.addTask("TaskRemoveArrowAttach")
+        # generate level item pure sprite
+
+        item_entity = self.attach_item.getObj().getEntity()
+        item_pure = item_entity.generatePure()
+        item_pure.enable()
+
+        # create moving node
+        item_moving_node = Mengine.createNode("Interender")
+        item_moving_node.setName("BezierFollow")
+
+        item_moving_node.setWorldPosition(self.attach_item.sprite_node.getWorldPosition())
+
+        item_moving_node.addChild(item_pure)
+        self.addChild(item_moving_node)
+
+        drop_item = self.drop_panel.getDropItem()
+        drop_item_scale = drop_item.getDefaultSpriteScale()
+
+        scale_from = self.attach_item.getSpriteScale()
+        scale_to = (drop_item_scale, drop_item_scale, 1.0)
+
+        panel_item_sprite = drop_item.getSprite()
+
+        source.addFunction(self.attach_item.onFinalize)
+
+        source.addPrint(" * START BEZIER ITEM ANIM")
+
+        with source.addParallelTask(2) as (scale, move):
+            scale.addTask("TaskNodeScaleTo",
+                          Node=item_moving_node,
+                          Easing=SCENE_SCALE_EASING,
+                          From=scale_from,
+                          To=scale_to,
+                          Time=SCENE_ANIMATION_TIME)
+
+            move.addTask("TaskNodeBezier2ScreenFollow",
+                           Node=item_moving_node,
+                           Easing=SCENE_MOVE_EASING,
+                           Follow=panel_item_sprite,
+                           Time=SCENE_ANIMATION_TIME)
+
+        source.addPrint(" * END BEZIER ITEM ANIM")
+
+        source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
+        source.addTask("TaskNodeDestroy", Node=item_pure)
+        source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
+        source.addTask("TaskNodeDestroy", Node=item_moving_node)
+
+    def _playReturnItemToPanelAnimation(self, source):
+        source.addFunction(self.drop_panel.returnDropItem)
+
+        with source.addParallelTask(2) as (moving_item, add_item):
+            moving_item.addScope(self._moveLevelItemToPanelItem)
+            add_item.addScope(self.drop_panel.playAddPanelItemAnim)
+
+        drop_item = self.drop_panel.getDropItem()
+        source.addFunction(self.quest_items.append, drop_item.getObj())
+        source.addScope(drop_item.setItemVisible, True)
+        source.addFunction(self.drop_panel.clearDropItem)
