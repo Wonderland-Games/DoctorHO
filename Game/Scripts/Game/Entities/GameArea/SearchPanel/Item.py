@@ -99,6 +99,9 @@ class Item(Initializer):
     def getSocket(self):
         return self.socket_node
 
+    def getObj(self):
+        return self.item_obj
+
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
