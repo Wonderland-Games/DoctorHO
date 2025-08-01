@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
+from Foundation.SceneManager import SceneManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Game.Managers.GameManager import GameManager
@@ -148,7 +149,9 @@ class SearchLevel(Initializer):
     def _defineLevelGroup(self):
         level_id = GameManager.getCurrentGameParam("LevelId")
         level_params = GameManager.getLevelParams(level_id)
-        level_group_name = level_params.GroupName
+        # level_group_name = level_params.GroupName # old way to get level group name
+        level_scene_name = level_params.SceneName
+        level_group_name = SceneManager.getSceneMainGroupName(level_scene_name)
         self.level_group = GroupManager.getGroup(level_group_name)
 
     def _calculateSize(self):
@@ -193,11 +196,6 @@ class SearchLevel(Initializer):
         randomizer = GameManager.getRandomizer()
 
         chapter_id = GameManager.getCurrentGameParam("ChapterId")
-
-        level_id = GameManager.getCurrentGameParam("LevelId")
-        level_params = GameManager.getLevelParams(level_id)
-        level_group_name = level_params.GroupName
-
         quest_index = GameManager.getCurrentGameParam("QuestIndex")
         if quest_index is not None:
             quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
@@ -207,8 +205,7 @@ class SearchLevel(Initializer):
             items_count = None
             quest_item_name = None
 
-        level_group = GroupManager.getGroup(level_group_name)
-        level_group_objects = level_group.getObjects()
+        level_group_objects = self.level_group.getObjects()
 
         if quest_item_name is not None:
             level_items = [obj for obj in level_group_objects if
@@ -239,7 +236,7 @@ class SearchLevel(Initializer):
             level_item = level_items[level_item_index]
 
             if quest_item_name is not None:
-                quest_item = level_group.getObject(quest_item_name)
+                quest_item = self.level_group.getObject(quest_item_name)
                 if quest_item not in self.items and i == quest_item_random_index:
                     level_item = quest_item
                     quest_item_name = None

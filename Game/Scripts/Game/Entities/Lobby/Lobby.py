@@ -136,9 +136,12 @@ class Lobby(BaseEntity):
         # current_chapter_data = player_data.getCurrentChapterData()
         # quest_index = current_chapter_data.getCurrentQuestIndex()
 
+        level_params = GameManager.getLevelParams(level_id)
+        level_scene_name = level_params.SceneName
+
         source.addFunction(GameManager.removeGame)
         source.addFunction(GameManager.prepareGame, level_id)
-        source.addFunction(GameManager.runLevelStartAdvertisement)
+        source.addFunction(GameManager.runLevelStartAdvertisement, level_scene_name)
 
     def _scopeLevelEnd(self, source):
         player_data = GameManager.getPlayerGameData()

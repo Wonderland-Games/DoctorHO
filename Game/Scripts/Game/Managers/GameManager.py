@@ -367,11 +367,10 @@ class GameManager(Manager):
     # - Advertising ----------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def runLevelStartAdvertisement():
+    def runLevelStartAdvertisement(scene_name):
         """ Do not forget to call setupLevelStartAdvertisement() before. """
         system_advertising = SystemManager.getSystem("SystemAdvertising")
-        level_id = GameManager.getCurrentGameParam("LevelId")
-        system_advertising.tryInterstitial("GameArea", "{}_level_start".format(level_id))
+        system_advertising.tryInterstitial(scene_name, "{}_level_start".format(scene_name))
 
     # - Authentication / Register --------------------------------------------------------------------------------------
 

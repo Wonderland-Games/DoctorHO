@@ -4,10 +4,10 @@ class DatabaseLevels(Database):
     def __init__(self):
         super(DatabaseLevels, self).__init__()
         class RecordLevels(object):
-            def __init__(self, LevelId, ChapterId, GroupName, CardMovie, LevelCardTextId, LevelMovie, QuestPointsToUnlock):
+            def __init__(self, LevelId, ChapterId, SceneName, CardMovie, LevelCardTextId, LevelMovie, QuestPointsToUnlock):
                 self.LevelId = LevelId
                 self.ChapterId = ChapterId
-                self.GroupName = GroupName
+                self.SceneName = SceneName
                 self.CardMovie = CardMovie
                 self.LevelCardTextId = LevelCardTextId
                 self.LevelMovie = LevelMovie
