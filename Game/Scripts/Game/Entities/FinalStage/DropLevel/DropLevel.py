@@ -15,17 +15,21 @@ class DropLevel(Initializer):
         self.va_hotspot = None
         self.box_points = None
         self.items = []
+        self.group = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, box_points):
+    def _onInitialize(self, box_points, group_name):
         self.box_points = box_points
+        self.group = GroupManager.getGroup(group_name)
 
         self._initVirtualArea()
 
         self._createRoot()
         self._setupVirtualArea()
+        print("{} is enable {}".format(group_name, GroupManager.isEnableGroup(group_name)))
         self._attachScene()
+        print("{} is enable {}".format(group_name, GroupManager.isEnableGroup(group_name)))
 
         self._runTaskChains()
 
@@ -52,6 +56,8 @@ class DropLevel(Initializer):
             self.va_hotspot.removeFromParent()
             Mengine.destroyNode(self.va_hotspot)
             self.va_hotspot = None
+
+        self.group_name = None
 
     def _createTaskChain(self, name, **params):
         tc_base = self.__class__.__name__
@@ -132,22 +138,13 @@ class DropLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
-        '''
-        level_id = "01_FinalStage"
-        level_params = GameManager.getLevelParams(level_id)
-        level_group_name = level_params.GroupName
-        '''
-        level_group = GroupManager.getGroup("01_FinalStage")
-
-        scene = level_group.getScene()
+        scene = self.group.getScene()
         scene_node = scene.getParent()
 
         self.virtual_area.add_node(scene_node)
         self.virtual_area.update_target()
 
-        scene.enable()
-
-        scene_layer = level_group.getMainLayer()
+        scene_layer = self.group.getMainLayer()
         scene_size = scene_layer.getSize()
         box_size = self.getSize()
 
@@ -155,6 +152,8 @@ class DropLevel(Initializer):
         diff = box_size.y - scene_size.y
         pos_y = header_y + diff / 2
         scene_node.setLocalPosition(Mengine.vec2f(0, pos_y))
+
+        scene.enable()
 
     def getSize(self):
         box_width = self.box_points.z - self.box_points.x

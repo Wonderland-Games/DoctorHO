@@ -11,7 +11,8 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 MOVIE_CONTENT = "Movie2_Content"
 MOVIE_PANEL = "Movie2_DropPanel"
-MOVIE_CLICK = "Movie2_Armor"
+MOVIE_ARMOR_CLICK = "Movie2_Armor"
+MOVIE_HELMET_CLICK = "Movie2_Helmet"
 
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
@@ -35,6 +36,8 @@ class FinalStage(BaseEntity):
         self.drop_panel = None
         self.quest_items = []
         self.attach_item = None
+        self.movie_items = []
+        self.group_name = None
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -70,6 +73,7 @@ class FinalStage(BaseEntity):
         self.content = self.object.getObject(MOVIE_CONTENT)
 
         self._setupChapterQuestItems()
+        print("{} is enable {}".format(self.group_name, GroupManager.isEnableGroup(self.group_name)))
 
         self._initDropPanel()
         self._initDropLevel()
@@ -103,6 +107,9 @@ class FinalStage(BaseEntity):
             self.attach_item.onFinalize()
             self.attach_item = None
 
+        self.movie_items = []
+        self.group_name = None
+
     # - DropLevel ----------------------------------------------------------------------------------------------------
 
     def _initDropLevel(self):
@@ -116,7 +123,7 @@ class FinalStage(BaseEntity):
         frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
 
         self.drop_level = DropLevel()
-        self.drop_level.onInitialize(frame_points)
+        self.drop_level.onInitialize(frame_points, self.group_name)
 
     def _attachDropLevel(self):
         _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -174,13 +181,21 @@ class FinalStage(BaseEntity):
                 parallel.addScope(self._playReturnItemToPanelAnimation)
 
         with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
-            group = GroupManager.getGroup("01_FinalStage")
+            group = GroupManager.getGroup(self.group_name)
+            items_to_drop = list(self.movie_items)
+            for item, parallel in tc.addRaceTaskList(items_to_drop):
+                MovieItem = group.getObject(item)
 
-            Movie = group.getObject(MOVIE_CLICK)
+                parallel.addEnable(MovieItem)
+                parallel.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=MovieItem, isDown=False, isPressed=False, UseArrowFilter=False)
+                parallel.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
+            '''
+            MovieHelmet = group.getObject(MOVIE_HELMET_CLICK)
 
-            tc.addEnable(Movie)
-            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=Movie, isDown=False)
-            tc.addTask("TaskMovie2Play", Movie2=Movie, Wait=True)
+            tc.addEnable(MovieArmor)
+            tc.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=MovieHelmet, isDown=False)
+            tc.addTask("TaskMovie2Play", Movie2=MovieHelmet, Wait=True)
+            '''
 
         pass
 
@@ -189,10 +204,13 @@ class FinalStage(BaseEntity):
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
         chapter_id = current_chapter_data.getChapterId()
+        self.group_name = "{:02d}_FinalStage".format(chapter_id)
 
         print(chapter_id)
+        items_name = []
         chapter_quests_params = GameManager.getQuestParamsByChapter(chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
+            items_name.append(quest_param.QuestItem)
             quest_param_item_name = quest_param.QuestItem.replace("Item_", "")
             quest_item_name = QUEST_ITEM_NAME.format(chapter_id, quest_param_item_name)
 
@@ -202,6 +220,13 @@ class FinalStage(BaseEntity):
             self.quest_items.append(quest_item_object)
 
             print(quest_item_name)
+
+        self._setupMovieItems(items_name)
+
+
+    def _setupMovieItems(self, items):
+        self.movie_items = ["Movie2_" + item.split("Quest_")[-1] for item in items]
+        print(self.movie_items)
 
     def _attachToCursor(self):
         arrow = Mengine.getArrow()
