@@ -171,7 +171,7 @@ class Item(Initializer):
         scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
         self.default_scale = scale_perc
         self.sprite.setScale((scale_perc, scale_perc))
-        self.socket_node.setScale((scale_perc, scale_perc))
+        #self.socket_node.setScale((scale_perc, scale_perc))
 
     def getSpriteScale(self):
         return self.sprite.getWorldScale()

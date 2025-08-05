@@ -1,5 +1,6 @@
 from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
+from Foundation.SceneManager import SceneManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
 from Foundation.TaskManager import TaskManager
@@ -15,21 +16,20 @@ class DropLevel(Initializer):
         self.va_hotspot = None
         self.box_points = None
         self.items = []
-        self.group = None
+        self.level_group = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, box_points, group_name):
+    def _onInitialize(self, box_points, scene_name):
         self.box_points = box_points
-        self.group = GroupManager.getGroup(group_name)
+        level_group_name = SceneManager.getSceneMainGroupName(scene_name)
+        self.level_group = GroupManager.getGroup(level_group_name)
 
         self._initVirtualArea()
 
         self._createRoot()
         self._setupVirtualArea()
-        print("{} is enable {}".format(group_name, GroupManager.isEnableGroup(group_name)))
         self._attachScene()
-        print("{} is enable {}".format(group_name, GroupManager.isEnableGroup(group_name)))
 
         self._runTaskChains()
 
@@ -57,7 +57,7 @@ class DropLevel(Initializer):
             Mengine.destroyNode(self.va_hotspot)
             self.va_hotspot = None
 
-        self.group_name = None
+        self.level_group = None
 
     def _createTaskChain(self, name, **params):
         tc_base = self.__class__.__name__
@@ -138,13 +138,13 @@ class DropLevel(Initializer):
     # - Scene ----------------------------------------------------------------------------------------------------------
 
     def _attachScene(self):
-        scene = self.group.getScene()
+        scene = self.level_group.getScene()
         scene_node = scene.getParent()
 
         self.virtual_area.add_node(scene_node)
         self.virtual_area.update_target()
 
-        scene_layer = self.group.getMainLayer()
+        scene_layer = self.level_group.getMainLayer()
         scene_size = scene_layer.getSize()
         box_size = self.getSize()
 
