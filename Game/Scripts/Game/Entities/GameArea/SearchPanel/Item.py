@@ -33,12 +33,14 @@ class Item(Initializer):
         self.box = None
         self.socket_node = None
         self.default_scale = None
+        self.movie_name = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, panel, item_obj, with_box=True):
+    def _onInitialize(self, panel, item_obj, movie_name=None, with_box=True):
         self.panel = panel
         self.item_obj = item_obj
+        self.movie_name = movie_name
 
         self._createRoot()
         self._createBox()
@@ -81,6 +83,7 @@ class Item(Initializer):
         self.item_obj = None
         self.panel = None
         self.default_scale = None
+        self.movie_name = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -101,6 +104,9 @@ class Item(Initializer):
 
     def getObj(self):
         return self.item_obj
+
+    def getMovieName(self):
+        return self.movie_name
 
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
