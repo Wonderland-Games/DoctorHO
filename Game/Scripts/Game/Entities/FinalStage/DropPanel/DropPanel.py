@@ -33,11 +33,11 @@ class DropPanel(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, movie_panel, quest_items):
+    def _onInitialize(self, movie_panel, items):
         super(DropPanel, self)._onInitialize()
 
         self.movie_panel = movie_panel
-        self.quest_items = quest_items
+        self.items = items
 
         self._initVirtualArea()
 
@@ -199,12 +199,16 @@ class DropPanel(Initializer):
         self.items_node.setName("Items")
         self.virtual_area.add_node(self.items_node)
 
-        # init items
+        '''
         for i, item_obj in enumerate(self.quest_items):
             item = Item()
             item.onInitialize(self, item_obj)
             item.attachTo(self.items_node)
             self.items.append(item)
+        '''
+
+        for item in self.items:
+            item.attachTo(self.items_node)
 
         items_node_pos = self._calcItemsNodeLocalPosition()
         self.items_node.setLocalPosition(items_node_pos)
