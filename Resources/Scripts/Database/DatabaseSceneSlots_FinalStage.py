@@ -7,7 +7,7 @@ class DatabaseSceneSlots_FinalStage(Database):
         self.addRecord(Name="FinalStage", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Level", Type="Layer2D", Width=2736, Height=1536, Main=1)
         self.addRecord(Name="QuestItemStore", Type="Layer2D", Width=2736, Height=1536, Main=0)
-        self.addRecord(Name="GameHeader", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="Header", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="DummyBanner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
         self.addRecord(Name="MissClick", Type="Layer2D", Width=2736, Height=1536)
         self.addRecord(Name="FadeUI", Type="Layer2D", Width=2736, Height=1536, Main=0)

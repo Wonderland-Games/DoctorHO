@@ -30,6 +30,7 @@ class DatabasePrototypes(Database):
         self.addORM(RecordPrototypes("Settings_Support", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, Icon=dict(Slot="icon", Prototype="Support")))
         self.addORM(RecordPrototypes("Settings_Credits", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, Icon=dict(Slot="icon", Prototype="Credits")))
         self.addORM(RecordPrototypes("Settings_Lobby", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, Icon=dict(Slot="icon", Prototype="Lobby")))
+        self.addORM(RecordPrototypes("Settings_QuestBackpack", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, Icon=dict(Slot="icon", Prototype="QuestBackpack")))
         self.addORM(RecordPrototypes("LevelLost_Icon", None, None, "Movie2_Circle", "Movie2_Circle", None, Icon=dict(Slot="icon", Prototype="Heart_Big")))
         self.addORM(RecordPrototypes("LevelLost_Ad", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, Icon=dict(Slot="icon", Prototype="Advertising", Size="Medium")))
         self.addORM(RecordPrototypes("LevelLost_Restart", None, None, "Movie2Button_Rectangle", "Movie2Button_Rectangle", None, {}))
@@ -45,6 +46,7 @@ class DatabasePrototypes(Database):
         self.addORM(RecordPrototypes("LoadingBar", None, None, "Movie2ProgressBar_Loading", "Movie2ProgressBar_Loading", None, {}))
         self.addORM(RecordPrototypes("QuestItemReceived_Button", None, None, "Movie2Button_Rectangle_Green", "Movie2Button_Rectangle_Green", None, {}))
         self.addORM(RecordPrototypes("QuestBackpack", None, None, "Movie2Button_Square_256", "Movie2Button_Square_256", None, Icon=dict(Slot="icon", Prototype="Backpack")))
+        self.addORM(RecordPrototypes("FinalStage", None, None, "Movie2Button_Square_256", "Movie2Button_Square_256", None, Icon=dict(Slot="icon", Prototype="FinalStage")))
         self.addORM(RecordPrototypes("Lobby", None, None, "Movie2Button_Square_256", "Movie2Button_Square_256", None, Icon=dict(Slot="icon", Prototype="InvestigationBoard")))
         self.addORM(RecordPrototypes("Cutscene_Skip", None, None, "Movie2_Text", "Movie2_Text", None, {}))
         pass

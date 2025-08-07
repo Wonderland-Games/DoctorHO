@@ -6,14 +6,14 @@ from Foundation.TaskManager import TaskManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
 from Game.Entities.GameArea.SearchPanel.Item import Item
+from Game.Entities.QuestBackpack.ChapterQuestItems import ChapterQuestItems
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
+
 MOVIE_CONTENT = "Movie2_Content"
 MOVIE_PANEL = "Movie2_DropPanel"
-MOVIE_ARMOR_CLICK = "Movie2_Armor"
-MOVIE_HELMET_CLICK = "Movie2_Helmet"
 
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
@@ -171,28 +171,24 @@ class FinalStage(BaseEntity):
                 items_to_click = self.items
                 print(len(items_to_click))
                 for item, parallel in tc.addRaceTaskList(items_to_click):
-                    item_obj = item.item_obj
-                    item_name = item_obj.getName()
                     item_socket = item.getSocket()
 
                     group = GroupManager.getGroup(self.scene_name)
                     movie_name = item.getMovieName()
-                    if movie_name is None:
-                        print("movie is None")
                     MovieItem = group.getObject(movie_name)
+
                     parallel.addEnable(MovieItem)
 
                     parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
-                    parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item_name))
-                    parallel.addFunction(self.quest_items.remove, item_obj)
-                    parallel.addFunction(self.drop_panel.findRemovingItem, item_obj)
+                    parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item.getObj().getName()))
+                    parallel.addFunction(self.drop_panel.findRemovingItem, item)
                     parallel.addFunction(self._attachToCursor)
 
                     with parallel.addParallelTask(2) as (scale, click):
                         scale.addScope(self.drop_panel.playRemovePanelItemAnim)
                         scale.addScope(self._scaleAttachItem)
 
-                        def __SocketRace(click_socket, mouse_up):
+                        def __clickRace(click_socket, mouse_up):
                             click_socket.addTask("TaskMovie2SocketClick",
                                                  SocketName="click",
                                                  Movie2=MovieItem,
@@ -202,47 +198,16 @@ class FinalStage(BaseEntity):
 
                             mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
 
-                        with click.addRaceScope(2, __SocketRace) as (click_socket, mouse_up):
+                        with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
                             mouse_up.addPrint("mouse_up")
-                            mouse_up.addScope(self._playReturnItemToPanelAnimation)
+                            #mouse_up.addScope(self._playReturnItemToPanelAnimation)
 
                             click_socket.addPrint("click_socket")
-                            click_socket.addScope(self._playCorrectDrop, MovieItem)
-
-            tc.addScope(__ItemsPickScope)
-
-        '''
-        with self._createTaskChain("ItemsPick", Repeat=True) as tc:
-            def __ItemsPickScope(source):
-                items_to_click = self.drop_panel.items
-                for item, parallel in tc.addRaceTaskList(items_to_click):
-                    item_obj = item.item_obj
-                    item_socket = item.getSocket()
-                    parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
-                    parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item_obj.getName()))
-                    parallel.addFunction(self.quest_items.remove, item_obj)
-                    parallel.addFunction(self.drop_panel.findRemovingItem, item_obj)
-                    parallel.addFunction(self._attachToCursor)
-
-                    with parallel.addParallelTask(2) as (scale, click):
-                        scale.addScope(self.drop_panel.playRemovePanelItemAnim)
-                        scale.addScope(self._scaleAttachItem)
-                        click.addTask("TaskMouseButtonClick", isDown=False)
-
+                            #click_socket.addScope(self._playCorrectDrop, MovieItem)
                     parallel.addScope(self._playReturnItemToPanelAnimation)
 
             tc.addScope(__ItemsPickScope)
 
-        with self._createTaskChain("FinalStageClick", Repeat=True) as tc:
-            group = GroupManager.getGroup(self.scene_name)
-            items_to_drop = list(self.movie_items)
-            for item, parallel in tc.addRaceTaskList(items_to_drop):
-                MovieItem = group.getObject(item)
-
-                parallel.addEnable(MovieItem)
-                parallel.addTask("TaskMovie2SocketClick", SocketName="click", Movie2=MovieItem, isDown=False, isPressed=False, UseArrowFilter=False)
-                parallel.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
-        '''
         pass
 
     def _playCorrectDrop(self, source, MovieItem):
@@ -256,8 +221,15 @@ class FinalStage(BaseEntity):
         chapter_id = self._getCurrentChapterId()
         self.scene_name = "{:02d}_FinalStage".format(chapter_id)
 
+        player_data = GameManager.getPlayerGameData()
+        chapter_data = player_data.getCurrentChapterData()
+        current_quest_index = chapter_data.getCurrentQuestIndex()
+
         final_stage_params = self.getFinalStageMappingParams(self.scene_name)
         for i, param in enumerate(final_stage_params):
+            if i >= current_quest_index:
+                break
+
             item_object = self.getItemObject(param)
             self.quest_items.append(item_object)
 
@@ -292,7 +264,7 @@ class FinalStage(BaseEntity):
         arrow_node = arrow.getNode()
         drop_item =  self.drop_panel.getDropItem()
         self.attach_item = Item()
-        self.attach_item.onInitialize(self, drop_item.item_obj, False)
+        self.attach_item.onInitialize(self, drop_item.item_obj, with_box=False)
         attach_item_root = self.attach_item.getRoot()
 
         ArrowManager.attachArrow(attach_item_root)

@@ -10,7 +10,9 @@ from Game.Entities.QuestBackpack.ChapterQuestItems import ChapterQuestItems
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_QUEST_ITEMS = "ChapterQuestItems"
 SLOT_LOBBY = "Lobby"
+SLOT_FINAL_STAGE = "FinalStage"
 PROTOTYPE_LOBBY = "Lobby"
+PROTOTYPE_FINAL_STAGE = "FinalStage"
 
 CHAPTER_QUEST_ITEMS_SPACE_PERCENT = 0.7
 LOBBY_SPACE_PERCENT = 0.3
@@ -23,6 +25,7 @@ class QuestBackpack(BaseEntity):
         self.tcs = []
         self.chapter_quest_items = None
         self.lobby = None
+        self.final_stage = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -33,6 +36,7 @@ class QuestBackpack(BaseEntity):
 
         self._setupChapterQuestItems()
         self._setupLobby()
+        self._setupFinalStage()
         self._setupSlotsPositions()
 
     def _onActivate(self):
@@ -52,6 +56,10 @@ class QuestBackpack(BaseEntity):
         if self.lobby is not None:
             self.lobby.onDestroy()
             self.lobby = None
+
+        if self.final_stage is not None:
+            self.final_stage.onDestroy()
+            self.final_stage = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -76,8 +84,16 @@ class QuestBackpack(BaseEntity):
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
         lobby_slot.addChild(lobby_node)
 
+    def _setupFinalStage(self):
+        self.final_stage = PrototypeManager.generateObjectContainer(PROTOTYPE_FINAL_STAGE, PROTOTYPE_FINAL_STAGE)
+        self.final_stage.setEnable(True)
+
+        final_stage_node = self.final_stage.getEntityNode()
+        final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
+        final_stage_slot.addChild(final_stage_node)
+
     def _setupSlotsPositions(self):
-        _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        game_width, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         available_space_y = game_height - banner_height - top_offset
 
         chapter_quest_items_space_y = available_space_y * CHAPTER_QUEST_ITEMS_SPACE_PERCENT
@@ -89,8 +105,14 @@ class QuestBackpack(BaseEntity):
         chapter_quest_items_slot = self.content.getMovieSlot(SLOT_CHAPTER_QUEST_ITEMS)
         chapter_quest_items_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
 
+
+        lobby_pos_x = x_center - (game_width / 6.0)
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
-        lobby_slot.setWorldPosition(Mengine.vec2f(x_center, lobby_pos_y))
+        lobby_slot.setWorldPosition(Mengine.vec2f(lobby_pos_x, lobby_pos_y))
+
+        final_stage_x = x_center + (game_width / 6.0)
+        final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
+        final_stage_slot.setWorldPosition(Mengine.vec2f(final_stage_x, lobby_pos_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -105,8 +127,19 @@ class QuestBackpack(BaseEntity):
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
             tc.addNotify(Notificator.onChangeScene, "Lobby")
 
+        with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage.movie)
+            current_scene = self._getCurrentFinalStageScene()
+            tc.addNotify(Notificator.onChangeScene, current_scene)
+
         if len(self.chapter_quest_items.quest_items.items()) > 0:
             self._runChapterQuestItemsTaskChains()
+
+    def _getCurrentFinalStageScene(self):
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        return "{:02d}_FinalStage".format(chapter_id)
 
     def _runChapterQuestItemsTaskChains(self):
         popup_object = DemonManager.getDemon("PopUp")
