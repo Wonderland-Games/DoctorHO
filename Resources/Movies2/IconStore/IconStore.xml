@@ -9,6 +9,9 @@
 	<Resource Name="0d/5219a328e8418e91afd90ae293b5f3fbcb3b6a.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/0d/5219a328e8418e91afd90ae293b5f3fbcb3b6a.png" MaxSize="119;119" />
 	</Resource>
+	<Resource Name="24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" MaxSize="300;300" Size="242;271" Offset="27;14" />
+	</Resource>
 	<Resource Name="a2/33ea897adf374111c56194f94e4e7b3465f961.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/a2/33ea897adf374111c56194f94e4e7b3465f961.png" MaxSize="82;72" Size="82;71" />
 	</Resource>

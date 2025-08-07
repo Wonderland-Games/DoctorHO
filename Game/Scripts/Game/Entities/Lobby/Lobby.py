@@ -125,15 +125,7 @@ class Lobby(BaseEntity):
 
         with self._createTaskChain(SLOT_QUEST_BACKPACK) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
-            #tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
-            current_scene = self._getCurrentFinalStageScene()
-            tc.addNotify(Notificator.onChangeScene, current_scene)
-
-    def _getCurrentFinalStageScene(self):
-        player_game_data = GameManager.getPlayerGameData()
-        current_chapter_data = player_game_data.getCurrentChapterData()
-        chapter_id = current_chapter_data.getChapterId()
-        return "{:02d}_FinalStage".format(chapter_id)
+            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
     def _scopePlay(self, source, level_id):
         # player_data = GameManager.getPlayerGameData()

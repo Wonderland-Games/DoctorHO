@@ -57,8 +57,7 @@ class DropPanel(Initializer):
     def _onFinalize(self):
         super(DropPanel, self)._onFinalize()
 
-        for item in self.items:
-            item.onFinalize()
+        # Items destroy in FinalStage
         self.items = []
 
         if self.items_node is not None:
@@ -199,14 +198,6 @@ class DropPanel(Initializer):
         self.items_node.setName("Items")
         self.virtual_area.add_node(self.items_node)
 
-        '''
-        for i, item_obj in enumerate(self.quest_items):
-            item = Item()
-            item.onInitialize(self, item_obj)
-            item.attachTo(self.items_node)
-            self.items.append(item)
-        '''
-
         for item in self.items:
             item.attachTo(self.items_node)
 
@@ -218,9 +209,9 @@ class DropPanel(Initializer):
             item_pos = self._calcItemLocalPosition(i)
             item.setLocalPositionX(item_pos.x)
 
-    def findRemovingItem(self, item_obj):
+    def findRemovingItem(self, remove_item):
         for i, item in enumerate(self.items):
-            if item.item_obj is item_obj:
+            if item is remove_item:
                 break
         else:
             i, item = None, None
