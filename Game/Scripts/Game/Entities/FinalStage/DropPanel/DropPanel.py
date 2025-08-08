@@ -23,13 +23,10 @@ class DropPanel(Initializer):
         self.va_hotspot = None
         self.root = None
         self.movie_panel = None
-        self.quest_items = []
         self.items = []
         self.items_node = None
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
-        self.drop_item = None
-        self.drop_item_num = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
@@ -78,15 +75,8 @@ class DropPanel(Initializer):
             self.va_hotspot = None
 
         self.movie_panel = None
-        self.quest_items = []
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
-
-        if self.drop_item is not None:
-            self.drop_item.onFinalize()
-            self.drop_item = None
-
-        self.drop_item_num = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -118,8 +108,12 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        item = self.items[0]
-        item_size = item.getSize()
+        if self.items:
+            item = self.items[0]
+            item_size = item.getSize()
+        else:
+            item_size = Mengine.vec2f(400.0,400.0)
+
         panel_size = self.getSize()
 
         va_begin_x = 0
@@ -209,20 +203,12 @@ class DropPanel(Initializer):
             item_pos = self._calcItemLocalPosition(i)
             item.setLocalPositionX(item_pos.x)
 
-    def findRemovingItem(self, remove_item):
-        for i, item in enumerate(self.items):
-            if item is remove_item:
-                break
-        else:
-            i, item = None, None
-
-        self.drop_item_num = i
-        self.drop_item = item
-
-
     def _calcItemsNodeLocalPosition(self):
         content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
-        content_height = self.items[0].getSize().y
+
+        content_height = 400
+        if self.items:
+            content_height = self.items[0].getSize().y
 
         return Mengine.vec2f(content_width / 2, content_height / 2)
 
@@ -234,9 +220,13 @@ class DropPanel(Initializer):
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
 
-    def returnDropItem(self):
-        self.items.insert(self.drop_item_num, self.drop_item)
-        self.drop_item.attachTo(self.items_node)
+    def returnDropItem(self, item, item_index):
+        if self.items:
+            self.items.insert(item_index, item)
+        else:
+            self.items.append(item)
+
+        item.attachTo(self.items_node)
 
     def _moveItemsToTargetPositions(self, source):
         # Animation of moving all items to target positions
@@ -266,10 +256,11 @@ class DropPanel(Initializer):
         self._calcVirtualAreaContentSize()
         self.virtual_area.update_target()
 
-    def playRemovePanelItemAnim(self, source):
-        del self.items[self.drop_item_num]
+    def playRemovePanelItemAnim(self, source, item, item_index):
+        print("playRemovePanelItemAnim : {}".format(str(item_index)))
+        del self.items[item_index]
 
-        source.addScope(self.drop_item.playItemDestroyAnim)
+        source.addScope(item.playItemDestroyAnim)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
@@ -280,25 +271,17 @@ class DropPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         source.addPrint(" * END ITEMS REMOVE ANIM")
 
-    def playAddPanelItemAnim(self, source):
+    def playAddPanelItemAnim(self, source, item):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS ADD ANIM")
 
-        source.addScope(self.drop_item.setItemVisible, False)
+        source.addScope(item.setItemVisible, False)
 
         source.addScope(self._moveItemsToTargetPositions)
         source.addScope(self._maybeMoveItemsNode)
 
-        source.addScope(self.drop_item.playItemCreateAnim)
+        source.addScope(item.playItemCreateAnim)
         source.addFunction(self._updateVirtualArea)
 
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
         source.addPrint(" * END ITEMS ADD ANIM")
-
-    def clearDropItem(self):
-        # Clear variables
-        self.drop_item = None
-        self.drop_item_num = None
-
-    def getDropItem(self):
-        return self.drop_item
