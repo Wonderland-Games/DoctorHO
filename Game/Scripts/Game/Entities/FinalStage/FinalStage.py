@@ -35,11 +35,8 @@ class FinalStage(BaseEntity):
         self.miss_click = None
         self.drop_level = None
         self.drop_panel = None
-        self.quest_items = []
         self.items = []
-        self.attach_item = None
         self.scene_name = None
-        self.on_socket_click = False
 
     # - Object ----------------------------------------------------------------------------------------------------
 
@@ -108,11 +105,6 @@ class FinalStage(BaseEntity):
                 item.onFinalize()
         self.items = []
 
-        if self.attach_item is not None:
-            self.attach_item.onFinalize()
-            self.attach_item = None
-
-        self.quest_items = []
         self.scene_name = None
 
     # - DropLevel ----------------------------------------------------------------------------------------------------
@@ -165,56 +157,72 @@ class FinalStage(BaseEntity):
         self.tcs.append(tc)
         return tc
 
+    def _findItem(self, remove_item):
+        return next((i for i, item in enumerate(self.items) if item is remove_item), None)
+
     def _runTaskChains(self):
         with self._createTaskChain("ItemsPick", Repeat=True) as tc:
             def __ItemsPickScope(source):
                 items_to_click = self.items
-                print(len(items_to_click))
                 for item, parallel in tc.addRaceTaskList(items_to_click):
-                    item_socket = item.getSocket()
-
-                    group = GroupManager.getGroup(self.scene_name)
-                    movie_name = item.getMovieName()
-                    MovieItem = group.getObject(movie_name)
-
-                    parallel.addEnable(MovieItem)
-
-                    parallel.addTask("TaskNodeSocketClick", Socket=item_socket, isDown=True)
+                    parallel.addTask("TaskNodeSocketClick", Socket=item.getSocket(), isDown=True)
                     parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item.getObj().getName()))
-                    parallel.addFunction(self.drop_panel.findRemovingItem, item)
-                    parallel.addFunction(self._attachToCursor)
+                    #parallel.addFunction(self.drop_panel.findRemovingItem, item)
 
-                    with parallel.addParallelTask(2) as (scale, click):
-                        scale.addScope(self.drop_panel.playRemovePanelItemAnim)
-                        scale.addScope(self._scaleAttachItem)
+                    def __panelClick(source, item):
+                        item_index = self._findItem(item)
 
-                        def __clickRace(click_socket, mouse_up):
-                            click_socket.addTask("TaskMovie2SocketClick",
-                                                 SocketName="click",
-                                                 Movie2=MovieItem,
-                                                 isDown=False,
-                                                 isPressed=False,
-                                                 UseArrowFilter=False)
+                        group = GroupManager.getGroup(self.scene_name)
+                        movie_name = item.getMovieName()
+                        MovieItem = group.getObject(movie_name)
 
-                            mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
+                        source.addEnable(MovieItem)
 
-                        with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
-                            mouse_up.addPrint("mouse_up")
-                            #mouse_up.addScope(self._playReturnItemToPanelAnimation)
+                        attach_item = Item()
+                        attach_item.onInitialize(self, item.getObj(), with_box=False)
 
-                            click_socket.addPrint("click_socket")
-                            #click_socket.addScope(self._playCorrectDrop, MovieItem)
-                    parallel.addScope(self._playReturnItemToPanelAnimation)
+                        source.addFunction(self._attachToCursor, attach_item)
+
+                        with source.addParallelTask(2) as (scale, click):
+                            scale.addScope(self.drop_panel.playRemovePanelItemAnim, item, item_index)
+                            scale.addScope(self._scaleAttachItem, attach_item)
+
+                            def __clickRace(click_socket, mouse_up):
+                                click_socket.addTask("TaskMovie2SocketClick",
+                                                     SocketName="click",
+                                                     Movie2=MovieItem,
+                                                     isDown=False,
+                                                     isPressed=False,
+                                                     UseArrowFilter=False)
+
+                                mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
+
+                            with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
+                                mouse_up.addPrint("mouse_up")
+                                mouse_up.addScope(self._playReturnItemToPanelAnimation, item, item_index, attach_item)
+
+                                click_socket.addPrint("click_socket")
+                                click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
+
+                    parallel.addScope(__panelClick, item)
 
             tc.addScope(__ItemsPickScope)
 
         pass
 
-    def _playCorrectDrop(self, source, MovieItem):
+    def _playFinalAnimation(self, source):
+        group = GroupManager.getGroup(self.scene_name)
+        movie_name = "Movie2_Final"
+        MovieItem = group.getObject(movie_name)
+        source.addEnable(MovieItem)
         source.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
-        source.addTask("TaskRemoveArrowAttach")
-        #source.addFunction(self.attach_item.playItemDestroyAnim)
-        source.addFunction(self.drop_panel.clearDropItem)
+
+    def _playCorrectDrop(self, source, MovieItem, attach_item):
+        with source.addParallelTask(2) as (play, remove):
+            play.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
+            play.addTask("TaskRemoveArrowAttach")
+
+            remove.addFunction(attach_item.onFinalize)
 
     def _setupChapterQuestItems(self):
         # get current chapter data
@@ -231,7 +239,6 @@ class FinalStage(BaseEntity):
                 break
 
             item_object = self.getItemObject(param)
-            self.quest_items.append(item_object)
 
             movie_name = param.MovieName
 
@@ -259,20 +266,18 @@ class FinalStage(BaseEntity):
         current_chapter_data = player_game_data.getCurrentChapterData()
         return current_chapter_data.getChapterId()
 
-    def _attachToCursor(self):
+    def _attachToCursor(self, attach_item):
+        attach_item_root = attach_item.getRoot()
+        ArrowManager.attachArrow(attach_item_root)
+
         arrow = Mengine.getArrow()
         arrow_node = arrow.getNode()
-        drop_item =  self.drop_panel.getDropItem()
-        self.attach_item = Item()
-        self.attach_item.onInitialize(self, drop_item.item_obj, with_box=False)
-        attach_item_root = self.attach_item.getRoot()
-
-        ArrowManager.attachArrow(attach_item_root)
         arrow_node.addChildFront(attach_item_root)
 
-    def _scaleAttachItem(self, source):
-        item_node = self.attach_item.sprite
-        scale_from = self.attach_item.getSpriteScale()
+    def _scaleAttachItem(self, source, attach_item):
+        print(attach_item)
+        item_node = attach_item.sprite
+        scale_from = attach_item.getSpriteScale()
         scale_to = (1.0, 1.0, 1.0)
 
         source.addTask("TaskNodeScaleTo",
@@ -282,11 +287,9 @@ class FinalStage(BaseEntity):
                       To=scale_to,
                       Time=SCENE_ANIMATION_TIME)
 
-    def _moveLevelItemToPanelItem(self, source):
-        source.addTask("TaskRemoveArrowAttach")
+    def _moveLevelItemToPanelItem(self, source, drop_item, attach_item):
         # generate level item pure sprite
-
-        item_entity = self.attach_item.getObj().getEntity()
+        item_entity = attach_item.getObj().getEntity()
         item_pure = item_entity.generatePure()
         item_pure.enable()
 
@@ -294,20 +297,22 @@ class FinalStage(BaseEntity):
         item_moving_node = Mengine.createNode("Interender")
         item_moving_node.setName("BezierFollow")
 
-        item_moving_node.setWorldPosition(self.attach_item.sprite_node.getWorldPosition())
+        print(str(attach_item.sprite_node.getWorldPosition()))
+        item_moving_node.setWorldPosition(attach_item.sprite_node.getWorldPosition())
 
         item_moving_node.addChild(item_pure)
         self.addChild(item_moving_node)
 
-        drop_item = self.drop_panel.getDropItem()
         drop_item_scale = drop_item.getDefaultSpriteScale()
 
-        scale_from = self.attach_item.getSpriteScale()
+        scale_from = attach_item.getSpriteScale()
         scale_to = (drop_item_scale, drop_item_scale, 1.0)
 
         panel_item_sprite = drop_item.getSprite()
 
-        source.addFunction(self.attach_item.onFinalize)
+        source.addTask("TaskRemoveArrowAttach")
+        #source.addScope(attach_item.playItemDestroyAnim)
+        source.addFunction(attach_item.onFinalize)
 
         source.addPrint(" * START BEZIER ITEM ANIM")
 
@@ -332,14 +337,12 @@ class FinalStage(BaseEntity):
         source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
         source.addTask("TaskNodeDestroy", Node=item_moving_node)
 
-    def _playReturnItemToPanelAnimation(self, source):
-        source.addFunction(self.drop_panel.returnDropItem)
+    def _playReturnItemToPanelAnimation(self, source, item, item_index, attach_item):
+        source.addFunction(self.drop_panel.returnDropItem, item, item_index)
 
         with source.addParallelTask(2) as (moving_item, add_item):
-            moving_item.addScope(self._moveLevelItemToPanelItem)
-            add_item.addScope(self.drop_panel.playAddPanelItemAnim)
+            moving_item.addScope(self._moveLevelItemToPanelItem, item, attach_item)
+            add_item.addScope(self.drop_panel.playAddPanelItemAnim, item)
 
-        drop_item = self.drop_panel.getDropItem()
-        source.addFunction(self.quest_items.append, drop_item.getObj())
-        source.addScope(drop_item.setItemVisible, True)
-        source.addFunction(self.drop_panel.clearDropItem)
+        source.addScope(item.setItemVisible, True)
+
