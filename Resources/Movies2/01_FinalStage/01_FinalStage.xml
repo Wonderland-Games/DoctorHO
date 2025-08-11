@@ -19,7 +19,9 @@
 			<Layer Index="0" Name="click" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1024.0;1024.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="Item_Bust.png" Type="Image" Matrix="0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.0;0.0;1294.0;1238.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
-		<Composition Name="Final" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1" />
+		<Composition Name="Final" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
+			<Layer Index="0" Name="Deep Red Solid 1" Type="Solid" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
 		<Composition Name="Helmet" Duration="1.00100100040435791015625" FrameDuration="0.0333666987717151641845703125" Master="1">
 			<Layer Index="0" Name="click" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1024.0;1024.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="Item_Helmet.png" Type="Image" Matrix="0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.0;0.0;1294.0;914.0;0.0;1.0" TrackMatte="0" />
