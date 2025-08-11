@@ -108,11 +108,7 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        if self.items:
-            item = self.items[0]
-            item_size = item.getSize()
-        else:
-            item_size = Mengine.vec2f(400.0,400.0)
+        item_size = Mengine.vec2f(200.0, 200.0)
 
         panel_size = self.getSize()
 
@@ -154,7 +150,8 @@ class DropPanel(Initializer):
         content_size_x = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
         panel_size = self.getSize()
 
-        center_panel_pos = Mengine.vec2f(panel_size.x / 2, self.items[0].getSize().y / 2)
+        item_size = Mengine.vec2f(200.0, 200.0)
+        center_panel_pos = Mengine.vec2f(panel_size.x / 2, item_size.y / 2)
 
         if content_size_x <= panel_size.x:
             self.virtual_area.set_content_size(0, 0, panel_size.x, panel_size.y)
@@ -206,16 +203,14 @@ class DropPanel(Initializer):
     def _calcItemsNodeLocalPosition(self):
         content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
 
-        content_height = 400
-        if self.items:
-            content_height = self.items[0].getSize().y
+        content_height = 200
 
         return Mengine.vec2f(content_width / 2, content_height / 2)
 
 
     def _calcItemLocalPosition(self, i):
         items_node_pos = self._calcItemsNodeLocalPosition()
-        item_size = self.items[0].getSize()
+        item_size = Mengine.vec2f(200.0, 200.0)
 
         item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
         return item_pos
@@ -257,8 +252,8 @@ class DropPanel(Initializer):
         self.virtual_area.update_target()
 
     def playRemovePanelItemAnim(self, source, item, item_index):
-        print("playRemovePanelItemAnim : {}".format(str(item_index)))
-        del self.items[item_index]
+        #del self.items[item_index]
+        self.items.remove(item)
 
         source.addScope(item.playItemDestroyAnim)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)

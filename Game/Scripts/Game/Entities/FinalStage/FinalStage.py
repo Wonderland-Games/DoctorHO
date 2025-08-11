@@ -161,52 +161,63 @@ class FinalStage(BaseEntity):
         return next((i for i, item in enumerate(self.items) if item is remove_item), None)
 
     def _runTaskChains(self):
-        with self._createTaskChain("ItemsPick", Repeat=True) as tc:
-            def __ItemsPickScope(source):
-                items_to_click = self.items
-                for item, parallel in tc.addRaceTaskList(items_to_click):
-                    parallel.addTask("TaskNodeSocketClick", Socket=item.getSocket(), isDown=True)
-                    parallel.addPrint(" * FINAL STAGE CLICK ON '{}'".format(item.getObj().getName()))
-                    #parallel.addFunction(self.drop_panel.findRemovingItem, item)
+        with self._createTaskChain("ItemsPick", Repeat=False) as tc:
+            items_to_click = self.items
+            for item, parallel in tc.addParallelTaskList(items_to_click):
+                event_run = Event(item)
 
-                    def __panelClick(source, item):
-                        item_index = self._findItem(item)
+                def makeClickAction(this_item, event_finish):
+                    def __clickAction(source):
+                        source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
+                        source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.getObj().getName()))
+
+                        item_index = self._findItem(this_item)
+                        if item_index is None:
+                            return
 
                         group = GroupManager.getGroup(self.scene_name)
-                        movie_name = item.getMovieName()
+                        movie_name = this_item.getMovieName()
                         MovieItem = group.getObject(movie_name)
-
                         source.addEnable(MovieItem)
 
                         attach_item = Item()
-                        attach_item.onInitialize(self, item.getObj(), with_box=False)
+                        attach_item.onInitialize(self, this_item.getObj(), with_box=False)
 
                         source.addFunction(self._attachToCursor, attach_item)
 
                         with source.addParallelTask(2) as (scale, click):
-                            scale.addScope(self.drop_panel.playRemovePanelItemAnim, item, item_index)
+                            scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
                             scale.addScope(self._scaleAttachItem, attach_item)
 
                             def __clickRace(click_socket, mouse_up):
-                                click_socket.addTask("TaskMovie2SocketClick",
-                                                     SocketName="click",
-                                                     Movie2=MovieItem,
-                                                     isDown=False,
-                                                     isPressed=False,
-                                                     UseArrowFilter=False)
-
+                                click_socket.addTask(
+                                    "TaskMovie2SocketClick",
+                                    SocketName="click",
+                                    Movie2=MovieItem,
+                                    isDown=False,
+                                    isPressed=False,
+                                    UseArrowFilter=False
+                                )
                                 mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
 
                             with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
-                                mouse_up.addPrint("mouse_up")
-                                mouse_up.addScope(self._playReturnItemToPanelAnimation, item, item_index, attach_item)
+                                mouse_up.addScope(self._playReturnItemToPanelAnimation,
+                                                  this_item,
+                                                  item_index,
+                                                  attach_item)
 
-                                click_socket.addPrint("click_socket")
                                 click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
+                                click_socket.addFunction(event_finish)
 
-                    parallel.addScope(__panelClick, item)
+                    return __clickAction
 
-            tc.addScope(__ItemsPickScope)
+                with parallel.addRepeatTask() as (source_repeat, source_until):
+                    event_finish = Event(item)
+                    source_repeat.addScope(makeClickAction(item, event_finish))
+                    source_until.addEvent(event_finish)
+
+            tc.addScope(self._playFinalAnimation)
+            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
         pass
 
@@ -267,15 +278,17 @@ class FinalStage(BaseEntity):
         return current_chapter_data.getChapterId()
 
     def _attachToCursor(self, attach_item):
+        if ArrowManager.emptyArrowAttach() is False:
+            attach = ArrowManager.getArrowAttach()
+            attach.setParam("Enable", False)
+            attachEntity = attach.getEntity()
+            attachEntity.disable()
+
         attach_item_root = attach_item.getRoot()
         ArrowManager.attachArrow(attach_item_root)
-
-        arrow = Mengine.getArrow()
-        arrow_node = arrow.getNode()
-        arrow_node.addChildFront(attach_item_root)
+        Mengine.getArrow().getNode().addChildFront(attach_item_root)
 
     def _scaleAttachItem(self, source, attach_item):
-        print(attach_item)
         item_node = attach_item.sprite
         scale_from = attach_item.getSpriteScale()
         scale_to = (1.0, 1.0, 1.0)
@@ -297,7 +310,6 @@ class FinalStage(BaseEntity):
         item_moving_node = Mengine.createNode("Interender")
         item_moving_node.setName("BezierFollow")
 
-        print(str(attach_item.sprite_node.getWorldPosition()))
         item_moving_node.setWorldPosition(attach_item.sprite_node.getWorldPosition())
 
         item_moving_node.addChild(item_pure)
