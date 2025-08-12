@@ -32,6 +32,7 @@ class DropPanel(Initializer):
 
     def _onInitialize(self, movie_panel, items):
         super(DropPanel, self)._onInitialize()
+        print("DropPanel._onInitialize")
 
         self.movie_panel = movie_panel
         self.items = items

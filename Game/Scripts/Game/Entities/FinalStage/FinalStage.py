@@ -1,15 +1,14 @@
 from Foundation.ArrowManager import ArrowManager
 from Foundation.DatabaseManager import DatabaseManager
-from Foundation.Entity.BaseEntity import BaseEntity
+from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
 from Foundation.GroupManager import GroupManager
-from Foundation.TaskManager import TaskManager
+from Foundation.LayoutBox import LayoutBox
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
 from Game.Entities.GameArea.SearchPanel.Item import Item
-from Game.Entities.QuestBackpack.ChapterQuestItems import ChapterQuestItems
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
-
+from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -26,48 +25,22 @@ SCENE_MOVE_EASING = "easyCubicIn"
 SCENE_SCALE_EASING = "easyBackOut"
 
 
-class FinalStage(BaseEntity):
+class FinalStage(BaseScopeEntity):
 
     def __init__(self):
         super(FinalStage, self).__init__()
         self.content = None
-        self.tcs = []
         self.miss_click = None
         self.drop_level = None
         self.drop_panel = None
         self.items = []
         self.scene_name = None
+        self.layout_box = None
 
-    # - Object ----------------------------------------------------------------------------------------------------
+    # - ScopeBaseEntity -----------------------------------------------------------------------------------------------------
 
-    @staticmethod
-    def declareORM(Type):
-        BaseEntity.declareORM(Type)
-
-    def _appendFoundItems(self, id, item):
-        print("FOUND ITEMS".format(self.FoundItems))
-
-    def _updateFoundItems(self, list):
-        pass
-
-    # - Initializer ----------------------------------------------------------------------------------------------------
-
-    def _onInitialize(self, obj):
-        super(FinalStage, self)._onInitialize(obj)
-        pass
-
-    def _onFinalize(self):
-        super(FinalStage, self)._onFinalize()
-        pass
-
-    # - BaseEntity -----------------------------------------------------------------------------------------------------
-
-    def _onPreparation(self):
-        super(FinalStage, self)._onPreparation()
-        pass
-
-    def _onActivate(self):
-        super(FinalStage, self)._onActivate()
+    def _onScopeActivate(self, source):
+        super(FinalStage, self)._onScopeActivate(source)
 
         self.content = self.object.getObject(MOVIE_CONTENT)
 
@@ -76,21 +49,70 @@ class FinalStage(BaseEntity):
         self._initDropPanel()
         self._initDropLevel()
 
-        self._attachDropLevel()
-        self._attachDropPanel()
+        self._setupLayoutBox()
 
-        self._runTaskChains()
+        items_to_click = self.items
+        for item, parallel in source.addParallelTaskList(items_to_click):
+            event_run = Event(item)
+            def makeClickAction(this_item, event_finish):
+                def __clickAction(source):
+                    source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
+                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.getObj().getName()))
 
-        '''
-        self._handleCheats()
-        '''
+                    item_index = self._findItem(this_item)
+                    if item_index is None:
+                        return
+
+                    group = GroupManager.getGroup(self.scene_name)
+                    movie_name = this_item.getMovieName()
+                    MovieItem = group.getObject(movie_name)
+                    source.addEnable(MovieItem)
+
+                    attach_item = Item()
+                    attach_item.onInitialize(self, this_item.getObj(), with_box=False)
+
+                    source.addFunction(self._attachToCursor, attach_item)
+
+                    with source.addParallelTask(2) as (scale, click):
+                        scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
+                        scale.addScope(self._scaleAttachItem, attach_item)
+
+                        def __clickRace(click_socket, mouse_up):
+                            click_socket.addTask(
+                                "TaskMovie2SocketClick",
+                                SocketName="click",
+                                Movie2=MovieItem,
+                                isDown=False,
+                                isPressed=False,
+                                UseArrowFilter=False
+                            )
+                            mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
+
+                        with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
+                            mouse_up.addScope(self._playReturnItemToPanelAnimation,
+                                              this_item,
+                                              item_index,
+                                              attach_item)
+
+                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
+                            click_socket.addFunction(event_finish)
+
+                return __clickAction
+
+            with parallel.addRepeatTask() as (source_repeat, source_until):
+                event_finish = Event(item)
+                source_repeat.addScope(makeClickAction(item, event_finish))
+                source_until.addEvent(event_finish)
+
+        source.addScope(self._playFinalAnimation)
+        source.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
     def _onDeactivate(self):
         super(FinalStage, self)._onDeactivate()
 
-        for tc in self.tcs:
-            tc.cancel()
-        self.tcs = []
+        if self.layout_box is not None:
+            self.layout_box.finalize()
+            self.layout_box = None
 
         if self.drop_panel is not None:
             self.drop_panel.onFinalize()
@@ -107,29 +129,13 @@ class FinalStage(BaseEntity):
 
         self.scene_name = None
 
-    # - DropLevel ----------------------------------------------------------------------------------------------------
+    # - DropLevel ------------------------------------------------------------------------------------------------------
 
     def _initDropLevel(self):
-        drop_panel_size = self.drop_panel.getSize()
-        _, _, header_height, banner_height, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        frame_begin_x = viewport.begin.x
-        frame_begin_y = viewport.begin.y + header_height
-        frame_end_x = viewport.end.x
-        frame_end_y = viewport.end.y - banner_height - drop_panel_size.y
-        frame_points = Mengine.vec4f(frame_begin_x, frame_begin_y, frame_end_x, frame_end_y)
-
         self.drop_level = DropLevel()
-        self.drop_level.onInitialize(frame_points, self.scene_name)
-
-    def _attachDropLevel(self):
-        _, _, header_height, _, viewport, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        drop_level_size = self.drop_level.getSize()
-        pos_y = viewport.begin.y + header_height + drop_level_size.y / 2
+        self.drop_level.onInitialize(self.scene_name)
 
         drop_level_slot = self.content.getMovieSlot(SLOT_DROP_LEVEL)
-        drop_level_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
         self.drop_level.attachTo(drop_level_slot)
 
     # - DropPanel ----------------------------------------------------------------------------------------------------
@@ -139,87 +145,60 @@ class FinalStage(BaseEntity):
         movie_panel = self.object.getObject(MOVIE_PANEL)
         self.drop_panel.onInitialize(movie_panel, self.items)
 
-    def _attachDropPanel(self):
-        _, game_height, _, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
-
-        drop_panel_size = self.drop_panel.getSize()
-        pos_y = game_height - banner_height - drop_panel_size.y / 2
-
         drop_panel_slot = self.content.getMovieSlot(SLOT_DROP_PANEL)
-        drop_panel_slot.setWorldPosition(Mengine.vec2f(x_center, pos_y))
         self.drop_panel.attachTo(drop_panel_slot)
 
-    # - TaskChain ------------------------------------------------------------------------------------------------------
+    # - FinalStage -----------------------------------------------------------------------------------------------------
 
-    def _createTaskChain(self, name, **params):
-        tc_base = self.__class__.__name__
-        tc = TaskManager.createTaskChain(Name=tc_base+"_"+name, **params)
-        self.tcs.append(tc)
-        return tc
+    def _setupLayoutBox(self):
+        # HEADER
+        def _getHeaderSize():
+            header_size = AdjustableScreenUtils.getHeaderSize()
+            return (header_size.x, header_size.y)
+
+        # DROP LEVEL
+        def _getDropLevelSize():
+            drop_level_size = self.drop_level.getSize()
+            return (drop_level_size.x, drop_level_size.y)
+
+        def _setDropLevelPos(layout_box, layout_offset, layout_size):
+            game_center = AdjustableScreenUtils.getGameCenter()
+            drop_level_slot = self.content.getMovieSlot(SLOT_DROP_LEVEL)
+            drop_level_slot.setWorldPosition((game_center.x, layout_offset[1] + layout_size[1]/2))
+
+        # DROP PANEL
+        def _getDropPanelSize():
+            drop_panel_size = self.drop_panel.getSize()
+            return (drop_panel_size.x, drop_panel_size.y)
+
+        def _setDropPanelPos(layout_box, layout_offset, layout_size):
+            game_center = AdjustableScreenUtils.getGameCenter()
+            drop_panel_slot = self.content.getMovieSlot(SLOT_DROP_PANEL)
+            drop_panel_slot.setWorldPosition((game_center.x, layout_offset[1] + layout_size[1]/2))
+
+        # BANNER
+        def _getBannerSize():
+            banner_width = AdjustableScreenUtils.getActualBannerWidth()
+            banner_height = AdjustableScreenUtils.getActualBannerHeight()
+            return (banner_width, banner_height)
+
+        # LAYOUT BOX
+        def _getLayoutBoxSize():
+            return AdjustableScreenUtils.getGameWidth(), AdjustableScreenUtils.getGameHeight()
+
+        self.layout_box = LayoutBox(_getLayoutBoxSize)
+
+        with LayoutBox.BuilderVertical(self.layout_box) as vertical:
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getHeaderSize, None))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getDropLevelSize, _setDropLevelPos))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getDropPanelSize, _setDropPanelPos))
+            vertical.addPadding(1)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
 
     def _findItem(self, remove_item):
         return next((i for i, item in enumerate(self.items) if item is remove_item), None)
-
-    def _runTaskChains(self):
-        with self._createTaskChain("ItemsPick", Repeat=False) as tc:
-            items_to_click = self.items
-            for item, parallel in tc.addParallelTaskList(items_to_click):
-                event_run = Event(item)
-
-                def makeClickAction(this_item, event_finish):
-                    def __clickAction(source):
-                        source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
-                        source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.getObj().getName()))
-
-                        item_index = self._findItem(this_item)
-                        if item_index is None:
-                            return
-
-                        group = GroupManager.getGroup(self.scene_name)
-                        movie_name = this_item.getMovieName()
-                        MovieItem = group.getObject(movie_name)
-                        source.addEnable(MovieItem)
-
-                        attach_item = Item()
-                        attach_item.onInitialize(self, this_item.getObj(), with_box=False)
-
-                        source.addFunction(self._attachToCursor, attach_item)
-
-                        with source.addParallelTask(2) as (scale, click):
-                            scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
-                            scale.addScope(self._scaleAttachItem, attach_item)
-
-                            def __clickRace(click_socket, mouse_up):
-                                click_socket.addTask(
-                                    "TaskMovie2SocketClick",
-                                    SocketName="click",
-                                    Movie2=MovieItem,
-                                    isDown=False,
-                                    isPressed=False,
-                                    UseArrowFilter=False
-                                )
-                                mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
-
-                            with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
-                                mouse_up.addScope(self._playReturnItemToPanelAnimation,
-                                                  this_item,
-                                                  item_index,
-                                                  attach_item)
-
-                                click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
-                                click_socket.addFunction(event_finish)
-
-                    return __clickAction
-
-                with parallel.addRepeatTask() as (source_repeat, source_until):
-                    event_finish = Event(item)
-                    source_repeat.addScope(makeClickAction(item, event_finish))
-                    source_until.addEvent(event_finish)
-
-            tc.addScope(self._playFinalAnimation)
-            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
-
-        pass
 
     def _playFinalAnimation(self, source):
         group = GroupManager.getGroup(self.scene_name)

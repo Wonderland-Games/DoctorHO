@@ -3,27 +3,31 @@ from Foundation.GroupManager import GroupManager
 from Foundation.SceneManager import SceneManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
-from Foundation.TaskManager import TaskManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
+
+
+HARDCODED_LEVEL_HEIGHT = 1536.0
 
 
 class DropLevel(Initializer):
     def __init__(self):
         super(DropLevel, self).__init__()
-        self.tcs = []
         self.root = None
         self.virtual_area = None
         self.va_hotspot = None
         self.box_points = None
         self.items = []
         self.level_group = None
+        self.level_size = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, box_points, scene_name):
-        self.box_points = box_points
+    def _onInitialize(self, scene_name):
         level_group_name = SceneManager.getSceneMainGroupName(scene_name)
         self.level_group = GroupManager.getGroup(level_group_name)
+
+        self._calculateSize()
+        self._defineBoxPoints()
 
         self._initVirtualArea()
 
@@ -31,17 +35,11 @@ class DropLevel(Initializer):
         self._setupVirtualArea()
         self._attachScene()
 
-        self._runTaskChains()
-
         return True
 
     def _onFinalize(self):
         self.box_points = None
         self.items = []
-
-        for tc in self.tcs:
-            tc.cancel()
-        self.tcs = []
 
         if self.root is not None:
             self.root.removeFromParent()
@@ -58,17 +56,9 @@ class DropLevel(Initializer):
             self.va_hotspot = None
 
         self.level_group = None
+        self.level_size = None
 
-    def _createTaskChain(self, name, **params):
-        tc_base = self.__class__.__name__
-        tc = TaskManager.createTaskChain(Name=tc_base+"_"+name, **params)
-        self.tcs.append(tc)
-        return tc
-
-    def _runTaskChains(self):
-        pass
-
-    # - Root -----------------------------------------------------------------------------------------------------------
+     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
@@ -142,20 +132,31 @@ class DropLevel(Initializer):
         scene_node = scene.getParent()
 
         self.virtual_area.add_node(scene_node)
-        self.virtual_area.update_target()
 
-        scene_layer = self.level_group.getMainLayer()
-        scene_size = scene_layer.getSize()
-        box_size = self.getSize()
+        level_size = self.getSize()
+        scene_main_layer = self.level_group.getMainLayer()
+        scene_size = scene_main_layer.getSize()
 
-        _, _, header_y, _, _, _, _ = AdjustableScreenUtils.getMainSizesExt()
-        diff = box_size.y - scene_size.y
-        pos_y = header_y + diff / 2
-        scene_node.setLocalPosition(Mengine.vec2f(0, pos_y))
+        offset_x = (level_size.x - scene_size.x) / 2
+        offset_y = (level_size.y - scene_size.y) / 2
+
+        scene_node.setLocalPosition((offset_x, offset_y))
 
         scene.enable()
 
     def getSize(self):
-        box_width = self.box_points.z - self.box_points.x
-        box_height = self.box_points.w - self.box_points.y
-        return Mengine.vec2f(box_width, box_height)
+        return self.level_size
+
+    def _calculateSize(self):
+        level_group_main_layer = self.level_group.getMainLayer()
+        level_group_main_layer_size = level_group_main_layer.getSize()
+
+        game_width = AdjustableScreenUtils.getGameWidth()
+
+        self.level_size = Mengine.vec2f(
+            min(game_width, level_group_main_layer_size.x),
+            HARDCODED_LEVEL_HEIGHT
+        )
+
+    def _defineBoxPoints(self):
+        self.box_points = Mengine.vec4f(0, 0, self.level_size.x, self.level_size.y)
