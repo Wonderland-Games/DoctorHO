@@ -106,13 +106,14 @@ class QuestBackpack(BaseEntity):
         chapter_quest_items_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
 
 
-        lobby_pos_x = x_center - (game_width / 6.0)
+        lobby_pos_x = x_center
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
         lobby_slot.setWorldPosition(Mengine.vec2f(lobby_pos_x, lobby_pos_y))
 
-        final_stage_x = x_center + (game_width / 6.0)
+        final_stage_x = x_center
+        final_stage_y = available_space_y / 2.0
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
-        final_stage_slot.setWorldPosition(Mengine.vec2f(final_stage_x, lobby_pos_y))
+        final_stage_slot.setWorldPosition(Mengine.vec2f(final_stage_x, final_stage_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
