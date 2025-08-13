@@ -16,7 +16,6 @@ class DropLevel(Initializer):
         self.virtual_area = None
         self.va_hotspot = None
         self.box_points = None
-        self.items = []
         self.level_group = None
         self.level_size = None
 
@@ -39,18 +38,17 @@ class DropLevel(Initializer):
 
     def _onFinalize(self):
         self.box_points = None
-        self.items = []
 
-        if self.root is not None:
+        if self.root:
             self.root.removeFromParent()
             Mengine.destroyNode(self.root)
             self.root = None
 
-        if self.virtual_area is not None:
+        if self.virtual_area:
             self.virtual_area.onFinalize()
             self.virtual_area = None
 
-        if self.va_hotspot is not None:
+        if self.va_hotspot:
             self.va_hotspot.removeFromParent()
             Mengine.destroyNode(self.va_hotspot)
             self.va_hotspot = None
