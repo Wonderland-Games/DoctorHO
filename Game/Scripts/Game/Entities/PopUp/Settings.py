@@ -1,5 +1,6 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from Game.Managers.GameManager import GameManager
+from Foundation.SceneManager import SceneManager
 
 
 SLOT_SOUND = "Sound"
@@ -9,6 +10,7 @@ SLOT_LANGUAGES = "Languages"
 SLOT_SUPPORT = "Support"
 SLOT_CREDITS = "Credits"
 SLOT_LOBBY = "Lobby"
+SLOT_QUEST_BACKPACK = "QuestBackpack"
 
 
 class Settings(PopUpContent):
@@ -82,9 +84,7 @@ class Settings(PopUpContent):
     def _setupButtons(self):
         buttons = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
 
-        current_level_id = GameManager.getCurrentGameParam("LevelId")
-        if current_level_id is not None and _DEVELOPMENT is True:
-            buttons.append(SLOT_LOBBY)
+        self._addOptionalButtons(buttons)
 
         for name in buttons:
             container = self._generateContainter(name)
@@ -108,6 +108,8 @@ class Settings(PopUpContent):
         button_slots = [SLOT_LANGUAGES, SLOT_SUPPORT, SLOT_CREDITS]
         if SLOT_LOBBY in self.buttons.keys():
             button_slots.append(SLOT_LOBBY)
+        if SLOT_QUEST_BACKPACK in self.buttons.keys():
+            button_slots.append(SLOT_QUEST_BACKPACK)
 
         # setup layout
         with LayoutBox.BuilderVertical(self.layout_box) as vertical:
@@ -135,6 +137,22 @@ class Settings(PopUpContent):
                 else:
                     # bot padding
                     vertical.addPadding(1.5)
+
+    def _isFinalStageScene(self):
+        scene_name = SceneManager.getCurrentSceneName()
+        if "FinalStage" in scene_name:
+            return True
+        else:
+            return False
+
+    def _addOptionalButtons(self, buttons):
+        current_level_id = GameManager.getCurrentGameParam("LevelId")
+        if current_level_id is not None and _DEVELOPMENT is True:
+            buttons.append(SLOT_LOBBY)
+
+        # If current scene is FinalStage we can return to QuestBackpack
+        if self._isFinalStageScene() is True and _DEVELOPMENT is True:
+            buttons.append(SLOT_QUEST_BACKPACK)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -193,6 +211,12 @@ class Settings(PopUpContent):
                 tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_lobby.movie)
                 tc.addScope(self._scopeLobby)
 
+        button_quest_backpack = self.buttons.get(SLOT_QUEST_BACKPACK)
+        if button_quest_backpack is not None:
+            with self._createTaskChain(SLOT_QUEST_BACKPACK) as tc:
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=button_quest_backpack.movie)
+                tc.addScope(self._scopeQuestBackpack)
+
     def _scopeSound(self, source, checkbox, value):
         source.addFunction(checkbox.setParam, "Value", value)
         source.addFunction(Mengine.changeCurrentAccountSetting, "MuteSound", unicode(value))
@@ -215,3 +239,8 @@ class Settings(PopUpContent):
         source.addNotify(Notificator.onPopUpHide)
         source.addFunction(GameManager.removeGame)
         source.addNotify(Notificator.onChangeScene, SLOT_LOBBY)
+
+    def _scopeQuestBackpack(self, source):
+        source.addNotify(Notificator.onPopUpHide)
+        source.addFunction(GameManager.removeGame)
+        source.addNotify(Notificator.onChangeScene, SLOT_QUEST_BACKPACK)

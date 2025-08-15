@@ -32,6 +32,8 @@ def onInitialize():
 
         "onLevelStart",
         "onLevelEnd",
+        "onDropFail",
+        "onDropSuccess",
         "onLevelMissClicked",
         "onLevelHintClicked",
         "onMissClickEffect",
@@ -64,6 +66,7 @@ def onInitialize():
         "Loading",
         "Lobby",
         "GameArea",
+        "FinalStage",
         "MissClick",
         {"name": "AdvertisingScene", "override": True},
         "QuestBackpack",

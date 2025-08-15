@@ -1,0 +1,6 @@
+<DataBlock Name = "02_FinalStage">
+    <Resource Name = "02_FinalStage/Layer2D_Main/Sprite_Background/Sprite_Background" Type = "ResourceImageDefault">
+        <File Path = "Art/02_FinalStage/Layer2D_Main/Sprite_Background/Sprite_Background.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
+    </Resource>
+    <Include Path = "Movies2/02_FinalStage/02_FinalStage.bin"/>
+</DataBlock>
