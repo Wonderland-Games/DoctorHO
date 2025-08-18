@@ -36,6 +36,7 @@ class FinalStage(BaseScopeEntity):
         self.scene_name = None
         self.layout_box = None
         self.attached_items = []
+        self.movie_items = []
 
     # - ScopeBaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -65,11 +66,10 @@ class FinalStage(BaseScopeEntity):
 
                     movie_info = this_item.getMovieInfo()
                     MovieItem = GroupManager.getObject(movie_info["group"], movie_info["name"])
+                    #self.movie_items.append(MovieItem)
                     source.addEnable(MovieItem)
 
                     attach_item = Item()
-                    print("__clickAction: this_item:{}".format(this_item.getObj().getName()))
-                    print("__clickAction: attach_item.onInitialize")
                     attach_item.onInitialize(self, this_item.getObj(), with_box=False)
                     self.attached_items.append(attach_item)
 
@@ -117,20 +117,20 @@ class FinalStage(BaseScopeEntity):
         source.addScope(self._playFinalAnimation)
         source.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
-    def _finalizeAndClear(self, attr_name):
-        obj = getattr(self, attr_name)
-        if obj is not None:
-            finalize = getattr(obj, "onFinalize", getattr(obj, "finalize", None))
-            if callable(finalize):
-                finalize()
-            setattr(self, attr_name, None)
-
     def _onDeactivate(self):
         super(FinalStage, self)._onDeactivate()
 
-        self._finalizeAndClear("layout_box")
-        self._finalizeAndClear("drop_panel")
-        self._finalizeAndClear("drop_level")
+        if self.layout_box:
+            self.layout_box.finalize()
+            self.layout_box = None
+
+        if self.drop_panel:
+            self.drop_panel.onFinalize()
+            self.drop_panel = None
+
+        if self.drop_level:
+            self.drop_level.onFinalize()
+            self.drop_level = None
 
         for item in self.items:
             item.onFinalize()
@@ -139,6 +139,10 @@ class FinalStage(BaseScopeEntity):
         for item in self.attached_items:
             self._finalizeAttachedItem(item)
         self.attached_items = []
+
+        for item in self.movie_items:
+            item.onFinalize()
+        self.movie_items = []
 
         self.scene_name = None
 
@@ -211,7 +215,13 @@ class FinalStage(BaseScopeEntity):
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
 
     def _findItem(self, remove_item):
-        return next((i for i, item in enumerate(self.items) if item is remove_item), None)
+        index = None
+        for i, item in enumerate(self.items):
+            if item is remove_item:
+                index = i
+                break
+
+        return index
 
     def _playFinalAnimation(self, source):
         MovieItem = GroupManager.getObject(self.scene_name, "Movie2_Final")
@@ -272,8 +282,11 @@ class FinalStage(BaseScopeEntity):
         return current_chapter_data.getChapterId()
 
     def _attachToCursor(self, attach_item):
-        ArrowManager.attachArrow(attach_item.getRoot())
-        Mengine.getArrow().getNode().addChildFront(attach_item.getRoot())
+        attach_item_root = attach_item.getRoot()
+        ArrowManager.attachArrow(attach_item_root)
+        arrow = Mengine.getArrow()
+        arrow_node = arrow.getNode()
+        arrow_node.addChildFront(attach_item_root)
 
     def _moveLevelItemToPanelItem(self, source, drop_item, attach_item):
         # generate level item pure sprite
@@ -286,7 +299,6 @@ class FinalStage(BaseScopeEntity):
         item_moving_node.setName("BezierFollow")
 
         item_moving_node.setWorldPosition(attach_item.sprite_node.getWorldPosition())
-        print(attach_item.sprite_node.getWorldPosition())
 
         item_moving_node.addChild(item_pure)
         self.addChild(item_moving_node)
