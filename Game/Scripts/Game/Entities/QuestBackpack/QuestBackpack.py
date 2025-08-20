@@ -105,15 +105,11 @@ class QuestBackpack(BaseEntity):
         chapter_quest_items_slot = self.content.getMovieSlot(SLOT_CHAPTER_QUEST_ITEMS)
         chapter_quest_items_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
 
-
-        lobby_pos_x = x_center
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
-        lobby_slot.setWorldPosition(Mengine.vec2f(lobby_pos_x, lobby_pos_y))
+        lobby_slot.setWorldPosition(Mengine.vec2f(x_center, lobby_pos_y))
 
-        final_stage_x = x_center
-        final_stage_y = available_space_y / 2.0
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
-        final_stage_slot.setWorldPosition(Mengine.vec2f(final_stage_x, final_stage_y))
+        final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, available_space_y / 2.0))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -130,17 +126,17 @@ class QuestBackpack(BaseEntity):
 
         with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage.movie)
-            current_scene = self._getCurrentFinalStageScene()
-            tc.addNotify(Notificator.onChangeScene, current_scene)
+            tc.addScope(self._setFinalStageScene)
 
         if len(self.chapter_quest_items.quest_items.items()) > 0:
             self._runChapterQuestItemsTaskChains()
 
-    def _getCurrentFinalStageScene(self):
+    def _setFinalStageScene(self, source):
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
         chapter_id = current_chapter_data.getChapterId()
-        return "{:02d}_FinalStage".format(chapter_id)
+        final_stage = "{:02d}_FinalStage".format(chapter_id)
+        source.addNotify(Notificator.onChangeScene, final_stage)
 
     def _runChapterQuestItemsTaskChains(self):
         popup_object = DemonManager.getDemon("PopUp")

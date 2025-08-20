@@ -136,9 +136,6 @@ class SystemGame(System):
         if self.existTaskChain("SearchPanelLives") is True:
             self.removeTaskChain("SearchPanelLives")
 
-        if self.existTaskChain("FinalStageItemsPick") is True:
-            self.removeTaskChain("FinalStageItemsPick")
-
     def _onCallRewardedAd(self, reward):
         tc_name = "GameRewardedAd"
 
