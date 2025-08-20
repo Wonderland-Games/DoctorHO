@@ -14,6 +14,7 @@
 	<Text Key="ID_Settings_Support" Value="Tech Support" />
 	<Text Key="ID_Settings_Credits" Value="Credits" />
 	<Text Key="ID_Settings_Lobby" Value="Return to Lobby" />
+	<Text Key="ID_Settings_QuestBackpack" Value="Backpack" />
 	
 	<Text Key="ID_LevelLost_Ad" Value="Watch Ad" />
 	<Text Key="ID_LevelLost_Restart" Value="Restart Level" />

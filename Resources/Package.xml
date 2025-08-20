@@ -8,6 +8,7 @@
 		<Resource Path="Resources/Lobby.bin" />
 		<Resource Path="Resources/MissClick.bin" />
 		<Resource Path="Resources/GameArea.bin" />
+		<Resource Path="Resources/FinalStage.bin" />
 		<Resource Path="Resources/Advertising.bin" />
 		<Resource Path="Resources/QuestBackpack.bin" />
 		<Resource Path="Resources/Cutscene.bin" />
@@ -36,6 +37,8 @@
 		<Resource Path="Resources/02_Titan.bin" />
 		<Resource Path="Resources/02_Venus.bin" />
 		<Resource Path="Resources/02_Moon.bin" />
+		<Resource Path="Resources/01_FinalStage.bin" />
+		<Resource Path="Resources/02_FinalStage.bin" />
 		
 		<Resource Path="Resources/Intro.bin" />
 		<Resource Path="Resources/Cutscene_01.bin" />

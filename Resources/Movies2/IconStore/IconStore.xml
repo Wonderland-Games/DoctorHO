@@ -9,6 +9,9 @@
 	<Resource Name="0d/5219a328e8418e91afd90ae293b5f3fbcb3b6a.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/0d/5219a328e8418e91afd90ae293b5f3fbcb3b6a.png" MaxSize="119;119" />
 	</Resource>
+	<Resource Name="24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" MaxSize="300;300" Size="242;271" Offset="27;14" />
+	</Resource>
 	<Resource Name="a2/33ea897adf374111c56194f94e4e7b3465f961.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/a2/33ea897adf374111c56194f94e4e7b3465f961.png" MaxSize="82;72" Size="82;71" />
 	</Resource>
@@ -29,6 +32,9 @@
 	</Resource>
 	<Resource Name="ff/5a6232d09f01794c63224e3647b1ee41811e7e.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/ff/5a6232d09f01794c63224e3647b1ee41811e7e.png" MaxSize="125;119" Size="119;114" Offset="3;2" />
+	</Resource>
+	<Resource Name="4a/59e028d362ded1383641641b179dda70a87358.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/4a/59e028d362ded1383641641b179dda70a87358.png" MaxSize="148;148" Size="113;112" Offset="17;18" />
 	</Resource>
 	<Resource Name="7e/63c971c04ce4343d02c0e6c99bcc3ecfc48de4.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/7e/63c971c04ce4343d02c0e6c99bcc3ecfc48de4.png" MaxSize="95;98" />
@@ -56,6 +62,9 @@
 		<Composition Name="Credits" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Credits.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;90.5;90.5;0.0;1.0" TrackMatte="0" />
 		</Composition>
+		<Composition Name="FinalStage" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="FinalStage.png" Type="Image" TrackMatte="0" />
+		</Composition>
 		<Composition Name="Heart" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-50.0234375;-50.0234375;49.9921875;49.9921875">
 			<Layer Index="0" Name="Heart.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;109.0;114.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
@@ -82,6 +91,9 @@
 		</Composition>
 		<Composition Name="PopUpButton_Close" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Medium Blue Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;100.0;100.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="QuestBackpack" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="QuestBackpack.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;76.0;76.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
 		<Composition Name="Settings" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Settings.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;102.5;101.0;0.0;1.0" TrackMatte="0" />

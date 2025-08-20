@@ -10,7 +10,9 @@ from Game.Entities.QuestBackpack.ChapterQuestItems import ChapterQuestItems
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_QUEST_ITEMS = "ChapterQuestItems"
 SLOT_LOBBY = "Lobby"
+SLOT_FINAL_STAGE = "FinalStage"
 PROTOTYPE_LOBBY = "Lobby"
+PROTOTYPE_FINAL_STAGE = "FinalStage"
 
 CHAPTER_QUEST_ITEMS_SPACE_PERCENT = 0.7
 LOBBY_SPACE_PERCENT = 0.3
@@ -23,6 +25,7 @@ class QuestBackpack(BaseEntity):
         self.tcs = []
         self.chapter_quest_items = None
         self.lobby = None
+        self.final_stage = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
@@ -33,6 +36,7 @@ class QuestBackpack(BaseEntity):
 
         self._setupChapterQuestItems()
         self._setupLobby()
+        self._setupFinalStage()
         self._setupSlotsPositions()
 
     def _onActivate(self):
@@ -52,6 +56,10 @@ class QuestBackpack(BaseEntity):
         if self.lobby is not None:
             self.lobby.onDestroy()
             self.lobby = None
+
+        if self.final_stage is not None:
+            self.final_stage.onDestroy()
+            self.final_stage = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -76,8 +84,16 @@ class QuestBackpack(BaseEntity):
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
         lobby_slot.addChild(lobby_node)
 
+    def _setupFinalStage(self):
+        self.final_stage = PrototypeManager.generateObjectContainer(PROTOTYPE_FINAL_STAGE, PROTOTYPE_FINAL_STAGE)
+        self.final_stage.setEnable(True)
+
+        final_stage_node = self.final_stage.getEntityNode()
+        final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
+        final_stage_slot.addChild(final_stage_node)
+
     def _setupSlotsPositions(self):
-        _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
+        game_width, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         available_space_y = game_height - banner_height - top_offset
 
         chapter_quest_items_space_y = available_space_y * CHAPTER_QUEST_ITEMS_SPACE_PERCENT
@@ -92,6 +108,9 @@ class QuestBackpack(BaseEntity):
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
         lobby_slot.setWorldPosition(Mengine.vec2f(x_center, lobby_pos_y))
 
+        final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
+        final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, available_space_y / 2.0))
+
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
     def _createTaskChain(self, name, **params):
@@ -105,8 +124,19 @@ class QuestBackpack(BaseEntity):
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
             tc.addNotify(Notificator.onChangeScene, "Lobby")
 
+        with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage.movie)
+            tc.addScope(self._setFinalStageScene)
+
         if len(self.chapter_quest_items.quest_items.items()) > 0:
             self._runChapterQuestItemsTaskChains()
+
+    def _setFinalStageScene(self, source):
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        final_stage = "{:02d}_FinalStage".format(chapter_id)
+        source.addNotify(Notificator.onChangeScene, final_stage)
 
     def _runChapterQuestItemsTaskChains(self):
         popup_object = DemonManager.getDemon("PopUp")

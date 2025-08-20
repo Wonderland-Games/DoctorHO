@@ -59,6 +59,7 @@ class SystemUI(BaseSystem):
             "Settings_Support",
             "Settings_Credits",
             "Settings_Lobby",
+            "Settings_QuestBackpack",
 
             "LevelLost_Ad",
             "LevelLost_Restart",
