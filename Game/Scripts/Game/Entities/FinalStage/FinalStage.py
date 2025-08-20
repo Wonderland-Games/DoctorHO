@@ -75,7 +75,7 @@ class FinalStage(BaseScopeEntity):
 
                     source.addFunction(self._attachToCursor, attach_item)
 
-                    with source.addParallelTask(2) as (scale, click):
+                    with source.addParallelTask(3) as (scale, click, center):
                         scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
                         scale.addTask("TaskNodeScaleTo",
                                       Node=attach_item.sprite,
@@ -83,6 +83,9 @@ class FinalStage(BaseScopeEntity):
                                       From=attach_item.getSpriteScale(),
                                       To=(1.0, 1.0, 1.0),
                                       Time=SCENE_ANIMATION_TIME)
+
+                        point = self._getNodeCenter(attach_item.sprite)
+                        center.addTask("TaskNodeSetOrigin", Node=attach_item.sprite, Value=point)
 
                         def __clickRace(click_socket, mouse_up):
                             click_socket.addTask(
@@ -350,3 +353,11 @@ class FinalStage(BaseScopeEntity):
         if item in self.attached_items:
             self.attached_items.remove(item)
         item.onFinalize()
+
+    def _getNodeCenter(self, node):
+        point = node.getLocalPosition()
+        size = node.getSurfaceSize()
+        point.x += size.x / 2
+        point.y += size.y / 2
+
+        return point

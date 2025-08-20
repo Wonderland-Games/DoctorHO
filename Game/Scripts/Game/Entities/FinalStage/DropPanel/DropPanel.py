@@ -1,7 +1,5 @@
-from Foundation.ArrowManager import ArrowManager
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
-from Game.Entities.GameArea.SearchPanel.Item import Item
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
