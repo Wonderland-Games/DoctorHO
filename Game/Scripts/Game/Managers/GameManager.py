@@ -370,7 +370,7 @@ class GameManager(Manager):
     def runLevelStartAdvertisement(scene_name):
         """ Do not forget to call setupLevelStartAdvertisement() before. """
         system_advertising = SystemManager.getSystem("SystemAdvertising")
-        system_advertising.tryInterstitial(scene_name, "{}_level_start".format(scene_name))
+        system_advertising.tryInterstitial({"SceneName": scene_name}, "{}_level_start".format(scene_name))
 
     # - Authentication / Register --------------------------------------------------------------------------------------
 
