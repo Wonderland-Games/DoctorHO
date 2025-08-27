@@ -6,6 +6,7 @@ class DatabaseSceneSlots_GameArea(Database):
         self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="GameArea", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Level", Type="Layer2D", Width=2736, Height=1536, Main=1)
+        self.addRecord(Name="LevelZones", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="GameHeader", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="DummyBanner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
         self.addRecord(Name="MissClick", Type="Layer2D", Width=2736, Height=1536)

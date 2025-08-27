@@ -32,5 +32,6 @@ class DatabaseGroups(Database):
         self.addRecord(GroupName="Intro")
         self.addRecord(GroupName="Cutscene_01")
         self.addRecord(GroupName="Cutscene_02")
+        self.addRecord(GroupName="LevelZones")
         pass
     pass

@@ -9,6 +9,7 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 HARDCODED_LEVEL_HEIGHT = 1536.0
+LEVEL_ZONES = "LevelZones"
 
 
 class SearchLevel(Initializer):
@@ -41,6 +42,7 @@ class SearchLevel(Initializer):
         self._setupMissClick()
         self._setupVirtualArea()
         self._attachScene()
+        self._attachLevelZones()
         self._fillItems()
         return True
 
@@ -186,6 +188,24 @@ class SearchLevel(Initializer):
         scene_node.setLocalPosition((offset_x, offset_y))
 
         scene.enable()
+
+    def _attachLevelZones(self):
+        if _DEVELOPMENT is False:
+            return
+
+        level_zones_sprite = GroupManager.getObject(LEVEL_ZONES, "Sprite_{}".format(LEVEL_ZONES))
+        level_zones_sprite_node = level_zones_sprite.getEntityNode()
+
+        self.virtual_area.add_node(level_zones_sprite_node)
+
+        level_size = self.getSize()
+        scene_main_layer = self.level_group.getMainLayer()
+        scene_size = scene_main_layer.getSize()
+
+        offset_x = (level_size.x - scene_size.x) / 2
+        offset_y = (level_size.y - scene_size.y) / 2
+
+        level_zones_sprite_node.setLocalPosition((offset_x, offset_y))
 
     def getSize(self):
         return self.level_size

@@ -1,0 +1,5 @@
+<DataBlock Name = "LevelZones">
+    <Resource Name = "LevelZones/Layer2D_Main/Sprite_LevelZones/Sprite_LevelZones" Type = "ResourceImageDefault">
+        <File Path = "Art/LevelZones/Layer2D_Main/Sprite_LevelZones/Sprite_LevelZones.png" Codec = "pngImage"  MaxSize = "2048;2048"/>
+    </Resource>
+</DataBlock>

@@ -41,5 +41,7 @@
 		<Resource Path="Resources/Cutscene_01.bin" />
 		<Resource Path="Resources/Cutscene_02.bin" />
 		
+		<Resource Path="Resources/LevelZones.bin" />
+		
 	</Resources>
 </Pak>
