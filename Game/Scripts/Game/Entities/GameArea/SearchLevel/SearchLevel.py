@@ -190,7 +190,12 @@ class SearchLevel(Initializer):
         scene.enable()
 
     def _attachLevelZones(self):
-        if _DEVELOPMENT is False:
+        checks = [
+            _DEVELOPMENT,
+            GroupManager.hasGroup(LEVEL_ZONES),
+            GroupManager.hasObject(LEVEL_ZONES, "Sprite_{}".format(LEVEL_ZONES)),
+        ]
+        if not all(checks):
             return
 
         level_zones_sprite = GroupManager.getObject(LEVEL_ZONES, "Sprite_{}".format(LEVEL_ZONES))
