@@ -26,9 +26,11 @@ class DatabaseIcons(Database):
         self.addORM(RecordIcons("Support", None, "Support", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Support", Play=False, Loop=False)))
         self.addORM(RecordIcons("Credits", None, "Credits", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Credits", Play=False, Loop=False)))
         self.addORM(RecordIcons("Lobby", None, "Lobby", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Lobby", Play=False, Loop=False)))
+        self.addORM(RecordIcons("QuestBackpack", None, "QuestBackpack", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="QuestBackpack", Play=False, Loop=False)))
         self.addORM(RecordIcons("Advertising", "Medium", "Advertising", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Advertising_Medium", Play=False, Loop=False)))
         self.addORM(RecordIcons("Advertising", "Small", "Advertising", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Advertising_Small", Play=False, Loop=False)))
         self.addORM(RecordIcons("Backpack", None, "Backpack", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="Backpack", Play=False, Loop=False)))
+        self.addORM(RecordIcons("FinalStage", None, "FinalStage", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="FinalStage", Play=False, Loop=False)))
         self.addORM(RecordIcons("InvestigationBoard", None, "InvestigationBoard", "Movie2", Params=dict(ResourceMovie="Movie2_IconStore", CompositionName="InvestigationBoard", Play=False, Loop=False)))
 
         self.makeIndexer("Prototype")
