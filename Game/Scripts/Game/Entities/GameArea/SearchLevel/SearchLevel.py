@@ -8,6 +8,7 @@ from Game.Entities.GameArea.SearchLevel.MissClick import MissClick
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
+HARDCODED_LEVEL_WIDTH = 1170.0
 HARDCODED_LEVEL_HEIGHT = 1536.0
 LEVEL_ZONES = "LevelZones"
 
@@ -164,8 +165,9 @@ class SearchLevel(Initializer):
         # game_height = AdjustableScreenUtils.getGameHeight()
 
         self.level_size = Mengine.vec2f(
-            min(game_width,  level_group_main_layer_size.x),
+            # min(game_width,  level_group_main_layer_size.x),
             # min(game_height, level_group_main_layer_size.y)
+            HARDCODED_LEVEL_WIDTH,
             HARDCODED_LEVEL_HEIGHT  # hardcoded for now, because of the game design
         )
 
