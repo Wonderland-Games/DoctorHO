@@ -2,7 +2,7 @@
 <DataBlock Name="Header">
 	<Resource Name="Movie2_Header" Type="ResourceMovie2">
 		<File Path="Movies2/Header/Header.aez" />
-		<Composition Name="Content" Duration="0.533333361148834228515625" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="0.125;0.125;2737.0;307.5">
+		<Composition Name="Content" Duration="0.533333361148834228515625" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="0.0;0.0;2736.001953125;150.0">
 			<Layer Index="0" Name="settings" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
 	</Resource>

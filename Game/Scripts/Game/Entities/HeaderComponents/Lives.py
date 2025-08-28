@@ -72,7 +72,7 @@ class Lives(HeaderComponent):
         self.background = PrototypeManager.generateObjectUniqueOnNode(self._root, PROTOTYPE_BG, PROTOTYPE_BG)
         self.background.setEnable(True)
 
-    def _getBackgroundSize(self):
+    def getSize(self):
         background_bounds = self.background.getCompositionBounds()
         background_size = Utils.getBoundingBoxSize(background_bounds)
         return background_size

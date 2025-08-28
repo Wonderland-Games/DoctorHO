@@ -1,5 +1,4 @@
 from MobileKit.Entities.Header.Header import Header as HeaderBase
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Entities.HeaderComponents.Settings import Settings
 from Foundation.SceneManager import SceneManager
 
@@ -15,13 +14,14 @@ class Header(HeaderBase):
         super(Header, self).__init__()
 
     def _adjustSlotsPositions(self):
-        header_width, _, header_height, _, viewport, _, _ = AdjustableScreenUtils.getMainSizesExt()
+        viewport = Mengine.getGameViewport()
+        header_size = self.object.getSize()
 
         if self.movie_content.hasSlot(Settings.slot_name):
             slot = self.movie_content.getMovieSlot(Settings.slot_name)
             slot.setWorldPosition(Mengine.vec2f(
-                viewport.begin.x + header_width * 0.85,
-                viewport.begin.y + header_height * 0.5
+                viewport.begin.x + header_size.x * 0.9,
+                viewport.begin.y + header_size.y * 0.5
             ))
 
     def _setup(self):
