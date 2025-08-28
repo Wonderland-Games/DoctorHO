@@ -9,7 +9,7 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 HARDCODED_LEVEL_WIDTH = 1170.0
-HARDCODED_LEVEL_HEIGHT = 1536.0
+HARDCODED_LEVEL_HEIGHT = 1736.0
 LEVEL_ZONES = "LevelZones"
 
 

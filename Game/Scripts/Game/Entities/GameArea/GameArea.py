@@ -136,7 +136,7 @@ class GameArea(BaseEntity):
 
         # SEARCH PANEL
         def _getSearchPanelSize():
-            search_panel_size = self.search_panel.getSizeFull()
+            search_panel_size = self.search_panel.getSize()
             return (search_panel_size.x, search_panel_size.y)
 
         def _setSearchPanelPos(layout_box, layout_offset, layout_size):
