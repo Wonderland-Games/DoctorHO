@@ -22,23 +22,23 @@ class SystemUI(BaseSystem):
                 Trace.msg_err("SystemUI._devAdjustBanner: Movie2_Banner entity is not active!!!!!")
                 return
 
-            # Get banner movie size
+            # Get dummy banner size
             dummy_banner_bounds = dummy_banner.getCompositionBounds()
             dummy_banner_size = Utils.getBoundingBoxSize(dummy_banner_bounds)
 
-            # Get dummy advertisement banner size
+            # Get advertisement banner size
             ad_banner_width = AdjustableScreenUtils.getActualBannerWidth()
             ad_banner_height = AdjustableScreenUtils.getActualBannerHeight()
 
-            # Get banner movie node
+            # Get dummy banner node
             dummy_banner_node = dummy_banner.getEntityNode()
 
-            # Set banner movie scale
+            # Set dummy banner scale
             scale_width = ad_banner_width / dummy_banner_size.x
             scale_height = ad_banner_height / dummy_banner_size.y
             dummy_banner_node.setScale((scale_width, scale_height, 1.0))
 
-            # Set banner movie position
+            # Set dummy banner position
             game_viewport = Mengine.getGameViewport()
             game_center = AdjustableScreenUtils.getGameCenter()
             dummy_banner_node.setWorldPosition((
