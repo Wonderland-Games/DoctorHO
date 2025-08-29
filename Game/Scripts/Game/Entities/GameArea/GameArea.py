@@ -146,9 +146,8 @@ class GameArea(BaseEntity):
 
         # BANNER
         def _getBannerSize():
-            banner_width = AdjustableScreenUtils.getActualBannerWidth()
-            banner_height = AdjustableScreenUtils.getActualBannerHeight()
-            return (banner_width, banner_height)
+            banner_size = AdjustableScreenUtils.getBannerSize()
+            return (banner_size.x, banner_size.y)
 
         # LAYOUT BOX
         def _getLayoutBoxSize():

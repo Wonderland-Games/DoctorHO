@@ -27,15 +27,14 @@ class SystemUI(BaseSystem):
             dummy_banner_size = Utils.getBoundingBoxSize(dummy_banner_bounds)
 
             # Get advertisement banner size
-            ad_banner_width = AdjustableScreenUtils.getActualBannerWidth()
-            ad_banner_height = AdjustableScreenUtils.getActualBannerHeight()
+            ad_banner_size = AdjustableScreenUtils.getBannerSize()
 
             # Get dummy banner node
             dummy_banner_node = dummy_banner.getEntityNode()
 
             # Set dummy banner scale
-            scale_width = ad_banner_width / dummy_banner_size.x
-            scale_height = ad_banner_height / dummy_banner_size.y
+            scale_width = ad_banner_size.x / dummy_banner_size.x
+            scale_height = ad_banner_size.y / dummy_banner_size.y
             dummy_banner_node.setScale((scale_width, scale_height, 1.0))
 
             # Set dummy banner position
@@ -43,7 +42,7 @@ class SystemUI(BaseSystem):
             game_center = AdjustableScreenUtils.getGameCenter()
             dummy_banner_node.setWorldPosition((
                 game_center.x,
-                game_viewport.end.y - ad_banner_height / 2
+                game_viewport.end.y - ad_banner_size.y / 2
             ))
 
         with TaskManager.createTaskChain() as tc:
