@@ -25,6 +25,8 @@
 			<Layer Index="0" Name="Hint_Effect_Background.png" Type="Image" Matrix="90.0;0.0;0.0;0.0;0.0;90.0;0.0;0.0;0.0;0.0;1.0;0.0;-72.0;-72.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
 			<Layer Index="1" Name="cutout" Type="Image" Matrix="5.0;0.0;0.0;0.0;0.0;5.0;0.0;0.0;0.0;0.0;1.0;0.0;-640.0;-640.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="1" />
 		</Composition>
-		<Composition Name="SearchPanel" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-550.0;-231.0;550.0;231.0" />
+		<Composition Name="SearchPanel" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-550.0;-187.5;550.0;187.5">
+			<Layer Index="0" Name="block" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
 	</Resource>
 </DataBlock>

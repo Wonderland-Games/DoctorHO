@@ -5,6 +5,7 @@ from Game.Entities.GameArea.SearchPanel.ItemsCounter import ItemsCounter
 from Game.Entities.GameArea.SearchPanel.Hint.Hint import Hint
 from Game.Entities.GameArea.SearchPanel.Hint.HintAd import HintAd
 from UIKit.Managers.PrototypeManager import PrototypeManager
+from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_PANEL = "Movie2_SearchPanel"
@@ -206,9 +207,10 @@ class SearchPanel(Initializer):
         self.root.addChild(movie_panel_node)
 
     def getSize(self):
+        game_width = AdjustableScreenUtils.getGameWidth()
         panel_bounds = self.movie_panel.getCompositionBounds()
-        panel_size = Utils.getBoundingBoxSize(panel_bounds)
-        return Mengine.vec2f(panel_size.x, panel_size.y)
+        panel_bounds_size = Utils.getBoundingBoxSize(panel_bounds)
+        return Mengine.vec2f(game_width, panel_bounds_size.y)
 
     def getSizeFull(self):
         panel_size = self.getSize()
@@ -423,7 +425,7 @@ class SearchPanel(Initializer):
 
         panel_size = self.getSize()
         self.items_counter.attachTo(self.root)
-        self.items_counter.setLocalPosition(((panel_size.x / 2) * 0.85, (panel_size.y / 2) * -0.25))
+        self.items_counter.setLocalPosition(((panel_size.x / 2) * 0.75, (panel_size.y / 2) * -0.35))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
