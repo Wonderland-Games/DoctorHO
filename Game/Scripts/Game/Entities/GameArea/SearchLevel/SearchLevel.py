@@ -9,7 +9,7 @@ from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 HARDCODED_LEVEL_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
-HARDCODED_LEVEL_HEIGHT = 1784.5  # 9:16 aspect ratio free space (game height - header - search panel - banner)
+HARDCODED_LEVEL_HEIGHT = 1750.0  # 9:16 aspect ratio free space (game height - header - search panel - banner - 34.5)
 LEVEL_ZONES = "LevelZones"
 
 

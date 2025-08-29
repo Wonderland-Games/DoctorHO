@@ -159,9 +159,9 @@ class GameArea(BaseEntity):
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getHeaderSize, None))
             vertical.addPadding(1)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getSearchLevelSize, _setSearchLevelPos))
-            vertical.addPadding(1)
+            vertical.addPadding(2)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getSearchPanelSize, _setSearchPanelPos))
-            vertical.addPadding(1)
+            vertical.addPadding(3)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
