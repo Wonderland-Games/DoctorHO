@@ -22,30 +22,28 @@ class SystemUI(BaseSystem):
                 Trace.msg_err("SystemUI._devAdjustBanner: Movie2_Banner entity is not active!!!!!")
                 return
 
-            # Get banner node
-            banner_node = dummy_banner.getEntityNode()
+            # Get banner movie size
+            banner_movie_bounds = dummy_banner.getCompositionBounds()
+            banner_movie_size = Utils.getBoundingBoxSize(banner_movie_bounds)
 
-            # Banner movie size (REMAKE HARDCODE TO SOMETHING MORE AUTOMATIC!)
-            banner_movie_width = 320.0
-            banner_movie_height = 50.0
-
-            # Dummy advertisement banner size
+            # Get dummy advertisement banner size
             banner_width = AdjustableScreenUtils.getActualBannerWidth()
             banner_height = AdjustableScreenUtils.getActualBannerHeight()
 
-            # Set banner scale
-            scale_factor_width = banner_width / banner_movie_width
-            scale_factor_height = banner_height / banner_movie_height
+            # Get banner movie node
+            banner_node = dummy_banner.getEntityNode()
+
+            # Set banner movie scale
+            scale_factor_width = banner_width / banner_movie_size.x
+            scale_factor_height = banner_height / banner_movie_size.y
             banner_node.setScale((scale_factor_width, scale_factor_height, 1.0))
 
-            # Game screen parameters, set banner position
+            # Set banner movie position
             game_viewport = Mengine.getGameViewport()
-            game_width = AdjustableScreenUtils.getGameWidth()
-            game_height = AdjustableScreenUtils.getGameHeight()
-
-            banner_node.setLocalPosition((
-                game_viewport.begin.x + game_width / 2,
-                game_viewport.begin.y + game_height - banner_height / 2
+            game_center = AdjustableScreenUtils.getGameCenter()
+            banner_node.setWorldPosition((
+                game_center.x,
+                game_viewport.end.y - banner_height / 2
             ))
 
         with TaskManager.createTaskChain() as tc:
