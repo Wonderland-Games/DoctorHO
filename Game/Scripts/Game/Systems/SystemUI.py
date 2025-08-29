@@ -23,27 +23,27 @@ class SystemUI(BaseSystem):
                 return
 
             # Get banner movie size
-            banner_movie_bounds = dummy_banner.getCompositionBounds()
-            banner_movie_size = Utils.getBoundingBoxSize(banner_movie_bounds)
+            dummy_banner_bounds = dummy_banner.getCompositionBounds()
+            dummy_banner_size = Utils.getBoundingBoxSize(dummy_banner_bounds)
 
             # Get dummy advertisement banner size
-            banner_width = AdjustableScreenUtils.getActualBannerWidth()
-            banner_height = AdjustableScreenUtils.getActualBannerHeight()
+            ad_banner_width = AdjustableScreenUtils.getActualBannerWidth()
+            ad_banner_height = AdjustableScreenUtils.getActualBannerHeight()
 
             # Get banner movie node
-            banner_node = dummy_banner.getEntityNode()
+            dummy_banner_node = dummy_banner.getEntityNode()
 
             # Set banner movie scale
-            scale_factor_width = banner_width / banner_movie_size.x
-            scale_factor_height = banner_height / banner_movie_size.y
-            banner_node.setScale((scale_factor_width, scale_factor_height, 1.0))
+            scale_width = ad_banner_width / dummy_banner_size.x
+            scale_height = ad_banner_height / dummy_banner_size.y
+            dummy_banner_node.setScale((scale_width, scale_height, 1.0))
 
             # Set banner movie position
             game_viewport = Mengine.getGameViewport()
             game_center = AdjustableScreenUtils.getGameCenter()
-            banner_node.setWorldPosition((
+            dummy_banner_node.setWorldPosition((
                 game_center.x,
-                game_viewport.end.y - banner_height / 2
+                game_viewport.end.y - ad_banner_height / 2
             ))
 
         with TaskManager.createTaskChain() as tc:
