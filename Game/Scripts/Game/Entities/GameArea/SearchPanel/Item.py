@@ -3,7 +3,7 @@ from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
 PROTOTYPE_BOX = "ItemBox"
-ITEM_SCALE_MULTIPLIER = 0.8
+ITEM_SCALE_MULTIPLIER = 0.95
 
 ITEM_REMOVE_SCALE_UP_TO = Mengine.vec3f(1.15, 1.15, 1.15)
 ITEM_REMOVE_SCALE_UP_TIME = 100.0
