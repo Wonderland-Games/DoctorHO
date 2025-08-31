@@ -109,7 +109,7 @@ class QuestBackpack(BaseEntity):
         lobby_slot.setWorldPosition(Mengine.vec2f(x_center, lobby_pos_y))
 
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
-        final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, available_space_y / 2.0))
+        final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
+from Game.Entities.FinalStage.SpriteNode.SpriteNode import SpriteNode
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -69,23 +70,29 @@ class FinalStage(BaseScopeEntity):
                     #self.movie_items.append(MovieItem)
                     source.addEnable(MovieItem)
 
+                    attach_sprite = SpriteNode()
+                    attach_sprite.onInitialize(this_item.getObj())
+                    self.attached_items.append(attach_sprite)
+                    '''
                     attach_item = Item()
                     attach_item.onInitialize(self, this_item.getObj(), with_box=False)
                     self.attached_items.append(attach_item)
+                    '''
 
-                    source.addFunction(self._attachToCursor, attach_item)
+                    #source.addFunction(self._attachToCursor, attach_item)
+                    source.addFunction(self._attachToCursor, attach_sprite)
 
                     with source.addParallelTask(3) as (scale, click, center):
                         scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
                         scale.addTask("TaskNodeScaleTo",
-                                      Node=attach_item.sprite,
+                                      Node=attach_sprite.sprite,
                                       Easing=SCENE_SCALE_EASING,
-                                      From=attach_item.getSpriteScale(),
+                                      From=attach_sprite.getSpriteScale(),
                                       To=(1.0, 1.0, 1.0),
                                       Time=SCENE_ANIMATION_TIME)
 
-                        point = self._getNodeCenter(attach_item.sprite)
-                        center.addTask("TaskNodeSetOrigin", Node=attach_item.sprite, Value=point)
+                        point = self._getNodeCenter(attach_sprite.sprite)
+                        center.addTask("TaskNodeSetOrigin", Node=attach_sprite.sprite, Value=point)
 
                         def __clickRace(click_socket, mouse_up):
                             click_socket.addTask(
@@ -103,12 +110,12 @@ class FinalStage(BaseScopeEntity):
                             mouse_up.addScope(self._playReturnItemToPanelAnimation,
                                               this_item,
                                               item_index,
-                                              attach_item)
+                                              attach_sprite)
 
-                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
+                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_sprite)
                             click_socket.addFunction(event_finish)
 
-                    source.addFunction(self._finalizeAttachedItem, attach_item)
+                    source.addFunction(self._finalizeAttachedItem, attach_sprite)
 
                 return __clickAction
 
@@ -300,8 +307,8 @@ class FinalStage(BaseScopeEntity):
         # create moving node
         item_moving_node = Mengine.createNode("Interender")
         item_moving_node.setName("BezierFollow")
-
-        item_moving_node.setWorldPosition(attach_item.sprite_node.getWorldPosition())
+        attach_item_position = attach_item.getRoot().getWorldPosition()
+        item_moving_node.setWorldPosition(attach_item_position)
 
         item_moving_node.addChild(item_pure)
         self.addChild(item_moving_node)

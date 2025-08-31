@@ -138,20 +138,13 @@ class Settings(PopUpContent):
                     # bot padding
                     vertical.addPadding(1.5)
 
-    def _isFinalStageScene(self):
-        scene_name = SceneManager.getCurrentSceneName()
-        if "FinalStage" in scene_name:
-            return True
-        else:
-            return False
-
     def _addOptionalButtons(self, buttons):
         current_level_id = GameManager.getCurrentGameParam("LevelId")
         if current_level_id is not None and _DEVELOPMENT is True:
             buttons.append(SLOT_LOBBY)
 
         # If current scene is FinalStage we can return to QuestBackpack
-        if self._isFinalStageScene() is True and _DEVELOPMENT is True:
+        if SceneManager.isCurrentSceneFinal() and _DEVELOPMENT:
             buttons.append(SLOT_QUEST_BACKPACK)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
