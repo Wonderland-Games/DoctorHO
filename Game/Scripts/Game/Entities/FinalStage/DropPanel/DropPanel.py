@@ -234,7 +234,7 @@ class DropPanel(Initializer):
                              Easing=ITEMS_MOVE_EASING,
                              To=item_pos)
 
-    def _maybeMoveItemsNode(self, source):
+    def _moveItemsNode(self, source):
         # If items_node needs to be moved, we do it
         items_node_pos = self._calcItemsNodeLocalPosition()
         va_content_width = self.virtual_area.get_content_size()[3]
@@ -259,7 +259,7 @@ class DropPanel(Initializer):
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
         source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._maybeMoveItemsNode)
+        source.addScope(self._moveItemsNode)
 
         source.addFunction(self._updateVirtualArea)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
@@ -272,7 +272,7 @@ class DropPanel(Initializer):
         source.addScope(item.setItemVisible, False)
 
         source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._maybeMoveItemsNode)
+        source.addScope(self._moveItemsNode)
 
         source.addScope(item.playItemCreateAnim)
         source.addFunction(self._updateVirtualArea)
