@@ -136,7 +136,7 @@
 		</Composition>
 		<Composition Name="Quest_Progress" Duration="2.1666667461395263671875" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-75.0546875;-75.0;74.9609375;75.0">
 			<Layer Index="0" Name="Yellow Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;75.0;75.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="1" Name="ID_LevelCard_QuestProgress" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;150.0;150.0;0.0;1.0" Options="26723;30307;24947" TrackMatte="0" />
+			<Layer Index="1" Name="ID_LevelCard_QuestProgress" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;150.0;150.0;0.0;1.0" Options="26723;30307;24947" Dimension="-67.53125;-67.5;67.484375;67.5" TrackMatte="0" />
 		</Composition>
 		<Composition Name="QuestIndicator" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Yellow Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;75.0;75.0;0.0;1.0" TrackMatte="0" />
