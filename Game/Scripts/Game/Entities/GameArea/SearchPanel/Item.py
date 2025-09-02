@@ -37,7 +37,7 @@ class Item(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, panel, item_obj, movie_info=None, with_box=True):
+    def _onInitialize(self, panel, item_obj, movie_info=None):
         self.panel = panel
         self.item_obj = item_obj
         self.movie_info = movie_info
@@ -50,9 +50,6 @@ class Item(Initializer):
         self._createHotSpotPolygon()
         self._scaleSprite()
         self._positionSprite()
-
-        if with_box is False:
-            self.box.setAlpha(0.0)
 
     def _onFinalize(self):
         if self.sprite is not None:
@@ -217,10 +214,8 @@ class Item(Initializer):
 
         source.addPrint(" * END CREATE ITEM ANIM")
 
-    def setItemVisible(self, source, visible):
-        item_alpha = 0.0
-
-        if visible is True:
-            item_alpha = 1.0
-
-        source.addTask("TaskNodeAlphaTo", Node=self.sprite, To=item_alpha, Time=0.001)
+    def setSpriteEnable(self, source, value):
+        if value is True:
+            source.addFunction(self.sprite.enable)
+        else:
+            source.addFunction(self.sprite.disable)

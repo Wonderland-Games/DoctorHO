@@ -9,7 +9,7 @@ from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
-from Game.Entities.FinalStage.SpriteNode.SpriteNode import SpriteNode
+from Game.Entities.FinalStage.FinalStageAttachItem.FinalStageAttachItem import FinalStageAttachItem
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -21,7 +21,6 @@ SLOT_DROP_PANEL = "drop_panel"
 QUEST_ITEM_STORE_GROUP = "QuestItemStore"
 QUEST_ITEM_NAME = "Item_{}_{}"
 
-SCENE_NAME_TEMPLATE = "{:02d}_FinalStage"
 SCENE_ANIMATION_TIME = 1000.0
 SCENE_MOVE_EASING = "easyCubicIn"
 SCENE_SCALE_EASING = "easyBackOut"
@@ -67,32 +66,25 @@ class FinalStage(BaseScopeEntity):
 
                     movie_info = this_item.getMovieInfo()
                     MovieItem = GroupManager.getObject(movie_info["group"], movie_info["name"])
-                    #self.movie_items.append(MovieItem)
                     source.addEnable(MovieItem)
 
-                    attach_sprite = SpriteNode()
-                    attach_sprite.onInitialize(this_item.getObj())
-                    self.attached_items.append(attach_sprite)
-                    '''
-                    attach_item = Item()
-                    attach_item.onInitialize(self, this_item.getObj(), with_box=False)
+                    attach_item = FinalStageAttachItem()
+                    attach_item.onInitialize(this_item.getObj())
                     self.attached_items.append(attach_item)
-                    '''
 
-                    #source.addFunction(self._attachToCursor, attach_item)
-                    source.addFunction(self._attachToCursor, attach_sprite)
+                    source.addFunction(self._attachToCursor, attach_item)
 
                     with source.addParallelTask(3) as (scale, click, center):
                         scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
                         scale.addTask("TaskNodeScaleTo",
-                                      Node=attach_sprite.sprite,
+                                      Node=attach_item.sprite,
                                       Easing=SCENE_SCALE_EASING,
-                                      From=attach_sprite.getSpriteScale(),
+                                      From=attach_item.getSpriteScale(),
                                       To=(1.0, 1.0, 1.0),
                                       Time=SCENE_ANIMATION_TIME)
 
-                        point = self._getNodeCenter(attach_sprite.sprite)
-                        center.addTask("TaskNodeSetOrigin", Node=attach_sprite.sprite, Value=point)
+                        point = self._getNodeCenter(attach_item.sprite)
+                        center.addTask("TaskNodeOriginTo", Node=attach_item.sprite, Time=SCENE_ANIMATION_TIME, To=point)
 
                         def __clickRace(click_socket, mouse_up):
                             click_socket.addTask(
@@ -110,12 +102,12 @@ class FinalStage(BaseScopeEntity):
                             mouse_up.addScope(self._playReturnItemToPanelAnimation,
                                               this_item,
                                               item_index,
-                                              attach_sprite)
+                                              attach_item)
 
-                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_sprite)
+                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
                             click_socket.addFunction(event_finish)
 
-                    source.addFunction(self._finalizeAttachedItem, attach_sprite)
+                    source.addFunction(self._finalizeAttachedItem, attach_item)
 
                 return __clickAction
 
@@ -243,13 +235,12 @@ class FinalStage(BaseScopeEntity):
             play.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
             play.addTask("TaskRemoveArrowAttach")
 
-            remove.addScope(attach_item.setItemVisible, False)
-            #remove.addFunction(self._finalizeAttachedItem, attach_item)
+            remove.addScope(attach_item.setSpriteEnable, False)
 
     def _setupChapterQuestItems(self):
         # get current chapter data
         chapter_id = self._getCurrentChapterId()
-        self.scene_name = SCENE_NAME_TEMPLATE.format(chapter_id)
+        self.scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
 
         player_data = GameManager.getPlayerGameData()
         chapter_data = player_data.getCurrentChapterData()
@@ -282,7 +273,8 @@ class FinalStage(BaseScopeEntity):
     def _getFinalStageMappingParams(self, stage_name):
         s_db_module = "Database"
         s_db_name_final_stage_mapping = "FinalStageMapping"
-        params = DatabaseManager.filterDatabaseORM(s_db_module, s_db_name_final_stage_mapping,
+        params = DatabaseManager.filterDatabaseORM(s_db_module,
+                                                   s_db_name_final_stage_mapping,
                                                    filter=lambda param: param.StageName == stage_name)
         return params
 
@@ -321,8 +313,7 @@ class FinalStage(BaseScopeEntity):
         panel_item_sprite = drop_item.getSprite()
 
         source.addTask("TaskRemoveArrowAttach")
-        source.addScope(attach_item.setItemVisible, False)
-        #source.addFunction(self._finalizeAttachedItem, attach_item)
+        source.addScope(attach_item.setSpriteEnable, False)
 
         source.addPrint(" * START BEZIER ITEM ANIM")
 
@@ -354,7 +345,7 @@ class FinalStage(BaseScopeEntity):
             moving_item.addScope(self._moveLevelItemToPanelItem, item, attach_item)
             add_item.addScope(self.drop_panel.playAddPanelItemAnim, item)
 
-        source.addScope(item.setItemVisible, True)
+        source.addScope(item.setSpriteEnable, True)
 
     def _finalizeAttachedItem(self, item):
         if item in self.attached_items:

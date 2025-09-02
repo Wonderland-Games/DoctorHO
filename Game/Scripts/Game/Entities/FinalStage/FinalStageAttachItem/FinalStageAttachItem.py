@@ -1,9 +1,9 @@
 from Foundation.Initializer import Initializer
 
-class SpriteNode(Initializer):
+class FinalStageAttachItem(Initializer):
     SCALE = 0.312500071526
     def __init__(self):
-        super(SpriteNode, self).__init__()
+        super(FinalStageAttachItem, self).__init__()
         self.item_obj = None
         self.root = None
         self.sprite = None
@@ -57,10 +57,8 @@ class SpriteNode(Initializer):
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
         self.sprite.setLocalPosition(sprite_position)
 
-    def setItemVisible(self, source, visible):
-        item_alpha = 0.0
-
-        if visible is True:
-            item_alpha = 1.0
-
-        source.addTask("TaskNodeAlphaTo", Node=self.sprite, To=item_alpha, Time=0.001)
+    def setSpriteEnable(self, source, value):
+        if value is True:
+            source.addFunction(self.sprite.enable)
+        else:
+            source.addFunction(self.sprite.disable)
