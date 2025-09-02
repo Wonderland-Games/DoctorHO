@@ -144,7 +144,8 @@ class Settings(PopUpContent):
             buttons.append(SLOT_LOBBY)
 
         # If current scene is FinalStage we can return to QuestBackpack
-        if SceneManager.isCurrentSceneFinal() and _DEVELOPMENT:
+        scene_name = SceneManager.getCurrentSceneName()
+        if GameManager.isSceneFinalStage(scene_name) and _DEVELOPMENT:
             buttons.append(SLOT_QUEST_BACKPACK)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------

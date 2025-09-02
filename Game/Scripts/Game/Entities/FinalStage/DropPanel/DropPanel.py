@@ -269,7 +269,7 @@ class DropPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS ADD ANIM")
 
-        source.addScope(item.setItemVisible, False)
+        source.addScope(item.setSpriteEnable, False)
 
         source.addScope(self._moveItemsToTargetPositions)
         source.addScope(self._moveItemsNode)

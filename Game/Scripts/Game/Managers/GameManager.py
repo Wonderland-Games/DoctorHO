@@ -23,6 +23,7 @@ class GameManager(Manager):
     s_db_name_chapters = "Chapters"
     s_db_name_levels = "Levels"
     s_db_name_quests = "Quests"
+    s_db_name_final_stage_levels = "FinalStageLevels"
 
     _loading_cache = {}  # clears after loading screen
     _cache_data = {}  # always available
@@ -858,3 +859,19 @@ class GameManager(Manager):
     @staticmethod
     def getRandomizer():
         return GameManager.s_randomizer
+
+    @staticmethod
+    def getFinalStageSceneByChapter(chapter_id):
+        params = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+                                                 GameManager.s_db_name_final_stage_levels,
+                                                 ChapterId = chapter_id)
+
+        return params.SceneName
+
+    @staticmethod
+    def isSceneFinalStage(scene_name):
+        params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module,
+                                                   GameManager.s_db_name_final_stage_levels,
+                                                   filter=lambda param: param.SceneName == scene_name)
+
+        return bool(params)
