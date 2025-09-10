@@ -128,10 +128,6 @@ class Lobby(BaseEntity):
             tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
 
     def _scopePlay(self, source, level_id):
-        zoom_target = self.chapter_levels.level_cards[level_id].movie
-        system_global = SystemManager.getSystem("SystemGlobal")
-        system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
-
         # player_data = GameManager.getPlayerGameData()
         # current_chapter_data = player_data.getCurrentChapterData()
         # quest_index = current_chapter_data.getCurrentQuestIndex()
@@ -139,9 +135,15 @@ class Lobby(BaseEntity):
         level_params = GameManager.getLevelParams(level_id)
         level_scene_name = level_params.SceneName
 
+        source.addScope(self._scopeSetTransitionParams, level_id)
         source.addFunction(GameManager.removeGame)
         source.addFunction(GameManager.prepareGame, level_id)
         source.addFunction(GameManager.runLevelStartAdvertisement, level_scene_name)
+
+    def _scopeSetTransitionParams(self, source, level_id):
+        zoom_target = self.chapter_levels.level_cards[level_id].movie
+        system_global = SystemManager.getSystem("SystemGlobal")
+        system_global.setTransitionSceneParams(ZoomEffectTransitionObject=zoom_target)
 
     def _scopeLevelEnd(self, source):
         player_data = GameManager.getPlayerGameData()
