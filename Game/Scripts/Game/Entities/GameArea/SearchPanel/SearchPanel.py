@@ -61,7 +61,6 @@ class SearchPanel(Initializer):
         self.switchHints()
 
         self._setupVirtualArea()
-        self._calcVirtualAreaContentSize()
 
         self._calcItemsRange()
         self._setupItemsCorners()
@@ -178,6 +177,7 @@ class SearchPanel(Initializer):
 
         self.virtual_area.setup_viewport(va_begin_x, va_begin_y, va_end_x, va_end_y)
         self.virtual_area.init_handlers(self.va_hotspot)
+        self._calcVirtualAreaContentSize()
 
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()

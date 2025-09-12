@@ -112,6 +112,8 @@ class SearchLevel(Initializer):
             allow_out_of_bounds=False,
             camera_name="SearchLevelVirtualCamera",
             viewport_name="SearchLevelViewport",
+            content_size=(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w),
+            viewport=(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w),
         )
 
     def _setupVirtualArea(self):
@@ -138,9 +140,7 @@ class SearchLevel(Initializer):
         self.va_hotspot.setLocalPosition(hotspot_polygon_center)
 
         # set hotspot to VA
-        self.virtual_area.setup_viewport(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
         self.virtual_area.init_handlers(self.va_hotspot)
-        self.virtual_area.set_content_size(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w)
 
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()
