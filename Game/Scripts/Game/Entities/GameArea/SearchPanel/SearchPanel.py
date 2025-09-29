@@ -17,6 +17,8 @@ ITEMS_MOVE_EASING = "easyCubicInOut"   # easyLinear, easyBackInOut, easyBackOut,
 
 PROTOTYPE_ITEMS_CORNER = "SearchItemsCorner"
 
+HARDCODED_PANEL_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
+
 
 class SearchPanel(Initializer):
     def __init__(self):
@@ -207,10 +209,10 @@ class SearchPanel(Initializer):
         self.root.addChild(movie_panel_node)
 
     def getSize(self):
-        game_width = AdjustableScreenUtils.getGameWidth()
+        # game_width = AdjustableScreenUtils.getGameWidth()
         panel_bounds = self.movie_panel.getCompositionBounds()
         panel_bounds_size = Utils.getBoundingBoxSize(panel_bounds)
-        return Mengine.vec2f(game_width, panel_bounds_size.y)
+        return Mengine.vec2f(HARDCODED_PANEL_WIDTH, panel_bounds_size.y)
 
     def getSizeFull(self):
         panel_size = self.getSize()

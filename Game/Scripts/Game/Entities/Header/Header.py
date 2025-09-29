@@ -15,12 +15,14 @@ class Header(HeaderBase):
 
     def _adjustSlotsPositions(self):
         viewport = Mengine.getGameViewport()
+        game_width = viewport.end.x - viewport.begin.x
         header_size = self.object.getSize()
+        space_before_header = (game_width - header_size.x) / 2
 
         if self.movie_content.hasSlot(Settings.slot_name):
             slot = self.movie_content.getMovieSlot(Settings.slot_name)
             slot.setWorldPosition(Mengine.vec2f(
-                viewport.begin.x + header_size.x * 0.9,
+                viewport.begin.x + space_before_header + header_size.x * 0.9,
                 viewport.begin.y + header_size.y * 0.5
             ))
 

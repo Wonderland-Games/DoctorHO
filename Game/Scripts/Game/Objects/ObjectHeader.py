@@ -2,6 +2,9 @@ from MobileKit.Objects.ObjectHeader import ObjectHeader as ObjectHeaderBase
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
+HARDCODED_HEADER_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
+
+
 class ObjectHeader(ObjectHeaderBase):
     def getSize(self):
         if self.isActive() is False:
@@ -11,7 +14,8 @@ class ObjectHeader(ObjectHeaderBase):
         content = self.getObject("Movie2_Content")
         bbox = content.getCompositionBounds()
 
-        width = AdjustableScreenUtils.getGameWidth()
+        # width = AdjustableScreenUtils.getGameWidth()
+        width = HARDCODED_HEADER_WIDTH
         height = bbox.maximum.y - bbox.minimum.y
         return Mengine.vec2f(width, height)
 
