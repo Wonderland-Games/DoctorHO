@@ -3,8 +3,8 @@
         <Script Path = "Scripts/" Module = "Game" Initializer = "onInitialize" Finalizer = "onFinalize"/>
     </Scripts>
     
-    <Settings>
+    <!-- <Settings>
         <Setting Name = "Test" Path = "Settings/Test.json"/>
 		<Setting Name = "MissClick" Path = "Settings/MissClick.json"/>
-    </Settings>
+    </Settings> -->
 </Pak>

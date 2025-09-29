@@ -6,6 +6,12 @@ MOVIE_POSITION_PREFIX = "Movie2_MissClickEffect"
 MOVIE_BACKGROUND_PREFIX = "Movie2_MissClickEffect_Background"
 
 
+# TEMP DISABLE SETTINGS JSON CONFIG
+SETTINGS_BASE_PLAY_TIME = 1000.0
+SETTINGS_UNFREEZE_TIME = 10000.0
+SETTINGS_X_FACTOR_LIMIT = 5.0
+
+
 class MissClick(BaseScopeEntity):
     ENTITY_SCOPE_REPEAT = True
 
@@ -19,7 +25,7 @@ class MissClick(BaseScopeEntity):
         super(MissClick, self)._onScopeActivate(source)
         mouse_position_capture = Capture(None)
 
-        with source.addWaitListener(SETTINGS.MissClick.unfreeze_time, Notificator.onMissClickEffect, Capture=mouse_position_capture) as (source_expire, source_effect):
+        with source.addWaitListener(SETTINGS_UNFREEZE_TIME, Notificator.onMissClickEffect, Capture=mouse_position_capture) as (source_expire, source_effect):
             source_expire.addFunction(self._resetXFactor)
             source_effect.addFunction(self._increaseXFactor)
             source_effect.addScope(self._play, mouse_position_capture)
@@ -33,7 +39,7 @@ class MissClick(BaseScopeEntity):
     def _play(self, source, capture):
         x_pos, y_pos = capture.getArgs()
         position = (x_pos, y_pos)
-        play_idle_time = SETTINGS.MissClick.base_play_time * self.x_factor
+        play_idle_time = SETTINGS_BASE_PLAY_TIME * self.x_factor
 
         source.addInteractive("Socket_Block", True)
 
@@ -53,7 +59,7 @@ class MissClick(BaseScopeEntity):
         source.addScope(self._spawnEffect, hide, position)
 
     def _increaseXFactor(self):
-        if self.x_factor < SETTINGS.MissClick.x_factor_limit:
+        if self.x_factor < SETTINGS_X_FACTOR_LIMIT:
             self.x_factor += 1.0
 
     def _resetXFactor(self):
