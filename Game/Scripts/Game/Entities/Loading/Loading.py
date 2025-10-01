@@ -116,7 +116,7 @@ class Loading(BaseEntity):
             ("PREFETCH FONTS", Functor(self._prefetcher.scopePrefetchFonts, 5.0)),
             ("PREFETCH GROUPS", Functor(self._prefetcher.scopePrefetchGroups, 5.0)),
             ("LOAD DUMMY DATA", Functor(self._scopeLoadDummyData, 70.0)),
-            # ("LOAD SERVER DATA", Functor(self._scopeLoadServerData, 85.0)),
+            # ("LOAD SERVER DATA", Functor(self._scopeLoadServerData, 70.0)),
             ("PREPARE SYSTEMS", Functor(self._scopePrepareSystems, 15.0)),
         ]
 
@@ -134,7 +134,99 @@ class Loading(BaseEntity):
         source.addFunction(GameManager.setDummyPlayerData)
         source.addFunction(self.addLoadingProgress, progress_value)
 
+    def _scopeLoadServerData(self, source, progress_value):
+        loading_steps = [
+            # ["TASK NAME", SCOPE, PROGRESS, FAILURE_SCOPE],
+            ["AUTHENTICATE", GameManager.scopeAuthenticate, 10.0, self.scopeLoadFailResolve],
+            ["GET PLAYFAB INFO", GameManager.scopeGetAccountInfo, 20.0, self.scopeLoadFailResolve],
+            ["LOAD ACCOUNT DATA", GameManager.scopePlayerLoggedIn, 40.0, self.scopeLoadFailResolve],
+        ]
+
+        # ---------- TEMPORARY ------------------------------
+        _total_progress = 0.0
+        for task_name, load_scope, step_progress_value, fail_scope in loading_steps:
+            _total_progress += step_progress_value
+        if _total_progress != progress_value:
+            Trace.log("Entity", 0, "Total progress value {} != expected {}".format(_total_progress, progress_value))
+            _step_progress_value = progress_value / len(loading_steps)
+            for i in range(len(loading_steps)):
+                loading_steps[i][2] = _step_progress_value
+        # ---------------------------------------------------
+
+        with source.addRaceTask(2) as (source_loading, source_offline):
+            for i, (task_name, load_scope, step_progress_value, fail_scope) in enumerate(loading_steps):
+                holder_success = Holder(False)
+
+                source_loading.addPrint(" SERVER LOAD [{}] START {} ".format(i, task_name).center(79, "S"))
+                source_loading.addFunction(self.addLoadingProgress, step_progress_value/2)
+                source_loading.addScope(self._scopeLoadServerTask, task_name, load_scope, holder_success)
+
+                with source_loading.addIfTask(holder_success.get) as (if_success, if_fail):
+                    if_success.addFunction(self.addLoadingProgress, step_progress_value/2)
+                    if_fail.addScope(fail_scope, task_name)
+
+                source_loading.addPrint(" SERVER LOAD [{}] - END {} ".format(i, task_name).center(79, "E"))
+
+            source_offline.addSemaphore(GameManager.semaphore_offline_mode, From=True)
+
+        source.addFunction(GameManager.loadDataFromCache)
+        source.addFunction(GameManager.clearLoadDataCache)
+
+    def scopeLoadFailResolve(self, source, task_name):
+        Trace.msg_err("[Server] Failed to load {!r} - please try again".format(task_name))
+
+        source.addFunction(GameManager.setInternetConnection, False)
+        source.addFunction(SystemAnalytics.sendCustomAnalytic, "loading_screen_failed", {
+            "load_task_name": task_name
+        })
+
+    def _scopeLoadServerTask(self, source, task_name, load_scope, holder_success):
+        """ load task with attempts, BUT APIClientRequestRateLimitExceeded fixes only after 10s """
+
+        NEW_ATTEMPT_DELAY = 5000.0
+        MAX_TRY_COUNT = 3
+        holder_tries = Holder(0)
+        event_break = Event("onLoadEnd")
+
+        def __inc_holder(holder):
+            holder.set(holder.get() + 1)
+
+        def __has_attempts():
+            if holder_tries.get() > MAX_TRY_COUNT:
+                return False
+            return True
+
+        def __scopeNewAttemptDelay(src):
+            attempt = holder_tries.get()
+            delay = NEW_ATTEMPT_DELAY * (attempt+1)
+
+            src.addPrint(" [!] SERVER LOAD {!r} - TRY AGAIN (delay {}ms): attempt {}".format(task_name, delay, attempt))
+            for i in range(3):  # show tiny "loading" progress
+                src.addFunction(self.addLoadingProgress, 0.5)
+                src.addDelay(delay/3)
+
+        with source.addRepeatTask() as (repeat, until):
+            repeat.addScope(load_scope, isSuccessHolder=holder_success)
+            repeat.addFunction(__inc_holder, holder_tries)
+
+            with repeat.addIfTask(holder_success.get) as (if_success, if_fail):
+                if_success.addFunction(event_break)
+                if_success.addBlock()
+
+                if_fail.addPrint(" [!] SERVER LOAD {!r} - FAILED!!!!!".format(task_name))
+                if_fail.addNotify(Notificator.onInternetConnectionFail)
+
+            with repeat.addIfTask(__has_attempts) as (if_new_attempt, if_max_attempts):
+                if_new_attempt.addScope(__scopeNewAttemptDelay)
+
+                if_max_attempts.addFunction(event_break)
+                if_max_attempts.addBlock()
+
+            until.addEvent(event_break)
+
     def _scopePrepareSystems(self, source, progress_value):
+        source.addPrint(" START SYSTEM PREPARING ".center(79, "-"))
+
         systems = SystemManager.getSystems()
         for name, system in systems.items():
             if system.isRun() is False:
@@ -142,6 +234,7 @@ class Loading(BaseEntity):
             system.preparation(source)
 
         source.addFunction(self.addLoadingProgress, progress_value)
+        source.addPrint(" END SYSTEM PREPARING ".center(79, "-"))
 
     def scopeLoadingProgressEnd(self, source):
         source.addSemaphore(self.semaphore_loading_finished, From=True)
