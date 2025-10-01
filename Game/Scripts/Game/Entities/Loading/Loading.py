@@ -2,6 +2,7 @@ from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.Systems.SystemAnalytics import SystemAnalytics
 from Foundation.Providers.AdvertisementProvider import AdvertisementProvider
+from Foundation.SystemManager import SystemManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from Game.Entities.Loading.Prefetcher import Prefetcher
 from Game.Managers.GameManager import GameManager
@@ -114,8 +115,9 @@ class Loading(BaseEntity):
             ("PREFETCH SCRIPTS", Functor(self._prefetcher.scopePrefetchScripts, 5.0)),
             ("PREFETCH FONTS", Functor(self._prefetcher.scopePrefetchFonts, 5.0)),
             ("PREFETCH GROUPS", Functor(self._prefetcher.scopePrefetchGroups, 5.0)),
-            ("LOAD DUMMY DATA", Functor(self._scopeLoadDummyData, 85.0)),
+            ("LOAD DUMMY DATA", Functor(self._scopeLoadDummyData, 70.0)),
             # ("LOAD SERVER DATA", Functor(self._scopeLoadServerData, 85.0)),
+            ("PREPARE SYSTEMS", Functor(self._scopePrepareSystems, 15.0)),
         ]
 
         for (i, (task_name, scope)), parallel in source.addParallelTaskList(enumerate(loading_steps)):
@@ -130,6 +132,15 @@ class Loading(BaseEntity):
 
     def _scopeLoadDummyData(self, source, progress_value):
         source.addFunction(GameManager.setDummyPlayerData)
+        source.addFunction(self.addLoadingProgress, progress_value)
+
+    def _scopePrepareSystems(self, source, progress_value):
+        systems = SystemManager.getSystems()
+        for name, system in systems.items():
+            if system.isRun() is False:
+                continue
+            system.preparation(source)
+
         source.addFunction(self.addLoadingProgress, progress_value)
 
     def scopeLoadingProgressEnd(self, source):
