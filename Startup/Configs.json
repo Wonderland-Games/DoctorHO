@@ -36,17 +36,17 @@
             [3.0, 4.0, 393, 0, 2343, 2600]
         ]
     },
-	
-	"__Comments__": {
-		"AspectRatioViewport": [
-			[16.0, 9.0, 2736, 2736],
-			[9.0, 20.0, 1170, 2600],
-			[9.0, 19.5, 1170, 2532],
-			[9.0, 18.0, 1266, 2532],
-			[9.0, 16.0, 1424, 2532],
-			[3.0, 4.0, 1950, 2600]
-		]
-	},
+    
+    "__Comments__": {
+        "AspectRatioViewport": [
+            [16.0, 9.0, 2736, 2736],
+            [9.0, 20.0, 1170, 2600],
+            [9.0, 19.5, 1170, 2532],
+            [9.0, 18.0, 1266, 2532],
+            [9.0, 16.0, 1424, 2532],
+            [3.0, 4.0, 1950, 2600]
+        ]
+    },
 
 
     "Game-IOS": {
@@ -74,7 +74,7 @@
     },
 
     "Window": {
-		"ApplicationTitleTextId": "APPLICATION_TITLE",
+        "ApplicationTitleTextId": "APPLICATION_TITLE",
         "Bits": 32,
         "Fullscreen": false,
         "VSync": true
@@ -82,12 +82,12 @@
 
     "Window-PC": {
         "Size": [393, 852],
-		"__Comments__": [
-			[393, 852, "9:19.5 iPhone15"],
-			[414, 736, "9:16 iPhone8"],
-			[820, 1180, "3:4 iPad10"],
-			[834, 1194, "7:10 iPad Pro 5 11'"]
-		]
+        "__Comments__": [
+            [393, 852, "9:19.5 iPhone15"],
+            [414, 736, "9:16 iPhone8"],
+            [820, 1180, "3:4 iPad10"],
+            [834, 1194, "7:10 iPad Pro 5 11'"]
+        ]
     },
 
     "Window-IOS": {
@@ -108,15 +108,16 @@
     },    
 
     "Params": {
-		"AutoLanguage": false,
+        "AutoLanguage": false,
         "ShowBuildVersion": true,
-		"ShowPlayFabId": true,
-		"PrivacyPolicyLink": "https://www.wonderland-games.com/privacy/",
-		"DeveloperWebsiteLink": "https://www.wonderland-games.com/",
-		"TechnicalSupportEnable": true,
-		"TechnicalSupportEmail": "support@wonderland-games.com"
+        "ShowPlayFabId": true,
+        "PrivacyPolicyLink": "https://www.wonderland-games.com/privacy/",
+        "DeveloperWebsiteLink": "https://www.wonderland-games.com/",
+        "TechnicalSupportEnable": true,
+        "TechnicalSupportEmail": "support@wonderland-games.com",
+        "CustomCursor": false
     },
-	
+    
     "DevPlugins-PC": {
         "Name": [
             "Win32AntifreezeMonitorPlugin.dll",
@@ -142,14 +143,14 @@
         "RenderMaxObject": 16000,
         "RenderMaxQuadBatch": 4000,
         "FxcPath": "fxc.exe",
-		"FFMPEGPath": "c:/ffmpeg/bin/ffmpeg.exe",
+        "FFMPEGPath": "c:/ffmpeg/bin/ffmpeg.exe",
         "AntifreezeMonitorSeconds": 10
     },
-	
+    
     "Win32AntifreezeMonitorPlugin": {
         "Seconds": 90
     },
-	
+    
     "Engine-IOS": {
         "VideoPluginAvailable": false,
         "ThreadServiceAvailable": true

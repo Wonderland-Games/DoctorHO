@@ -107,45 +107,6 @@ def onInitialize():
         if isGlobal is True:
             return
 
-        Mengine.addCurrentAccountSetting("Default", u"False", None)
-        Mengine.addCurrentAccountSetting("Save", u"False", None)
-        Mengine.addCurrentAccountSetting("SessionSave", u"True", None)
-        Mengine.addCurrentAccountSetting("Name", u"Player", None)
-        Mengine.addCurrentAccountSetting("SelectedLanguage", u"", None)
-
-        # SOUND\MUSIC params
-
-        def __updateMuteMusic(account_id, value):
-            if value == "True":
-                Mengine.musicSetVolume(0.0)
-                return
-            music_volume_percent = float(Mengine.getCurrentAccountSetting("MusicVolumePercent"))
-            Mengine.musicSetVolume(music_volume_percent)
-
-        def __updateMuteSound(account_id, value):
-            if value == "True":
-                Mengine.soundSetVolume(0.0)
-                return
-            sound_volume_percent = float(Mengine.getCurrentAccountSetting("SoundVolumePercent"))
-            Mengine.soundSetVolume(sound_volume_percent)
-
-        def __updateMusicVolumePercent(account_id, value):
-            if Mengine.getCurrentAccountSettingBool("MuteMusic") is False:
-                Mengine.musicSetVolume(float(value))
-
-        def __updateSoundVolumePercent(account_id, value):
-            if Mengine.getCurrentAccountSettingBool("MuteSound") is False:
-                Mengine.soundSetVolume(float(value))
-
-        default_music_volume = DefaultManager.getDefaultFloat("DefaultMusicVolume", 1.0)
-        default_sound_volume = DefaultManager.getDefaultFloat("DefaultSoundVolume", 1.0)
-
-        Mengine.addCurrentAccountSetting("MuteMusic", u"False", __updateMuteMusic)
-        Mengine.addCurrentAccountSetting("MuteSound", u"False", __updateMuteSound)
-        if _DEVELOPMENT is True:
-            Mengine.addCurrentAccountSetting("MuteVibration", u"False", None)
-        Mengine.addCurrentAccountSetting("SoundVolumePercent", unicode(default_sound_volume), __updateSoundVolumePercent)
-        Mengine.addCurrentAccountSetting("MusicVolumePercent", unicode(default_music_volume), __updateMusicVolumePercent)
         Mengine.addCurrentAccountSetting("FirstName", u"", None)
 
     AccountManager.setCreateAccount(accountSetuper)
