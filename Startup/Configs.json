@@ -170,5 +170,15 @@
             "ModuleNodeDebugger",
             "ModuleCameraDebugGizmo"
         ]
+    },
+    
+    "Advertising": {
+        "Banner": true,
+        "Interstitial": true,
+        "Rewarded": false,
+        "DummyConsentFlow": true,
+        "InterstitialUnitNames": [
+            "OnLevelStart"
+        ]
     }
 }
