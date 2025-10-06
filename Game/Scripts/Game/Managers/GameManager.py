@@ -5,7 +5,7 @@ from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
-from Game.Managers.GameData import PlayerGameData
+from Game.Managers.GameData import GameDataCompressor, StoryPlayerGameData, GAME_MODE_STORY
 
 
 # server statuses
@@ -56,8 +56,10 @@ class GameManager(Manager):
     def _onSave(cls):
         save_data = {}
 
-        # Save game data
-        # ...
+        # Save story data
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        story_session_save = story_data.saveData()
+        save_data[GAME_MODE_STORY] = story_session_save
 
         # Save player revision
         save_data["Revision"] = GameManager.getPlayerRevision()
@@ -76,8 +78,13 @@ class GameManager(Manager):
         Trace.msg_dev("GameManager._onLoad: {}".format(saved_data))
         game_data = {}
 
-        # Load game data
-        # ...
+        # Load story data
+        story_session_save = saved_data.get(GAME_MODE_STORY)
+        if story_session_save is not None:
+            story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+            ready_store_session_save = GameDataCompressor.decompress(story_session_save)
+            story_data.loadData(ready_store_session_save)
+            game_data[GAME_MODE_STORY] = story_session_save
 
         # Load player revision
         revision = saved_data.get("Revision", 0)
@@ -85,7 +92,7 @@ class GameManager(Manager):
 
         # Load player data cache (for cases when user is offline!)
         player_data = {
-            "Game": game_data,
+            "Games": game_data,
             "Bank": {
                 "AccountInfo": {
                     "Revision": revision
@@ -102,13 +109,18 @@ class GameManager(Manager):
         return GameManager._player_data
 
     @staticmethod
-    def getPlayerGameData():
-        return GameManager._player_data["Game"]
+    def getPlayerGameData(game_mode=GAME_MODE_STORY):
+        player_data = GameManager.getPlayerData()
+        games_data = player_data["Games"]
+        game_mode_data = games_data.get(game_mode, None)
+        return game_mode_data
 
     @staticmethod
     def resetPlayerData():
         new_player_data = {
-            "Game": PlayerGameData(),
+            "Games": {
+                GAME_MODE_STORY: StoryPlayerGameData(),
+            },
             "Revision": 0,
         }
         GameManager._player_data = new_player_data
@@ -122,8 +134,15 @@ class GameManager(Manager):
                       " QuestIndex: {}".format(quest_index) + "\n" +
                       " LevelsData: {}".format(levels_data))
 
-        player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_id, quest_index, levels_data)
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        save_data = {
+            "Data": {
+                "active_chapter_id": active_chapter_id,
+                "active_quest_index": quest_index,
+                "levels_data": levels_data,
+            }
+        }
+        story_data.loadData(save_data)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -176,8 +195,11 @@ class GameManager(Manager):
 
         # ------------------------------------------------
         # load games data
-        games_data = player_data["Game"]
-        # ...
+        games_data = player_data["Games"]
+        print "!!!!!!!!!!!!", games_data
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        story_save_data = GameDataCompressor.decompress(games_data[GAME_MODE_STORY])
+        story_data.loadData(story_save_data)
 
         bank_data = player_data["Bank"]
 

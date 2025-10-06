@@ -115,8 +115,8 @@ class Loading(BaseEntity):
             ("PREFETCH SCRIPTS", Functor(self._prefetcher.scopePrefetchScripts, 5.0)),
             ("PREFETCH FONTS", Functor(self._prefetcher.scopePrefetchFonts, 5.0)),
             ("PREFETCH GROUPS", Functor(self._prefetcher.scopePrefetchGroups, 5.0)),
-            ("LOAD DUMMY DATA", Functor(self._scopeLoadDummyData, 70.0)),
-            # ("LOAD SERVER DATA", Functor(self._scopeLoadServerData, 70.0)),
+            # ("LOAD DUMMY DATA", Functor(self._scopeLoadDummyData, 70.0)),
+            ("LOAD SERVER DATA", Functor(self._scopeLoadServerData, 70.0)),
             ("PREPARE SYSTEMS", Functor(self._scopePrepareSystems, 15.0)),
         ]
 
