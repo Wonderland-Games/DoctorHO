@@ -1,5 +1,6 @@
 from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
+from Foundation.SystemManager import SystemManager
 from Game.Entities.GameArea.SearchLevel.SearchLevel import SearchLevel
 from Game.Entities.GameArea.SearchPanel.SearchPanel import SearchPanel
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
@@ -149,6 +150,10 @@ class GameArea(BaseEntity):
             banner_size = AdjustableScreenUtils.getBannerSize()
             return (banner_size.x, banner_size.y)
 
+        def _setBannerPos(layout_box, layout_offset, layout_size):
+            system_ui = SystemManager.getSystem("SystemUI")
+            system_ui.updateDevBannerPosition()
+
         # LAYOUT BOX
         def _getLayoutBoxSize():
             return AdjustableScreenUtils.getGameWidth(), AdjustableScreenUtils.getGameHeight()
@@ -162,7 +167,7 @@ class GameArea(BaseEntity):
             vertical.addPadding(2)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getSearchPanelSize, _setSearchPanelPos))
             vertical.addPadding(3)
-            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, _setBannerPos))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
