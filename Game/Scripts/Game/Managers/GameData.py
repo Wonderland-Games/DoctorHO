@@ -22,69 +22,6 @@ class GameDataCompressor(object):
         return save_data
 
 
-class LevelData(object):
-    def __init__(self, level_id):
-        self.level_id = level_id
-        self.active = False
-        self.quest_points = 0
-
-    def getLevelId(self):
-        return self.level_id
-
-    def getActive(self):
-        return self.active
-
-    def setActive(self, active):
-        self.active = active
-
-    def getQuestPoints(self):
-        return self.quest_points
-
-    def setQuestPoints(self, quest_points):
-        self.quest_points = quest_points
-
-    def addQuestPoints(self, quest_points):
-        self.quest_points += quest_points
-
-
-class ChapterData(object):
-    def __init__(self, chapter_id):
-        self.chapter_id = chapter_id
-        self.levels_data = {}
-        self.current_quest_index = 0
-
-    def getChapterId(self):
-        return self.chapter_id
-
-    def getCurrentQuestIndex(self):
-        return self.current_quest_index
-
-    def setCurrentQuestIndex(self, quest_index):
-        self.current_quest_index = quest_index
-
-    def getLevelData(self, level_id):
-        return self.levels_data[level_id]
-
-    def setLevelData(self, level_id, level_data):
-        self.levels_data[level_id] = level_data
-
-    def getActiveLevelsData(self):
-        levels_data = {}
-        for level_id, level_data in self.levels_data.items():
-            if level_data.getActive() is True:
-                levels_data[level_id] = level_data
-
-        return levels_data
-
-    def getBlockedLevelsData(self):
-        levels_data = {}
-        for level_id, level_data in self.levels_data.items():
-            if level_data.getActive() is False:
-                levels_data[level_id] = level_data
-
-        return levels_data
-
-
 class PlayerGameData(object):
     game_name = None
     version = 1
@@ -101,12 +38,80 @@ class PlayerGameData(object):
 class StoryPlayerGameData(PlayerGameData):
     game_name = GAME_MODE_STORY
 
+    class ChapterData(object):
+        class LevelData(object):
+            def __init__(self, level_id):
+                self.level_id = level_id
+                self.active = False
+                self.quest_points = 0
+
+            def getLevelId(self):
+                return self.level_id
+
+            def getActive(self):
+                return self.active
+
+            def setActive(self, active):
+                self.active = active
+
+            def getQuestPoints(self):
+                return self.quest_points
+
+            def setQuestPoints(self, quest_points):
+                self.quest_points = quest_points
+
+            def addQuestPoints(self, quest_points):
+                self.quest_points += quest_points
+
+        def __init__(self, chapter_id):
+            self.chapter_id = chapter_id
+            self.levels_data = {}
+            self.current_quest_index = 0
+
+        def getChapterId(self):
+            return self.chapter_id
+
+        def getCurrentQuestIndex(self):
+            return self.current_quest_index
+
+        def setCurrentQuestIndex(self, quest_index):
+            self.current_quest_index = quest_index
+
+        def getLevelData(self, level_id):
+            return self.levels_data[level_id]
+
+        def setLevelData(self, level_id, level_data):
+            self.levels_data[level_id] = level_data
+
+        def getActiveLevelsData(self):
+            levels_data = {}
+            for level_id, level_data in self.levels_data.items():
+                if level_data.getActive() is True:
+                    levels_data[level_id] = level_data
+
+            return levels_data
+
+        def getBlockedLevelsData(self):
+            levels_data = {}
+            for level_id, level_data in self.levels_data.items():
+                if level_data.getActive() is False:
+                    levels_data[level_id] = level_data
+
+            return levels_data
+
     def __init__(self):
+        super(StoryPlayerGameData, self).__init__()
         self.current_chapter = None
+        self.active_chapter_id = 0  # current selected chapter
         self._last_level_data = {}
+        self.nextChapter()  # create chapter 1
 
     def getCurrentChapterData(self):
         return self.current_chapter
+
+    def nextChapter(self):
+        self.active_chapter_id += 1
+        self.current_chapter = StoryPlayerGameData.ChapterData(self.active_chapter_id)
 
     def loadData(self, save_data):
         save_version = save_data.get("__VERSION", 0)
@@ -118,11 +123,12 @@ class StoryPlayerGameData(PlayerGameData):
         active_quest_index = story_data.get("active_quest_index")
         levels_data = story_data.get("levels_data")
 
-        self.current_chapter = ChapterData(active_chapter_id)
+        self.active_chapter_id = active_chapter_id
+        self.current_chapter = StoryPlayerGameData.ChapterData(active_chapter_id)
         self.current_chapter.current_quest_index = active_quest_index
 
         for level_id, level_data in levels_data.items():
-            _level_data = LevelData(level_id)
+            _level_data = self.current_chapter.LevelData(level_id)
             _level_data.setActive(level_data.get("Active", False))
             _level_data.setQuestPoints(level_data.get("QuestPoints", 0))
             self.current_chapter.setLevelData(level_id, _level_data)
