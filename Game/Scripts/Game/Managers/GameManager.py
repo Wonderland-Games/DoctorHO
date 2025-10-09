@@ -196,13 +196,13 @@ class GameManager(Manager):
         # ------------------------------------------------
         # load games data
         games_data = player_data["Games"]
-        print "!!!!!!!!!!!!", games_data
+
         story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
         story_save_data = GameDataCompressor.decompress(games_data[GAME_MODE_STORY])
         story_data.loadData(story_save_data)
 
+        # bank data
         bank_data = player_data["Bank"]
-
         revision = bank_data["AccountInfo"].get("Revision", 0)
         GameManager.setPlayerRevision(revision)
 

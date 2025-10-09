@@ -114,6 +114,8 @@ class StoryPlayerGameData(PlayerGameData):
         self.current_chapter = StoryPlayerGameData.ChapterData(self.active_chapter_id)
 
     def loadData(self, save_data):
+        print "StoryPlayerGameData.loadData", save_data
+
         save_version = save_data.get("__VERSION", 0)
         self.version = save_version
 
