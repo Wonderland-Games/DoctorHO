@@ -101,17 +101,17 @@ class StoryPlayerGameData(PlayerGameData):
 
     def __init__(self):
         super(StoryPlayerGameData, self).__init__()
-        self.current_chapter = None
-        self.active_chapter_id = 0  # current selected chapter
+        self.active_chapter_id = 1  # first chapter
+        self.current_chapter = StoryPlayerGameData.ChapterData(self.active_chapter_id)  # create chapter 1
+        for level_id in range(3):   # create levels 1, 2, 3 for chapter 1
+            self.current_chapter.levels_data[level_id + 1] = self.current_chapter.LevelData(level_id + 1)
+            if level_id + 1 == 1:
+                self.current_chapter.levels_data[level_id + 1].setActive(True)
+
         self._last_level_data = {}
-        self.nextChapter()  # create chapter 1
 
     def getCurrentChapterData(self):
         return self.current_chapter
-
-    def nextChapter(self):
-        self.active_chapter_id += 1
-        self.current_chapter = StoryPlayerGameData.ChapterData(self.active_chapter_id)
 
     def loadData(self, save_data):
         self.version = save_data.get("__VERSION", 0)

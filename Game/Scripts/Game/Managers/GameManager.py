@@ -35,25 +35,25 @@ class GameManager(Manager):
 
     # - Manager --------------------------------------------------------------------------------------------------------
 
-    @classmethod
-    def _onInitialize(cls, *args):
+    @staticmethod
+    def _onInitialize(*args):
         if Mengine.hasOption("offline") is True:
             GameManager.setInternetConnection(False)
 
-        cls.resetPlayerData()
+        GameManager.resetPlayerData()
 
-        cls.updateCache()
-        cls.initRandomizer()
+        GameManager.updateCache()
+        GameManager.initRandomizer()
 
-    @classmethod
-    def _onFinalize(cls):
+    @staticmethod
+    def _onFinalize():
         GameManager._cache_data = {}
         GameManager._loading_cache = {}
         GameManager._player_data = {}
         GameManager.s_randomizer = None
 
-    @classmethod
-    def _onSave(cls):
+    @staticmethod
+    def _onSave():
         save_data = {}
 
         # Save story data
@@ -73,8 +73,8 @@ class GameManager(Manager):
         dict_save = GameManager._onSave()
         return dict_save
 
-    @classmethod
-    def _onLoad(cls, saved_data):
+    @staticmethod
+    def _onLoad(saved_data):
         Trace.msg_dev("GameManager._onLoad: {}".format(saved_data))
         game_data = {}
 

@@ -130,9 +130,24 @@ class Loading(BaseEntity):
 
         source.addNotify(Notificator.onGameDataLoaded)
 
+    def scopeLoadingProgressEnd(self, source):
+        source.addSemaphore(self.semaphore_loading_finished, From=True)
+        source.addFunction(self.setLoadingProgress, 100.0)
+        source.addFunction(SystemAnalytics.sendCustomAnalytic, "loading_screen_end", {})
+
+    def scopePlay(self, source):
+        if Mengine.hasOption("nobanner") is False:
+            source.addFunction(AdvertisementProvider.showBanner)
+
+        source.addNotify(Notificator.onChangeScene, "Lobby")
+
+    # - Load Dummy Data ------------------------------------------------------------------------------------------------
+
     def _scopeLoadDummyData(self, source, progress_value):
         source.addFunction(GameManager.setDummyPlayerData)
         source.addFunction(self.addLoadingProgress, progress_value)
+
+    # - Load Server Data -----------------------------------------------------------------------------------------------
 
     def _scopeLoadServerData(self, source, progress_value):
         loading_steps = [
@@ -224,6 +239,8 @@ class Loading(BaseEntity):
 
             until.addEvent(event_break)
 
+    # - Prepare Systems ------------------------------------------------------------------------------------------------
+
     def _scopePrepareSystems(self, source, progress_value):
         source.addPrint(" START SYSTEM PREPARING ".center(79, "-"))
 
@@ -235,14 +252,3 @@ class Loading(BaseEntity):
 
         source.addFunction(self.addLoadingProgress, progress_value)
         source.addPrint(" END SYSTEM PREPARING ".center(79, "-"))
-
-    def scopeLoadingProgressEnd(self, source):
-        source.addSemaphore(self.semaphore_loading_finished, From=True)
-        source.addFunction(self.setLoadingProgress, 100.0)
-        source.addFunction(SystemAnalytics.sendCustomAnalytic, "loading_screen_end", {})
-
-    def scopePlay(self, source):
-        if Mengine.hasOption("nobanner") is False:
-            source.addFunction(AdvertisementProvider.showBanner)
-
-        source.addNotify(Notificator.onChangeScene, "Lobby")
