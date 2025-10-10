@@ -114,25 +114,27 @@ class StoryPlayerGameData(PlayerGameData):
         self.current_chapter = StoryPlayerGameData.ChapterData(self.active_chapter_id)
 
     def loadData(self, save_data):
-        print "StoryPlayerGameData.loadData", save_data
-
-        save_version = save_data.get("__VERSION", 0)
-        self.version = save_version
-
+        self.version = save_data.get("__VERSION", 0)
         story_data = save_data.get("Data", {})
+
         # TEMP
         active_chapter_id = story_data.get("active_chapter_id")
         active_quest_index = story_data.get("active_quest_index")
         levels_data = story_data.get("levels_data")
+        levels_data = {int(key): value for key, value in levels_data.items()}   # convert keys to int
 
         self.active_chapter_id = active_chapter_id
         self.current_chapter = StoryPlayerGameData.ChapterData(active_chapter_id)
         self.current_chapter.current_quest_index = active_quest_index
 
         for level_id, level_data in levels_data.items():
+            active = level_data.get("Active", False)
+            quest_points = level_data.get("QuestPoints", 0)
+
             _level_data = self.current_chapter.LevelData(level_id)
-            _level_data.setActive(level_data.get("Active", False))
-            _level_data.setQuestPoints(level_data.get("QuestPoints", 0))
+            _level_data.setActive(active)
+            _level_data.setQuestPoints(quest_points)
+
             self.current_chapter.setLevelData(level_id, _level_data)
 
     def saveData(self):
