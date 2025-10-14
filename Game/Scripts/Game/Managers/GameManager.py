@@ -84,6 +84,7 @@ class GameManager(Manager):
         if story_session_save is not None:
             story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
             ready_store_session_save = GameDataCompressor.decompress(story_session_save)
+            print "GAME SAVED PLAYER STORY DATA", ready_store_session_save
             story_data.loadData(ready_store_session_save)
             game_data[GAME_MODE_STORY] = story_session_save
 
@@ -100,7 +101,7 @@ class GameManager(Manager):
                 }
             }
         }
-
+        print "GAME SAVED PLAYER DATA", player_data
         GameManager.setLoadDataCache("PlayerData", player_data)
 
     # - Player data ----------------------------------------------------------------------------------------------------
@@ -366,7 +367,7 @@ class GameManager(Manager):
             current_chapter_data = player_data.getCurrentChapterData()
             current_chapter_data.setCurrentQuestIndex(quest_index + 1)
 
-        GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
+        # GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
 
     @staticmethod
     def __apiEndGame(game_name, chapter_id, level_id, quest_index):
@@ -658,6 +659,7 @@ class GameManager(Manager):
                     isSuccessHolder.set(False)
                 return
 
+            print "PLAYFAB PLAYER DATA", player_data
             GameManager.setLoadDataCache("PlayerData", player_data)
 
             Notification.notify(Notificator.onLoadFromServerSuccess, Name="PlayerData")

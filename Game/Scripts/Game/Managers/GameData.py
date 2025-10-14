@@ -34,6 +34,18 @@ class PlayerGameData(object):
         """ :returns: json string """
         return "{}"
 
+    def describe(self):
+        if _DEVELOPMENT is False:
+            return
+
+        Trace.msg(" PLAYER GAMES DATA DESCRIPTION ".center(50, "-"))
+        Trace.msg("Game: {!r}".format(self.game_name))
+        Trace.msg(self._getDescription())
+        Trace.msg("".center(50, "-"))
+
+    def _getDescription(self):
+        return ""
+
 
 class StoryPlayerGameData(PlayerGameData):
     game_name = GAME_MODE_STORY
@@ -109,6 +121,11 @@ class StoryPlayerGameData(PlayerGameData):
                 self.current_chapter.levels_data[level_id + 1].setActive(True)
 
         self._last_level_data = {}
+
+    def _getDescription(self):
+        return "Version: {}\nActive chapter id: {}\nActive quest index: {}\nLevels info: {}".format(
+            self.version, self.active_chapter_id, self.current_chapter.getCurrentQuestIndex(), self.current_chapter.levels_data
+        )
 
     def getCurrentChapterData(self):
         return self.current_chapter
