@@ -95,6 +95,16 @@ class StoryPlayerGameData(PlayerGameData):
         def setLevelData(self, level_id, level_data):
             self.levels_data[level_id] = level_data
 
+        def getLevelsDataDescrition(self):
+            description = ", ".join(
+                ["<LevelId={}; Active={}; QuestPoints={}>".format(
+                    level_data.getLevelId(),
+                    level_data.getActive(),
+                    level_data.getQuestPoints()
+                ) for level_data in self.levels_data.values()]
+            )
+            return description
+
         def getActiveLevelsData(self):
             levels_data = {}
             for level_id, level_data in self.levels_data.items():
@@ -124,7 +134,7 @@ class StoryPlayerGameData(PlayerGameData):
 
     def _getDescription(self):
         return "Version: {}\nActive chapter id: {}\nActive quest index: {}\nLevels info: {}".format(
-            self.version, self.active_chapter_id, self.current_chapter.getCurrentQuestIndex(), self.current_chapter.levels_data
+            self.version, self.active_chapter_id, self.current_chapter.getCurrentQuestIndex(), self.current_chapter.getLevelsDataDescrition()
         )
 
     def getCurrentChapterData(self):
