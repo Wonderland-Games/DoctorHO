@@ -3,6 +3,7 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
+from Foundation.TaskManager import TaskManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
 from Game.Managers.GameData import GameDataCompressor, StoryPlayerGameData, GAME_MODE_STORY
@@ -348,7 +349,7 @@ class GameManager(Manager):
         player_data.setLastLevelData({})
 
     @staticmethod
-    def endGame(is_win):
+    def endGame(game_name, is_win):
         player_data = GameManager.getPlayerGameData()
         chapter_id = GameManager.getCurrentGameParam("ChapterId")
         level_id = GameManager.getCurrentGameParam("LevelId")
@@ -364,6 +365,87 @@ class GameManager(Manager):
         if is_win is True and quest_index is not None:
             current_chapter_data = player_data.getCurrentChapterData()
             current_chapter_data.setCurrentQuestIndex(quest_index + 1)
+
+        GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
+
+    @staticmethod
+    def __apiEndGame(game_name, chapter_id, level_id, quest_index):
+        API_FUNCTION_NAME = "API_EndGame"
+        API_VERSION = 1
+
+        GameManager.incPlayerRevision()
+
+        if GameManager.hasInternetConnection() is False:
+            Trace.log("Manager", 0, "[GameManager] user is offline to call {!r}".format(API_FUNCTION_NAME))
+            return
+
+        # current_game_params = GameManager.getCurrentGameParams()
+        # if current_game_params is None:
+        #     Trace.log("Manager", 0, "[GameManager] No game to end, prepare it first!")
+        #     return
+
+        # api interaction
+
+        MAX_TRY_COUNT = 15
+        DELAY_COEF = 100.0
+        holder_try_count = Holder(0)
+        semaphore_end = Semaphore(False, "RequestEmptyTries")
+
+        def __inc_holder(holder):
+            holder.set(holder.get() + 1)
+
+        def __scope_delay(source, holder):
+            try_count = holder.get()
+            delay = try_count * DELAY_COEF
+            Trace.msg_dev("[PlayFab] {} WAIT TO NEXT TRY {}".format(API_FUNCTION_NAME, delay))
+            source.addDelay(delay)
+
+        def __success_cb(result):
+            GameManager.setInternetConnection(True)
+            semaphore_end.setValue(True)
+
+        def __fail_cb(playFabError):
+            Mengine.logError("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+            GameManager.setInternetConnection(False)
+            semaphore_end.setValue(True)
+
+        def __curl_fail_cb(playFabError):
+            try_count = holder_try_count.get()
+            if try_count > MAX_TRY_COUNT:
+                Mengine.logError("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+                semaphore_end.setValue(True)
+                GameManager.setInternetConnection(False)
+            else:
+                Trace.msg_err("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+                Notification.notify(Notificator.onInternetConnectionFail)
+
+        error_handlers = {
+            "CloudScriptAPIRequestCountExceeded": __fail_cb,
+            "CloudScriptAPIRequestError": __fail_cb,
+            "CloudScriptFunctionArgumentSizeExceeded": __fail_cb,
+            "CloudScriptHTTPRequestError": __fail_cb,
+            "CloudScriptNotFound": __fail_cb,
+            "JavascriptException": __fail_cb,
+            "ServiceUnavailable": __curl_fail_cb,
+        }
+
+        with TaskManager.createTaskChain() as tc:
+            with tc.addRepeatTask() as (tc_repeat, tc_until):
+                tc_repeat.addFunction(__inc_holder, holder_try_count)
+                tc_repeat.addScope(
+                    PlayFabManager.scopeExecuteCloudScript,
+                    API_FUNCTION_NAME,
+                    {
+                        "GameName": game_name,
+                        "ChapterId": chapter_id,
+                        "LevelId": level_id,
+                        "QuestIndex": quest_index,
+                        "__api_version__": API_VERSION
+                    },
+                    __success_cb, __fail_cb, **error_handlers)
+                tc_repeat.addScope(__scope_delay, holder_try_count)
+
+                tc_until.addSemaphore(semaphore_end, From=True)
 
     @staticmethod
     def removeGame():
