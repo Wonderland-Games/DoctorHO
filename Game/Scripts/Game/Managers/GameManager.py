@@ -3,9 +3,10 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
+from Foundation.TaskManager import TaskManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
-from Game.Managers.GameData import PlayerGameData
+from Game.Managers.GameData import GameDataCompressor, StoryPlayerGameData, GAME_MODE_STORY
 
 
 # server statuses
@@ -35,29 +36,31 @@ class GameManager(Manager):
 
     # - Manager --------------------------------------------------------------------------------------------------------
 
-    @classmethod
-    def _onInitialize(cls, *args):
+    @staticmethod
+    def _onInitialize(*args):
         if Mengine.hasOption("offline") is True:
             GameManager.setInternetConnection(False)
 
-        cls.resetPlayerData()
+        GameManager.resetPlayerData()
 
-        cls.updateCache()
-        cls.initRandomizer()
+        GameManager.updateCache()
+        GameManager.initRandomizer()
 
-    @classmethod
-    def _onFinalize(cls):
+    @staticmethod
+    def _onFinalize():
         GameManager._cache_data = {}
         GameManager._loading_cache = {}
         GameManager._player_data = {}
         GameManager.s_randomizer = None
 
-    @classmethod
-    def _onSave(cls):
+    @staticmethod
+    def _onSave():
         save_data = {}
 
-        # Save game data
-        # ...
+        # Save story data
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        story_session_save = story_data.saveData()
+        save_data[GAME_MODE_STORY] = story_session_save
 
         # Save player revision
         save_data["Revision"] = GameManager.getPlayerRevision()
@@ -71,13 +74,18 @@ class GameManager(Manager):
         dict_save = GameManager._onSave()
         return dict_save
 
-    @classmethod
-    def _onLoad(cls, saved_data):
+    @staticmethod
+    def _onLoad(saved_data):
         Trace.msg_dev("GameManager._onLoad: {}".format(saved_data))
         game_data = {}
 
-        # Load game data
-        # ...
+        # Load story data
+        story_session_save = saved_data.get(GAME_MODE_STORY)
+        if story_session_save is not None:
+            story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+            ready_store_session_save = GameDataCompressor.decompress(story_session_save)
+            story_data.loadData(ready_store_session_save)
+            game_data[GAME_MODE_STORY] = story_session_save
 
         # Load player revision
         revision = saved_data.get("Revision", 0)
@@ -85,14 +93,13 @@ class GameManager(Manager):
 
         # Load player data cache (for cases when user is offline!)
         player_data = {
-            "Game": game_data,
+            "Games": game_data,
             "Bank": {
                 "AccountInfo": {
                     "Revision": revision
                 }
             }
         }
-
         GameManager.setLoadDataCache("PlayerData", player_data)
 
     # - Player data ----------------------------------------------------------------------------------------------------
@@ -102,13 +109,18 @@ class GameManager(Manager):
         return GameManager._player_data
 
     @staticmethod
-    def getPlayerGameData():
-        return GameManager._player_data["Game"]
+    def getPlayerGameData(game_mode=GAME_MODE_STORY):
+        player_data = GameManager.getPlayerData()
+        games_data = player_data["Games"]
+        game_mode_data = games_data.get(game_mode, None)
+        return game_mode_data
 
     @staticmethod
     def resetPlayerData():
         new_player_data = {
-            "Game": PlayerGameData(),
+            "Games": {
+                GAME_MODE_STORY: StoryPlayerGameData(),
+            },
             "Revision": 0,
         }
         GameManager._player_data = new_player_data
@@ -122,8 +134,15 @@ class GameManager(Manager):
                       " QuestIndex: {}".format(quest_index) + "\n" +
                       " LevelsData: {}".format(levels_data))
 
-        player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(active_chapter_id, quest_index, levels_data)
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        save_data = {
+            "Data": {
+                "active_chapter_id": active_chapter_id,
+                "active_quest_index": quest_index,
+                "levels_data": levels_data,
+            }
+        }
+        story_data.loadData(save_data)
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -176,11 +195,14 @@ class GameManager(Manager):
 
         # ------------------------------------------------
         # load games data
-        games_data = player_data["Game"]
-        # ...
+        games_data = player_data["Games"]
 
+        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
+        story_save_data = GameDataCompressor.decompress(games_data[GAME_MODE_STORY])
+        story_data.loadData(story_save_data)
+
+        # bank data
         bank_data = player_data["Bank"]
-
         revision = bank_data["AccountInfo"].get("Revision", 0)
         GameManager.setPlayerRevision(revision)
 
@@ -326,7 +348,7 @@ class GameManager(Manager):
         player_data.setLastLevelData({})
 
     @staticmethod
-    def endGame(is_win):
+    def endGame(game_name, is_win):
         player_data = GameManager.getPlayerGameData()
         chapter_id = GameManager.getCurrentGameParam("ChapterId")
         level_id = GameManager.getCurrentGameParam("LevelId")
@@ -342,6 +364,81 @@ class GameManager(Manager):
         if is_win is True and quest_index is not None:
             current_chapter_data = player_data.getCurrentChapterData()
             current_chapter_data.setCurrentQuestIndex(quest_index + 1)
+
+        GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
+
+    @staticmethod
+    def __apiEndGame(game_name, chapter_id, level_id, quest_index):
+        API_FUNCTION_NAME = "API_EndGame"
+        API_VERSION = 1
+
+        GameManager.incPlayerRevision()
+
+        if GameManager.hasInternetConnection() is False:
+            Trace.log("Manager", 0, "[GameManager] user is offline to call {!r}".format(API_FUNCTION_NAME))
+            return
+
+        # api interaction
+        MAX_TRY_COUNT = 15
+        DELAY_COEF = 100.0
+        holder_try_count = Holder(0)
+        semaphore_end = Semaphore(False, "RequestEmptyTries")
+
+        def __inc_holder(holder):
+            holder.set(holder.get() + 1)
+
+        def __scope_delay(source, holder):
+            try_count = holder.get()
+            delay = try_count * DELAY_COEF
+            Trace.msg_dev("[PlayFab] {} WAIT TO NEXT TRY {}".format(API_FUNCTION_NAME, delay))
+            source.addDelay(delay)
+
+        def __success_cb(result):
+            GameManager.setInternetConnection(True)
+            semaphore_end.setValue(True)
+
+        def __fail_cb(playFabError):
+            Mengine.logError("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+            GameManager.setInternetConnection(False)
+            semaphore_end.setValue(True)
+
+        def __curl_fail_cb(playFabError):
+            try_count = holder_try_count.get()
+            if try_count > MAX_TRY_COUNT:
+                Mengine.logError("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+                semaphore_end.setValue(True)
+                GameManager.setInternetConnection(False)
+            else:
+                Trace.msg_err("[PlayFab] {} fail: {}".format(API_FUNCTION_NAME, playFabError))
+                Notification.notify(Notificator.onInternetConnectionFail)
+
+        error_handlers = {
+            "CloudScriptAPIRequestCountExceeded": __fail_cb,
+            "CloudScriptAPIRequestError": __fail_cb,
+            "CloudScriptFunctionArgumentSizeExceeded": __fail_cb,
+            "CloudScriptHTTPRequestError": __fail_cb,
+            "CloudScriptNotFound": __fail_cb,
+            "JavascriptException": __fail_cb,
+            "ServiceUnavailable": __curl_fail_cb,
+        }
+
+        with TaskManager.createTaskChain() as tc:
+            with tc.addRepeatTask() as (tc_repeat, tc_until):
+                tc_repeat.addFunction(__inc_holder, holder_try_count)
+                tc_repeat.addScope(
+                    PlayFabManager.scopeExecuteCloudScript,
+                    API_FUNCTION_NAME,
+                    {
+                        "GameName": game_name,
+                        "ChapterId": chapter_id,
+                        "LevelId": level_id,
+                        "QuestIndex": quest_index,
+                        "__api_version__": API_VERSION
+                    },
+                    __success_cb, __fail_cb, **error_handlers)
+                tc_repeat.addScope(__scope_delay, holder_try_count)
+
+                tc_until.addSemaphore(semaphore_end, From=True)
 
     @staticmethod
     def removeGame():

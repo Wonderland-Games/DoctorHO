@@ -2,7 +2,7 @@ from Foundation.System import System
 from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.Task.Capture import Capture
-from Game.Managers.GameManager import GameManager
+from Game.Managers.GameManager import GameManager, GAME_MODE_STORY
 
 
 class SystemGame(System):
@@ -122,7 +122,7 @@ class SystemGame(System):
             Notification.notify(Notificator.onPopUpShow, "LevelLost", popup.BUTTONS_STATE_DISABLE, popup.PROTOTYPE_BG_BIG)
             # Notification.notify(Notificator.onChangeScene, "Lobby")
 
-        GameManager.endGame(is_win)
+        GameManager.endGame(GAME_MODE_STORY, is_win)
 
         return False
 
