@@ -84,7 +84,6 @@ class GameManager(Manager):
         if story_session_save is not None:
             story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
             ready_store_session_save = GameDataCompressor.decompress(story_session_save)
-            print "GAME SAVED PLAYER STORY DATA", ready_store_session_save
             story_data.loadData(ready_store_session_save)
             game_data[GAME_MODE_STORY] = story_session_save
 
@@ -101,7 +100,6 @@ class GameManager(Manager):
                 }
             }
         }
-        print "GAME SAVED PLAYER DATA", player_data
         GameManager.setLoadDataCache("PlayerData", player_data)
 
     # - Player data ----------------------------------------------------------------------------------------------------
@@ -367,7 +365,7 @@ class GameManager(Manager):
             current_chapter_data = player_data.getCurrentChapterData()
             current_chapter_data.setCurrentQuestIndex(quest_index + 1)
 
-        # GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
+        GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
 
     @staticmethod
     def __apiEndGame(game_name, chapter_id, level_id, quest_index):
@@ -380,13 +378,7 @@ class GameManager(Manager):
             Trace.log("Manager", 0, "[GameManager] user is offline to call {!r}".format(API_FUNCTION_NAME))
             return
 
-        # current_game_params = GameManager.getCurrentGameParams()
-        # if current_game_params is None:
-        #     Trace.log("Manager", 0, "[GameManager] No game to end, prepare it first!")
-        #     return
-
         # api interaction
-
         MAX_TRY_COUNT = 15
         DELAY_COEF = 100.0
         holder_try_count = Holder(0)
@@ -659,7 +651,6 @@ class GameManager(Manager):
                     isSuccessHolder.set(False)
                 return
 
-            print "PLAYFAB PLAYER DATA", player_data
             GameManager.setLoadDataCache("PlayerData", player_data)
 
             Notification.notify(Notificator.onLoadFromServerSuccess, Name="PlayerData")
