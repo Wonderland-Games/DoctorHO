@@ -2,7 +2,6 @@ from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
 from Game.Managers.GameManager import GameManager
 
-GROUP_LEVEL_CARDS = "LevelCards"
 SLOT_LEVEL = "Level"
 ALIAS_TITLE = "$LevelCardTitle"
 TEXT_TITLE = "ID_LevelCardTitle"
@@ -27,6 +26,7 @@ class LevelCard(Initializer):
 
     def __init__(self):
         super(LevelCard, self).__init__()
+        self.chapter = None
         self.level_id = None
         self.root = None
         self.state = None
@@ -38,8 +38,9 @@ class LevelCard(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, level_id, state=None):
+    def _onInitialize(self, chapter, level_id, state=None):
         super(LevelCard, self)._onInitialize()
+        self.chapter = chapter
         self.level_id = level_id
 
         self.state = self.STATE_BLOCKED
@@ -75,6 +76,7 @@ class LevelCard(Initializer):
 
         self.level_id = None
         self.state = None
+        self.chapter = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -115,7 +117,7 @@ class LevelCard(Initializer):
         current_state_movie = state_movie.get(self.state)
         movie_level_state_name = level_movie_name + "_{}".format(current_state_movie)
 
-        self.level = GroupManager.generateObjectUnique(movie_level_state_name, GROUP_LEVEL_CARDS, movie_level_state_name)
+        self.level = GroupManager.generateObjectUnique(movie_level_state_name, self.chapter.params.LevelCardsGroupName, movie_level_state_name)
         self.level.setEnable(True)
 
         level_node = self.level.getEntityNode()
@@ -133,7 +135,7 @@ class LevelCard(Initializer):
         level_params = GameManager.getLevelParams(self.level_id)
         card_movie_name = level_params.CardMovie
 
-        self.movie = GroupManager.generateObjectUnique(card_movie_name, GROUP_LEVEL_CARDS, card_movie_name)
+        self.movie = GroupManager.generateObjectUnique(card_movie_name, self.chapter.params.LevelCardsGroupName, card_movie_name)
         self.movie.setEnable(True)
 
         movie_node = self.movie.getEntityNode()
@@ -173,7 +175,7 @@ class LevelCard(Initializer):
         if quest_params.LevelId != self.level_id:
             return
 
-        self.quest_indicator = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_INDICATOR, GROUP_LEVEL_CARDS, PROTOTYPE_QUEST_INDICATOR)
+        self.quest_indicator = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_INDICATOR, self.chapter.params.LevelCardsGroupName, PROTOTYPE_QUEST_INDICATOR)
         self.quest_indicator.setEnable(True)
 
         quest_indicator_node = self.quest_indicator.getEntityNode()
@@ -201,7 +203,7 @@ class LevelCard(Initializer):
 
         quest_progress_percent = float(current_level_qp) / float(level_qp_to_unlock) * 100.0
 
-        self.quest_progress_bar = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_PROGRESS_BAR, GROUP_LEVEL_CARDS, PROTOTYPE_QUEST_PROGRESS_BAR)
+        self.quest_progress_bar = GroupManager.generateObjectUnique(PROTOTYPE_QUEST_PROGRESS_BAR, self.chapter.params.LevelCardsGroupName, PROTOTYPE_QUEST_PROGRESS_BAR)
         self.quest_progress_bar.setEnable(True)
         self.quest_progress_bar.setValue(quest_progress_percent)
         self.quest_progress_bar.setText_ID(TEXT_QUEST_PROGRESS_BAR)

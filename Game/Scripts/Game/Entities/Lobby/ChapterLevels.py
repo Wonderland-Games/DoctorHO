@@ -4,7 +4,6 @@ from Game.Managers.GameManager import GameManager
 from Game.Entities.Lobby.LevelCard import LevelCard
 
 
-GROUP_LEVEL_CARDS = "LevelCards"
 CHAPTER_SLOTS = "Card_{}"
 
 
@@ -13,6 +12,7 @@ class ChapterLevels(Initializer):
         super(ChapterLevels, self).__init__()
         self.root = None
         self.chapter_id = None
+        self.params = None
         self.level_slots_movie = None
         self.level_cards = {}
 
@@ -42,6 +42,7 @@ class ChapterLevels(Initializer):
             self.root = None
 
         self.chapter_id = None
+        self.params = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -60,11 +61,12 @@ class ChapterLevels(Initializer):
 
     def _setupLevelCards(self):
         # get levels from chapter data
-        chapter_params = GameManager.getChapterParams(self.chapter_id)
-        chapter_levels_id = chapter_params.LevelsId
-        chapter_slots = chapter_params.Slots
+        self.params = GameManager.getChapterParams(self.chapter_id)
+        chapter_levels_id = self.params.LevelsId
+        level_cards_group_name = self.params.LevelCardsGroupName
+        chapter_slots = self.params.Slots
 
-        self.level_slots_movie = GroupManager.generateObjectUnique(chapter_slots, GROUP_LEVEL_CARDS, chapter_slots)
+        self.level_slots_movie = GroupManager.generateObjectUnique(chapter_slots, level_cards_group_name, chapter_slots)
         self.level_slots_movie.setEnable(True)
         level_slots_movie_node = self.level_slots_movie.getEntityNode()
         self.root.addChild(level_slots_movie_node)
@@ -85,9 +87,9 @@ class ChapterLevels(Initializer):
             card = LevelCard()
 
             if level_id in active_levels_id:
-                card.onInitialize(level_id, card.STATE_ACTIVE)
+                card.onInitialize(self, level_id, card.STATE_ACTIVE)
             else:
-                card.onInitialize(level_id)
+                card.onInitialize(self, level_id)
 
             self.level_cards[level_id] = card
 

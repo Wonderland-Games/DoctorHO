@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<DataBlock Name="LevelCards_SolarSystem">
+	<Resource Name="c6/d1373fe7420f56bceb7cc55f5e8e06633d8967.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/c6/d1373fe7420f56bceb7cc55f5e8e06633d8967.png" MaxSize="300;350" />
+	</Resource>
+	<Resource Name="b9/ffaad687df03134971e006ebbde3323c89f855.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/b9/ffaad687df03134971e006ebbde3323c89f855.png" MaxSize="250;250" />
+	</Resource>
+	<Resource Name="4a/e4d8cb9fb88de67db83c2244711023201eb182.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/4a/e4d8cb9fb88de67db83c2244711023201eb182.png" MaxSize="250;250" />
+	</Resource>
+	<Resource Name="c4/b061f60d52d3cd16981b8e8e7990ad3454aacf.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/c4/b061f60d52d3cd16981b8e8e7990ad3454aacf.png" MaxSize="250;250" />
+	</Resource>
+	<Resource Name="0d/ef75010bcefbd364b885818bee2b00fe75b869.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/0d/ef75010bcefbd364b885818bee2b00fe75b869.png" MaxSize="250;250" />
+	</Resource>
+	<Resource Name="43/efaf0c9def7e2f1721125527603ad89f586f04.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/43/efaf0c9def7e2f1721125527603ad89f586f04.png" MaxSize="250;250" />
+	</Resource>
+	<Resource Name="Movie2_LevelCards_SolarSystem" Type="ResourceMovie2">
+		<File Path="Movies2/LevelCards_SolarSystem/LevelCards_SolarSystem.aez" />
+		<Composition Name="Card" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-150.0;-175.0;150.0;175.0">
+			<Layer Index="0" Name="Black Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1243.0;618.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Level" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;743.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="QuestIndicator" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;743.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="3" Name="QuestProgressBar" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;743.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="4" Name="stars.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;593.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="5" Name="$LevelCardTitle" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;905.5;0.0;1.0" Options="30307;26723" TrackMatte="0" />
+			<Layer Index="6" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;768.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="ChapterSlots" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Card_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1008.0;688.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Card_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1728.0;608.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="Card_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;408.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="3" Name="Card_4" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1168.0;1128.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="4" Name="Card_5" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1568.0;1048.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Europa_Active" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Europa" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Europa_Blocked" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Europa" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Europa_Unlocking" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Europa" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Mars_Active" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Mars" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Mars_Blocked" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Mars" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Mars_Unlocking" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Mars" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Moon_Active" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Moon" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Moon_Blocked" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Moon" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Moon_Unlocking" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Moon" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Titan_Active" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Titan" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Titan_Blocked" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Titan" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Titan_Unlocking" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Titan" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Venus_Active" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Venus" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Venus_Blocked" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Venus" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="02_Venus_Unlocking" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="02_Venus" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;25.0;25.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Quest_Progress" Duration="2.1666667461395263671875" FrameDuration="0.0333333350718021392822265625" Master="1" Bounds="-75.0546875;-75.0;74.9609375;75.0">
+			<Layer Index="0" Name="Yellow Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;75.0;75.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="ID_LevelCard_QuestProgress" Type="TextField" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;150.0;150.0;0.0;1.0" Options="26723;30307;24947" Dimension="-67.53125;-67.5;67.484375;67.5" TrackMatte="0" />
+		</Composition>
+		<Composition Name="QuestIndicator" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Yellow Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;75.0;75.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>
