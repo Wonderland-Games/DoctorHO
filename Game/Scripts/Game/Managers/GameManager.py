@@ -829,29 +829,8 @@ class GameManager(Manager):
     # - Randomizer -----------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def generateSeed():
-        return Mengine.rand(1000000)
-
-    @staticmethod
-    def initRandomizer(seed=None):
-        randomizer = Mengine.generateRandomizer("MT19937Randomizer")
-        GameManager.s_randomizer = randomizer
-        GameManager.updateRandomizerSeed(seed)
-
-    @staticmethod
-    def updateRandomizerSeed(seed=None):
-        randomizer = GameManager.getRandomizer()
-
-        if seed is None:
-            DebugRandomizerSeed = DefaultManager.getDefault("GameRandomizerSeed", "Random")
-            if DebugRandomizerSeed == "Random":
-                seed = Mengine.rand(100000)
-            else:
-                seed = int(DebugRandomizerSeed)
-
-        randomizer.setSeed(seed)
-        GameManager._randomizer_seed = seed
-        Trace.msg_dev("Randomizer seed: {}".format(seed))
+    def initRandomizer():
+        GameManager.s_randomizer = Mengine.generateRandomizer("MT19937Randomizer")
 
     @staticmethod
     def getRandomizer():
