@@ -1,15 +1,12 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from UIKit.LayoutWrapper.LayoutSpriteWrapper import LayoutSpriteWrapper
-from Foundation.GroupManager import GroupManager
+from Game.Managers.GameManager import GameManager
 
 
 SLOT_ITEM = "Item"
 SLOT_BUTTON = "Button"
 
 ITEM_BOX_SIZE = 500.0
-
-QUEST_ITEM_STORE_GROUP = "QuestItemStore"
-QUEST_ITEM_NAME = "Item_{}_{}"
 
 
 class QuestItemReceived(PopUpContent):
@@ -27,7 +24,7 @@ class QuestItemReceived(PopUpContent):
     def _onInitializeContent(self, **content_args):
         super(QuestItemReceived, self)._onInitializeContent()
 
-        self._setupItem(content_args["ChapterId"], content_args["ItemName"])
+        self._setupItem(content_args["ItemName"])
         self._setupButton()
         self._setupLayoutBox()
 
@@ -47,12 +44,9 @@ class QuestItemReceived(PopUpContent):
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
-    def _setupItem(self, chapter_id, item_name):
-        item_name_raw = item_name.replace("Item_", "")
-        item_name_store = QUEST_ITEM_NAME.format(chapter_id, item_name_raw)
-
-        item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
-        item_object = item_store_group.getObject(item_name_store)
+    def _setupItem(self, item_name):
+        item_store_group = GameManager.getCurrentQuestItemStoreGroup()
+        item_object = item_store_group.getObject(item_name)
         item_entity = item_object.getEntity()
         self.item_sprite = item_entity.generatePure()
         self.item_sprite.enable()

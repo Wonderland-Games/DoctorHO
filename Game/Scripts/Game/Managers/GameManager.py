@@ -3,6 +3,7 @@ from Foundation.DemonManager import DemonManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DatabaseManager import DatabaseManager
 from Foundation.DefaultManager import DefaultManager
+from Foundation.GroupManager import GroupManager
 from Foundation.TaskManager import TaskManager
 from Foundation.Providers.FacebookProvider import FacebookProvider
 from PlayFab.PlayFabManager import PlayFabManager
@@ -231,6 +232,14 @@ class GameManager(Manager):
         db = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
         params = DatabaseManager.findDB(db, ChapterId=chapter_id)
         return params
+
+    @staticmethod
+    def getCurrentChapterParams():
+        player_data = GameManager.getPlayerGameData()
+        chapter_data = player_data.getCurrentChapterData()
+        chapter_id = chapter_data.getChapterId()
+        chapter_params = GameManager.getChapterParams(chapter_id)
+        return chapter_params
 
     @staticmethod
     def getLevelParams(level_id):
@@ -825,6 +834,13 @@ class GameManager(Manager):
             if demon.isActive():
                 return demon
         return None
+
+    @staticmethod
+    def getCurrentQuestItemStoreGroup():
+        current_chapter_params = GameManager.getCurrentChapterParams()
+        quest_item_store_group_name = current_chapter_params.QuestItemStoreGroupName
+        quest_item_store_group = GroupManager.getGroup(quest_item_store_group_name)
+        return quest_item_store_group
 
     # - Randomizer -----------------------------------------------------------------------------------------------------
 

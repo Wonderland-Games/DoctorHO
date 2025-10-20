@@ -1,7 +1,7 @@
 from UIKit.Entities.PopUp.PopUpContent import PopUpContent, LayoutBox
 from UIKit.LayoutWrapper.LayoutSpriteWrapper import LayoutSpriteWrapper
 from UIKit.LayoutWrapper.LayoutTextWrapper import LayoutTextWrapper
-from Foundation.GroupManager import GroupManager
+from Game.Managers.GameManager import GameManager
 
 
 SLOT_ITEM_SPRITE = "ItemSprite"
@@ -21,9 +21,6 @@ TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE = "ID_QuestItem_{}_{}"
 ITEM_BOX_SIZE = 500.0
 TEXT_ITEM_DESCRIPTION_LENGTH_PERCENT = 0.9
 
-QUEST_ITEM_STORE_GROUP = "QuestItemStore"
-QUEST_ITEM_NAME = "Item_{}_{}"
-
 
 class QuestItemDescription(PopUpContent):
     content_id = "QuestItemDescription"
@@ -31,7 +28,7 @@ class QuestItemDescription(PopUpContent):
     def __init__(self):
         super(QuestItemDescription, self).__init__()
 
-        self.item_codename = None
+        self.item_name = None
         self.item_sprite = None
         self.item_name = None
         self.item_description_full = None
@@ -40,16 +37,7 @@ class QuestItemDescription(PopUpContent):
 
     def _onInitializeContent(self, **content_args):
         super(QuestItemDescription, self)._onInitializeContent()
-
-        chapter_id = content_args["ChapterId"]
-        item_name = content_args["ItemName"]
-        convert_to_store_item_name = content_args.get("ConvertToStoreItemName", True)
-
-        if convert_to_store_item_name is True:
-            item_name_raw = item_name.replace("Item_", "")
-            self.item_codename = QUEST_ITEM_NAME.format(chapter_id, item_name_raw)
-        else:
-            self.item_codename = item_name
+        self.item_name = content_args["ItemName"]
 
         self._setupItemSprite()
         # self._setupItemName()
@@ -72,13 +60,13 @@ class QuestItemDescription(PopUpContent):
             Mengine.destroyNode(self.item_sprite)
             self.item_sprite = None
 
-        self.item_codename = None
+        self.item_name = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupItemSprite(self):
-        item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
-        item_object = item_store_group.getObject(self.item_codename)
+        item_store_group = GameManager.getCurrentQuestItemStoreGroup()
+        item_object = item_store_group.getObject(self.item_name)
         item_entity = item_object.getEntity()
         self.item_sprite = item_entity.generatePure()
         self.item_sprite.enable()
@@ -113,13 +101,13 @@ class QuestItemDescription(PopUpContent):
 
     def _setupItemName(self):
         self.item_name = Mengine.createNode("TextField")
-        self.item_name.setName(self.item_codename + "_" + TEXT_ITEM_NAME_ANNEX)
+        self.item_name.setName(self.item_name + "_" + TEXT_ITEM_NAME_ANNEX)
 
         self.item_name.setVerticalBottomAlign()
         self.item_name.setHorizontalCenterAlign()
 
         self.item_name.setTextId(TEXT_ITEM_NAME)
-        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_codename, TEXT_ITEM_NAME_ANNEX)
+        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_name, TEXT_ITEM_NAME_ANNEX)
         item_name_text = Mengine.getTextFromId(item_name_text_id)
         self.item_name.setTextFormatArgs(item_name_text)
 
@@ -133,12 +121,12 @@ class QuestItemDescription(PopUpContent):
         self.item_name.enable()
 
     def _setupPopUpTitle(self):
-        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_codename, TEXT_ITEM_NAME_ANNEX)
+        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_name, TEXT_ITEM_NAME_ANNEX)
         self.title_text_id = item_name_text_id
 
     def _setupItemDescriptionFull(self):
         self.item_description_full = Mengine.createNode("TextField")
-        self.item_description_full.setName(self.item_codename + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
+        self.item_description_full.setName(self.item_name + "_" + TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
         self.item_description_full.setVerticalCenterAlign()
         self.item_description_full.setHorizontalCenterAlign()
@@ -146,7 +134,7 @@ class QuestItemDescription(PopUpContent):
         self.item_description_full.setJustify(True)
 
         self.item_description_full.setTextId(TEXT_ITEM_DESCRIPTION_FULL)
-        item_description_full_text_id = TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE.format(self.item_codename, TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
+        item_description_full_text_id = TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE.format(self.item_name, TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
         item_description_full_text = Mengine.getTextFromId(item_description_full_text_id)
         self.item_description_full.setTextFormatArgs(item_description_full_text)
 

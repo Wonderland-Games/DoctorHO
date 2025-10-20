@@ -1,12 +1,9 @@
 from Foundation.Initializer import Initializer
-from Foundation.GroupManager import GroupManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.QuestBackpack.QuestItem import QuestItem
 
 
 CHAPTER_SLOTS = "QuestItem_{}"
-QUEST_ITEM_STORE_GROUP = "QuestItemStore"
-QUEST_ITEM_NAME = "Item_{}_{}"
 
 
 class ChapterQuestItems(Initializer):
@@ -80,11 +77,8 @@ class ChapterQuestItems(Initializer):
 
         chapter_quests_params = GameManager.getQuestParamsByChapter(self.chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
-            quest_param_item_name = quest_param.QuestItem.replace("Item_", "")
-            quest_item_name = QUEST_ITEM_NAME.format(self.chapter_id, quest_param_item_name)
-
-            quest_item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
-            quest_item_object = quest_item_store_group.getObject(quest_item_name)
+            quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
+            quest_item_object = quest_item_store_group.getObject(quest_param.QuestItem)
             quest_item_entity = quest_item_object.getEntity()
 
             quest_item = QuestItem()
@@ -98,4 +92,4 @@ class ChapterQuestItems(Initializer):
             quest_item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
             quest_item.attachTo(quest_item_slot)
 
-            self.quest_items[quest_item_name] = quest_item
+            self.quest_items[quest_param.QuestItem] = quest_item

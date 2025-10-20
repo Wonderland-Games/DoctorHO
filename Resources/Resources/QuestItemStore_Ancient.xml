@@ -1,0 +1,20 @@
+<DataBlock Name = "QuestItemStore_Ancient">
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Armor/_Item_Quest_Armor[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Armor/Item_Quest_Armor[Full].png" Codec = "pngImage" MaxSize = "427;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Armor/_Item_Quest_Armor[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Armor/Item_Quest_Armor[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Helmet/_Item_Quest_Helmet[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Helmet/Item_Quest_Helmet[Full].png" Codec = "pngImage" MaxSize = "401;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Helmet/_Item_Quest_Helmet[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Helmet/Item_Quest_Helmet[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Bust/_Item_Quest_Bust[Full]" Type = "ResourceImageDefault">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Bust/Item_Quest_Bust[Full].png" Codec = "pngImage" MaxSize = "346;512"/>
+    </Resource>
+    <Resource Name = "QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Bust/_Item_Quest_Bust[Pick]" Type = "ResourceHIT">
+        <File Path = "Art/QuestItemStore_Ancient/Layer2D_Main/Item_Quest_Bust/Item_Quest_Bust[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
+    </Resource>
+</DataBlock>
