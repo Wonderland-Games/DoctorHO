@@ -11,6 +11,7 @@ class QuestItem(Initializer):
     def __init__(self):
         super(QuestItem, self).__init__()
         self.ref_item_entity = None
+        self.item_name = None
         self.item_sprite = None
         self.hotspot = None
         self.root = None
@@ -20,7 +21,8 @@ class QuestItem(Initializer):
 
     def _onInitialize(self, ref_item_entity, state=STATE_BLOCKED):
         super(QuestItem, self)._onInitialize()
-        self.ref_item_entity = ref_item_entity
+        self.ref_item_entity = ref_item_entity      # not available after initialization
+        self.item_name = ref_item_entity.getName()
 
         self.state = state
         if self.state is self.STATE_BLOCKED:
@@ -47,14 +49,14 @@ class QuestItem(Initializer):
             self.root = None
 
         self.ref_item_entity = None
+        self.item_name = None
         self.state = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
-        ref_item_name = self.ref_item_entity.getName()
         self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__ + "_" + str(ref_item_name))
+        self.root.setName(self.__class__.__name__ + "_" + self.item_name)
 
     def attachTo(self, node):
         self.root.removeFromParent()
@@ -79,8 +81,8 @@ class QuestItem(Initializer):
                                                         -item_sprite_center[1] * ITEM_SCALE_MODIFIER))
 
     def _setupHotspot(self):
-        hotspot_name = str(self.ref_item_entity.getName()) + "_HotSpot"
-        self.hotspot =Utils.createBBSpriteHotspot(hotspot_name, self.item_sprite)
+        hotspot_name = self.item_name + "_HotSpot"
+        self.hotspot = Utils.createBBSpriteHotspot(hotspot_name, self.item_sprite)
         self.root.addChild(self.hotspot)
 
         item_sprite_center = self.ref_item_entity.getSpriteCenter()
@@ -107,7 +109,6 @@ class QuestItem(Initializer):
         if event.button != 0 or event.isDown is not False:
             return False
 
-        quest_item_name = self.ref_item_entity.getName()
-        Notification.notify(Notificator.onQuestItemClicked, quest_item_name)
+        Notification.notify(Notificator.onQuestItemClicked, self.item_name)
 
         return False

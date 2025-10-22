@@ -77,8 +77,10 @@ class ChapterQuestItems(Initializer):
 
         chapter_quests_params = GameManager.getQuestParamsByChapter(self.chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
-            quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
-            quest_item_object = quest_item_store_group.getObject(quest_param.QuestItem)
+            # Temporary generating object
+            quest_item_object = GameManager.generateQuestItem(quest_param.QuestItem)
+
+            # Initializing QuestItem class
             quest_item_entity = quest_item_object.getEntity()
 
             quest_item = QuestItem()
@@ -93,3 +95,6 @@ class ChapterQuestItems(Initializer):
             quest_item.attachTo(quest_item_slot)
 
             self.quest_items[quest_param.QuestItem] = quest_item
+
+            # Destroying used object
+            quest_item_object.onDestroy()

@@ -842,6 +842,12 @@ class GameManager(Manager):
         quest_item_store_group = GroupManager.getGroup(quest_item_store_group_name)
         return quest_item_store_group
 
+    @staticmethod
+    def generateQuestItem(item_name):
+        quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
+        quest_item = quest_item_store_group.generateObjectUnique(item_name, item_name)
+        return quest_item
+
     # - Randomizer -----------------------------------------------------------------------------------------------------
 
     @staticmethod

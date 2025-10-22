@@ -45,11 +45,16 @@ class QuestItemReceived(PopUpContent):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupItem(self, item_name):
-        item_store_group = GameManager.getCurrentQuestItemStoreGroup()
-        item_object = item_store_group.getObject(item_name)
+        # Temporary generating object
+        item_object = GameManager.generateQuestItem(item_name)
+
+        # Generating sprite pure from object
         item_entity = item_object.getEntity()
         self.item_sprite = item_entity.generatePure()
         self.item_sprite.enable()
+
+        # Destroying used object
+        item_object.onDestroy()
 
         self.isHoldingItem = True
 

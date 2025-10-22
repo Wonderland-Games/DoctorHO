@@ -5,8 +5,6 @@ class DatabaseSceneSlots_Lobby(Database):
         super(DatabaseSceneSlots_Lobby, self).__init__()
         self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Lobby", Type="Layer2D", Width=2736, Height=1536, Main=1)
-        self.addRecord(Name="QuestItemStore_Ancient", Type="Layer2D", Width=2736, Height=1536, Main=0)
-        self.addRecord(Name="QuestItemStore_SolarSystem", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Header", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="DummyBanner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
         self.addRecord(Name="FadeUI", Type="Layer2D", Width=2736, Height=1536, Main=0)
