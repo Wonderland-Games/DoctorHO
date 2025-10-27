@@ -92,4 +92,7 @@
     <Resource Name = "01_AncientEgypt/Layer2D_Main/Item_Crown/_Item_Crown[Pick]" Type = "ResourceHIT">
         <File Path = "Art/01_AncientEgypt/Layer2D_Main/Item_Crown/Item_Crown[Pick].png" Codec = "hitPick" Converter = "png2hit"/>
     </Resource>
+    <Resource Name = "01_AncientEgypt/Layer2D_Main/Sprite_Foreground/Sprite_Foreground" Type = "ResourceImageDefault">
+        <File Path = "Art/01_AncientEgypt/Layer2D_Main/Sprite_Foreground/Sprite_Foreground.png" Codec = "pngImage"  MaxSize = "177;116"/>
+    </Resource>
 </DataBlock>
