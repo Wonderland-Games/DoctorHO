@@ -6,11 +6,11 @@ class ObjectGameArea(DemonObject):
     @staticmethod
     def declareORM(Type):
         DemonObject.declareORM(Type)
-        Type.addParam(Type, "ChapterId", None)
-        Type.addParam(Type, "LevelId", None)
-        Type.addParam(Type, "QuestIndex", None)
-        Type.addParam(Type, "FoundItems", None)
-        Type.addParam(Type, "HintCount", None)
+        Type.declareParam("ChapterId", None)
+        Type.declareParam("LevelId", None)
+        Type.declareParam("QuestIndex", None)
+        Type.declareParam("FoundItems", None)
+        Type.declareParam("HintCount", None)
 
     def _onParams(self, params):
         super(ObjectGameArea, self)._onParams(params)

@@ -24,7 +24,7 @@ class Cutscene(BaseEntity):
     @staticmethod
     def declareORM(Type):
         BaseEntity.declareORM(Type)
-        Type.addAction(Type, "CutsceneId")
+        Type.addAction("CutsceneId")
 
     def __init__(self):
         super(Cutscene, self).__init__()

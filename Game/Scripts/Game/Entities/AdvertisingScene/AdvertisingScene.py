@@ -9,8 +9,8 @@ class AdvertisingScene(BaseScopeEntity):
     @staticmethod
     def declareORM(Type):
         BaseScopeEntity.declareORM(Type)
-        Type.addAction(Type, "NextScene")
-        Type.addAction(Type, "AdPlacement")
+        Type.addAction("NextScene")
+        Type.addAction("AdPlacement")
 
     def _onPreparation(self):
         if _DEVELOPMENT is True and self.object.hasObject(MOVIE_CONTENT):

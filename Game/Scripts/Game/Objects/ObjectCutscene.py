@@ -5,7 +5,7 @@ class ObjectCutscene(DemonObject):
     @staticmethod
     def declareORM(Type):
         DemonObject.declareORM(Type)
-        Type.addParam(Type, "CutsceneId")
+        Type.declareParam("CutsceneId")
 
     def _onParams(self, params):
         super(ObjectCutscene, self)._onParams(params)

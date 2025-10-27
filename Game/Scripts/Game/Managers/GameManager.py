@@ -761,7 +761,7 @@ class GameManager(Manager):
             return __wrapper
 
         def __success_cb(response):
-            if _DEVELOPMENT:
+            if _DEVELOPMENT is True:
                 Trace.msg("scopeGetAccountInfo success {}".format(response))
             else:
                 Trace.msg("PlayFab GetAccountInfo [{}] created at {} success".format(

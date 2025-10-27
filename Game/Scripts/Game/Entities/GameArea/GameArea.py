@@ -33,11 +33,11 @@ class GameArea(BaseEntity):
     @staticmethod
     def declareORM(Type):
         BaseEntity.declareORM(Type)
-        Type.addAction(Type, "ChapterId")
-        Type.addAction(Type, "LevelId")
-        Type.addAction(Type, "QuestIndex")
-        Type.addActionActivate(Type, "FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
-        Type.addAction(Type, "HintCount")
+        Type.addAction("ChapterId")
+        Type.addAction("LevelId")
+        Type.addAction("QuestIndex")
+        Type.addActionActivate("FoundItems", Append=GameArea._appendFoundItems, Update=GameArea._updateFoundItems)
+        Type.addAction("HintCount")
 
     def _appendFoundItems(self, id, item):
         print "FOUND ITEMS", self.FoundItems

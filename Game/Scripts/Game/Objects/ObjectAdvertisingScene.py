@@ -5,8 +5,8 @@ class ObjectAdvertisingScene(DemonObject):
     @staticmethod
     def declareORM(Type):
         DemonObject.declareORM(Type)
-        Type.addParam(Type, "NextScene")
-        Type.addParam(Type, "AdPlacement")
+        Type.declareParam("NextScene")
+        Type.declareParam("AdPlacement")
 
     def _onParams(self, params):
         super(ObjectAdvertisingScene, self)._onParams(params)
