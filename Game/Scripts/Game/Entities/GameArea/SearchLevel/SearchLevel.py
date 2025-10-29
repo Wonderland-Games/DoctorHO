@@ -117,10 +117,7 @@ class SearchLevel(Initializer):
         )
 
     def _setupVirtualArea(self):
-        # create hotspot to handle VA
-        self.va_hotspot = Mengine.createNode("HotSpotPolygon")
-        self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
-
+        # calculate hotspot polygon and center
         hotspot_polygon = [
             (self.box_points.x, self.box_points.y),
             (self.box_points.z, self.box_points.y),
@@ -132,20 +129,25 @@ class SearchLevel(Initializer):
             -((self.box_points.w - self.box_points.y) / 2 + self.box_points.y)
         )
 
-        self.va_hotspot.setPolygon(hotspot_polygon)
-        self.va_hotspot.setDefaultHandle(False)
-
-        self.root.addChild(self.va_hotspot)
-        self.va_hotspot.enable()
-        self.va_hotspot.setLocalPosition(hotspot_polygon_center)
-
-        # set hotspot to VA
-        self.virtual_area.init_handlers(self.va_hotspot)
-
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()
         self.root.addChild(virtual_area_node)
         virtual_area_node.setLocalPosition(hotspot_polygon_center)
+
+        # create hotspot to handle VA
+        self.va_hotspot = Mengine.createNode("HotSpotPolygon")
+        self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
+
+        self.va_hotspot.setPolygon(hotspot_polygon)
+        self.va_hotspot.setDefaultHandle(False)
+
+        # set hotspot to VA
+        self.virtual_area.init_handlers(self.va_hotspot)
+
+        # attach VA hotspot to root
+        self.root.addChild(self.va_hotspot)
+        self.va_hotspot.enable()
+        self.va_hotspot.setLocalPosition(hotspot_polygon_center)
 
     # - Scene ----------------------------------------------------------------------------------------------------------
 
