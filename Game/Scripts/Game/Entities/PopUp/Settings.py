@@ -237,4 +237,6 @@ class Settings(PopUpContent):
     def _scopeQuestBackpack(self, source):
         source.addNotify(Notificator.onPopUpHide)
         source.addFunction(GameManager.removeGame)
-        source.addNotify(Notificator.onChangeScene, SLOT_QUEST_BACKPACK)
+
+        backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
+        source.addNotify(Notificator.onChangeScene, backpack_scene_name)

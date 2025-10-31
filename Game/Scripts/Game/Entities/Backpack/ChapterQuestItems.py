@@ -1,7 +1,7 @@
 from Foundation.Initializer import Initializer
 from Foundation.GroupManager import GroupManager
 from Game.Managers.GameManager import GameManager
-from Game.Entities.QuestBackpack.QuestItem import QuestItem
+from Game.Entities.Backpack.QuestItem import QuestItem
 
 
 CHAPTER_SLOTS = "QuestItem_{}"

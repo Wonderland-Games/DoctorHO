@@ -40,6 +40,9 @@
 		<Resource Path="Resources/01_FinalStage.bin" />
 		<Resource Path="Resources/02_FinalStage.bin" />
 		
+		<Resource Path="Resources/01_Backpack.bin" />
+		<Resource Path="Resources/02_Backpack.bin" />
+		
 		<Resource Path="Resources/Intro.bin" />
 		<Resource Path="Resources/Cutscene_01.bin" />
 		<Resource Path="Resources/Cutscene_02.bin" />

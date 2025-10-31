@@ -60,6 +60,8 @@ class ChapterData(object):
 
         return levels_data
 
+    def getLevelDataSize(self):
+        return len(self.levels_data)
 
 class PlayerGameData(object):
     def __init__(self):
