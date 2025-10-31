@@ -69,10 +69,10 @@ def onInitialize():
         "FinalStage",
         "MissClick",
         {"name": "AdvertisingScene", "override": True},
-        "QuestBackpack",
         "Cutscene",
         {"name": "Header", "override": True},
         "GameHeader",
+        "Backpack",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:

@@ -117,7 +117,9 @@ class FinalStage(BaseScopeEntity):
                 source_until.addEvent(event_finish)
 
         source.addScope(self._playFinalAnimation)
-        source.addNotify(Notificator.onChangeScene, "QuestBackpack")
+
+        backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
+        source.addNotify(Notificator.onChangeScene, backpack_scene_name)
 
     def _onDeactivate(self):
         super(FinalStage, self)._onDeactivate()

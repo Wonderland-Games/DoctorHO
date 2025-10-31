@@ -24,6 +24,7 @@ class GameManager(Manager):
     s_db_name_levels = "Levels"
     s_db_name_quests = "Quests"
     s_db_name_final_stage_levels = "FinalStageLevels"
+    s_db_name_backpack_levels = "BackpackLevels"
 
     _loading_cache = {}  # clears after loading screen
     _cache_data = {}  # always available
@@ -128,25 +129,54 @@ class GameManager(Manager):
         GameManager._player_data = new_player_data
         GameManager.clearLoadDataCache()
 
+
     @staticmethod
     def setDummyPlayerData():
-        active_chapter_id, quest_index, levels_data = GameManager.getRandomPlayerData()
+        randomizer = GameManager.getRandomizer()
+
+        db_chapters = DatabaseManager.getDatabase(GameManager.s_db_module, GameManager.s_db_name_chapters)
+        db_chapters_params = db_chapters.getORMs()
+        db_chapters_len = len(db_chapters_params)
+        chapter_params_index = randomizer.getRandom(db_chapters_len)
+        chapter_params = db_chapters_params[chapter_params_index]
+        random_chapter_id = chapter_params.ChapterId
+
+        quest_params_list = GameManager.getQuestParamsByChapter(random_chapter_id)
+        quest_params_len = len(quest_params_list)
+        quest_index = randomizer.getRandom(quest_params_len)
+
+        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(quest_index, random_chapter_id)
+        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+
         Trace.msg_dev("[GameManager] set dummy player data" + "\n" +
                       " ChapterId: {}".format(active_chapter_id) + "\n" +
                       " QuestIndex: {}".format(quest_index) + "\n" +
                       " LevelsData: {}".format(levels_data))
 
-        story_data = GameManager.getPlayerGameData(GAME_MODE_STORY)
-        save_data = {
-            "Data": {
-                "active_chapter_id": active_chapter_id,
-                "active_quest_index": quest_index,
-                "levels_data": levels_data,
-            }
-        }
-        story_data.loadData(save_data)
-
         GameManager.initRandomizer()  # reset randomizer
+
+
+    @staticmethod
+    def setMaxPlayerProgress():
+        chapter_id = GameManager.getCurrentChapterId()
+
+        quest_params_list = GameManager.getQuestParamsByChapter(chapter_id)
+        quest_params_len = len(quest_params_list)
+
+        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(quest_params_len, chapter_id)
+        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+
+        Notification.notify(Notificator.onChangeScene, "Lobby")
+
+
+    @staticmethod
+    def resetPlayerProgress():
+        chapter_id = GameManager.getCurrentChapterId()
+
+        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(0, chapter_id)
+        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+        GameManager.initRandomizer()  # reset randomizer
+        Notification.notify(Notificator.onChangeScene, "Lobby")
 
     @staticmethod
     def getPlayerRevision():
@@ -332,6 +362,56 @@ class GameManager(Manager):
                 }
 
         return chapter_id, quest_params_index, levels_data
+
+    @staticmethod
+    def getPlayerDataByQuestIndex(quest_index, chapter_id):
+        randomizer = GameManager.getRandomizer()
+
+        levels_data = {}
+        chapter_quests = GameManager.getQuestParamsByChapter(chapter_id)
+
+        for i, quest_params in enumerate(chapter_quests):
+            level_params = GameManager.getLevelParams(quest_params.LevelId)
+
+            if quest_params.LevelId in levels_data:
+                continue
+
+            if i <= quest_index:
+                levels_data[quest_params.LevelId] = {
+                    "Active": True,
+                    "QuestPoints": level_params.QuestPointsToUnlock,
+                }
+            else:
+                random_qp = randomizer.getRandom(level_params.QuestPointsToUnlock)
+                levels_data[quest_params.LevelId] = {
+                    "Active": False,
+                    "QuestPoints": random_qp,
+                }
+
+        return chapter_id, quest_index, levels_data
+
+    @staticmethod
+    def loadCustomPlayerData(chapter_id, quest_index, levels_data):
+        player_game_data = GameManager.getPlayerGameData()
+        player_game_data.loadData(chapter_id, quest_index, levels_data)
+        GameManager.setLoadDataCache("PlayerData", player_game_data)
+        #GameManager.clearLoadDataCache()
+
+    @staticmethod
+    def getCurrentChapterId():
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+
+        return chapter_id
+
+    @staticmethod
+    def isChapterCompleted():
+        player_game_data = GameManager.getPlayerGameData()
+        chapter_data = player_game_data.getCurrentChapterData()
+        current_index = chapter_data.getCurrentQuestIndex()
+        max_index = chapter_data.getLevelDataSize()
+        return current_index == max_index
 
     # - Game -----------------------------------------------------------------------------------------------------------
 
@@ -862,16 +942,58 @@ class GameManager(Manager):
 
     @staticmethod
     def getFinalStageSceneByChapter(chapter_id):
-        params = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
                                                  GameManager.s_db_name_final_stage_levels,
                                                  ChapterId = chapter_id)
 
-        return params.SceneName
+        return param.SceneName
 
     @staticmethod
     def isSceneFinalStage(scene_name):
-        params = DatabaseManager.filterDatabaseORM(GameManager.s_db_module,
-                                                   GameManager.s_db_name_final_stage_levels,
-                                                   filter=lambda param: param.SceneName == scene_name)
+        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+                                                 GameManager.s_db_name_final_stage_levels,
+                                                 SceneName = scene_name)
 
-        return bool(params)
+        if param is None:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def getCurrentFinalStageSceneName():
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        final_stage_scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
+        return final_stage_scene_name
+
+    @staticmethod
+    def getBackpackSceneByChapter(chapter_id):
+        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+                                                GameManager.s_db_name_backpack_levels,
+                                                ChapterId=chapter_id)
+
+        return param.SceneName
+
+    @staticmethod
+    def getCurrentQuestBackpackSceneName():
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        quest_backpack_scene_name = GameManager.getBackpackSceneByChapter(chapter_id)
+        return quest_backpack_scene_name
+
+    @staticmethod
+    def getBackpackDemonByChapter(chapter_id):
+        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+                                                GameManager.s_db_name_backpack_levels,
+                                                ChapterId=chapter_id)
+
+        return param.DemonName
+    @staticmethod
+    def getCurrentQuestBackpackDemonName():
+        player_game_data = GameManager.getPlayerGameData()
+        current_chapter_data = player_game_data.getCurrentChapterData()
+        chapter_id = current_chapter_data.getChapterId()
+        quest_backpack_demon_name = GameManager.getBackpackDemonByChapter(chapter_id)
+        return quest_backpack_demon_name

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<DataBlock Name="QuestBackpack">
+<DataBlock Name="02_Backpack">
 	<Resource Name="24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" Type="ResourceImageDefault" Unique="0">
 		<File Path="Movies2/cache_images/24/1c3fb7fe4977c74cd738e524bae77f1974eaa0.png" MaxSize="300;300" Size="242;271" Offset="27;14" />
 	</Resource>
-	<Resource Name="Movie2_QuestBackpack" Type="ResourceMovie2">
-		<File Path="Movies2/QuestBackpack/QuestBackpack.aez" />
+	<Resource Name="Movie2_02_Backpack" Type="ResourceMovie2">
+		<File Path="Movies2/02_Backpack/02_Backpack.aez" />
 		<Composition Name="ChapterSlots_Ancient" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="FinalStage" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1367.875;1368.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="QuestItem_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1048.0;1568.0;0.0;1.0" TrackMatte="0" />
@@ -27,6 +27,15 @@
 		<Composition Name="FinalStageAnimation" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Click" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.25;1368.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="FinalStage.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;1218.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="FinalStageButton_Block" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="FinalStage.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;1218.0;0.0;1.0" Color="1.0;1.0;1.0;0.5" TrackMatte="0" />
+		</Composition>
+		<Composition Name="FinalStageButton_Idle" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="FinalStage.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;1218.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="FinalStageButton_Pressed" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="FinalStage.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1218.0;1218.0;0.0;1.0" Color="1.0;1.0;1.0;0.5" TrackMatte="0" />
 		</Composition>
 	</Resource>
 </DataBlock>

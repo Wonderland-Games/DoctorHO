@@ -15,7 +15,8 @@ class DatabaseScenes(Database):
         self.addRecord(SceneName="02_Moon", DefaultScene="GameArea", BaseScene="GameArea", SlotName="Level", SceneType="Scene", GroupName="02_Moon", GameScene=0)
         self.addRecord(SceneName="01_FinalStage", DefaultScene="FinalStage", BaseScene="FinalStage", SlotName="Level", SceneType="Scene", GroupName="01_FinalStage", GameScene=0)
         self.addRecord(SceneName="02_FinalStage", DefaultScene="FinalStage", BaseScene="FinalStage", SlotName="Level", SceneType="Scene", GroupName="02_FinalStage", GameScene=0)
-        self.addRecord(SceneName="QuestBackpack", DefaultScene="QuestBackpack", BaseScene="QuestBackpack", SlotName="QuestBackpack", SceneType="Scene", GroupName="QuestBackpack", GameScene=0)
+        self.addRecord(SceneName="01_Backpack", DefaultScene="Backpack", BaseScene="Backpack", SlotName="Backpack", SceneType="Scene", GroupName="01_Backpack", GameScene=0)
+        self.addRecord(SceneName="02_Backpack", DefaultScene="Backpack", BaseScene="Backpack", SlotName="Backpack", SceneType="Scene", GroupName="02_Backpack", GameScene=0)
         self.addRecord(SceneName="Cutscene", DefaultScene="Cutscene", BaseScene="Cutscene", SlotName="Cutscene", SceneType="Scene", GroupName="Cutscene", GameScene=0)
         pass
     pass
