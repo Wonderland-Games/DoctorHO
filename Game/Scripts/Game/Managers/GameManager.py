@@ -961,39 +961,25 @@ class GameManager(Manager):
 
     @staticmethod
     def getCurrentFinalStageSceneName():
-        player_game_data = GameManager.getPlayerGameData()
-        current_chapter_data = player_game_data.getCurrentChapterData()
-        chapter_id = current_chapter_data.getChapterId()
+        chapter_id = GameManager.getCurrentChapterId()
         final_stage_scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
         return final_stage_scene_name
 
     @staticmethod
-    def getBackpackSceneByChapter(chapter_id):
-        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+    def getBackpackDataByChapter(chapter_id):
+        data = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
                                                 GameManager.s_db_name_backpack_levels,
                                                 ChapterId=chapter_id)
-
-        return param.SceneName
+        return data
 
     @staticmethod
     def getCurrentQuestBackpackSceneName():
-        player_game_data = GameManager.getPlayerGameData()
-        current_chapter_data = player_game_data.getCurrentChapterData()
-        chapter_id = current_chapter_data.getChapterId()
-        quest_backpack_scene_name = GameManager.getBackpackSceneByChapter(chapter_id)
-        return quest_backpack_scene_name
+        chapter_id = GameManager.getCurrentChapterId()
+        backpack_data = GameManager.getBackpackDataByChapter(chapter_id)
+        return backpack_data.SceneName
 
     @staticmethod
-    def getBackpackDemonByChapter(chapter_id):
-        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
-                                                GameManager.s_db_name_backpack_levels,
-                                                ChapterId=chapter_id)
-
-        return param.DemonName
-    @staticmethod
-    def getCurrentQuestBackpackDemonName():
-        player_game_data = GameManager.getPlayerGameData()
-        current_chapter_data = player_game_data.getCurrentChapterData()
-        chapter_id = current_chapter_data.getChapterId()
-        quest_backpack_demon_name = GameManager.getBackpackDemonByChapter(chapter_id)
-        return quest_backpack_demon_name
+    def getCurrentQuestBackpackGroupName():
+        chapter_id = GameManager.getCurrentChapterId()
+        backpack_data = GameManager.getBackpackDataByChapter(chapter_id)
+        return backpack_data.GroupName

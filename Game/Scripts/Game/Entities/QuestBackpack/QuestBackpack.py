@@ -5,37 +5,41 @@ from Foundation.GroupManager import GroupManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Managers.GameManager import GameManager
-from Game.Entities.Backpack.ChapterQuestItems import ChapterQuestItems
+from Game.Entities.QuestBackpack.ChapterQuestItems import ChapterQuestItems
 
 
-DEMON_NAME = "Backpack"
 MOVIE_CONTENT = "Movie2_Content"
 SLOT_CHAPTER_QUEST_ITEMS = "ChapterQuestItems"
 SLOT_LOBBY = "Lobby"
 SLOT_FINAL_STAGE = "FinalStage"
 PROTOTYPE_LOBBY = "Lobby"
-PROTOTYPE_FINAL_STAGE = "FinalStageButton"
+PROTOTYPE_FINAL_STAGE = "Movie2Button_FinalStageButton"
 
 CHAPTER_QUEST_ITEMS_SPACE_PERCENT = 0.7
 LOBBY_SPACE_PERCENT = 0.3
 
 
-class Backpack(BaseEntity):
+class QuestBackpack(BaseEntity):
     def __init__(self):
-        super(Backpack, self).__init__()
+        super(QuestBackpack, self).__init__()
+        print "BACKPACK INIT !!!!!!!!!!!!!!!!!!!"
         self.content = None
         self.tcs = []
         self.chapter_quest_items = None
         self.lobby = None
         self.final_stage = None
-        self.backpack_demon = None
+        self.backpack_group = None
 
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
-        self.backpack_demon = DemonManager.getDemon(DEMON_NAME)
+        print "BACKPACK PREPARATION !!!!!!!!!!!!!!!!!!!!!!!!!"
+        self.content = self.object.getObject(MOVIE_CONTENT)
+        if self.content is None:
+            return
 
-        self.content = self.backpack_demon.getObject(MOVIE_CONTENT)
+        backpack_group_name = GameManager.getCurrentQuestBackpackGroupName()
+        self.backpack_group = GroupManager.getGroup(backpack_group_name)
 
         #self.content.setActive(True)
         self._setupChapterQuestItems()
@@ -67,9 +71,8 @@ class Backpack(BaseEntity):
             self.final_stage.onDestroy()
             self.final_stage = None
 
-        if self.backpack_demon is not None:
-            self.backpack_demon = None
-
+        if self.backpack_group is not None:
+            self.backpack_group = None
 
     # - Setup ----------------------------------------------------------------------------------------------------------
 
@@ -102,7 +105,7 @@ class Backpack(BaseEntity):
         #if chapter_finished is False:
         #    return
 
-        self.final_stage = self.backpack_demon.tryGenerateObjectUnique(PROTOTYPE_FINAL_STAGE, PROTOTYPE_FINAL_STAGE)
+        self.final_stage = self.backpack_group.generateObjectUnique(PROTOTYPE_FINAL_STAGE, PROTOTYPE_FINAL_STAGE)
         self.final_stage.setEnable(True)
 
         final_stage_node = self.final_stage.getEntityNode()
@@ -150,7 +153,7 @@ class Backpack(BaseEntity):
         chapter_finished = GameManager.isChapterCompleted()
         if chapter_finished is True:
             with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
-                tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage.movie)
+                tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage)
                 tc.addScope(self._setFinalStageScene)
 
         if len(self.chapter_quest_items.quest_items.items()) > 0:

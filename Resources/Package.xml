@@ -32,6 +32,7 @@
         <Resource Path="Resources/01_AncientGreece.bin" />
         <Resource Path="Resources/01_AncientRome.bin" />
         <Resource Path="Resources/01_FinalStage.bin" />
+		<Resource Path="Resources/01_Backpack.bin" />
 
         <Resource Path="Resources/LevelCards_SolarSystem.bin" />
         <Resource Path="Resources/QuestItemStore_SolarSystem.bin" />
@@ -41,6 +42,7 @@
         <Resource Path="Resources/02_Venus.bin" />
         <Resource Path="Resources/02_Moon.bin" />
         <Resource Path="Resources/02_FinalStage.bin" />
+		<Resource Path="Resources/02_Backpack.bin" />
 
         <Resource Path="Resources/Intro.bin" />
         <Resource Path="Resources/Cutscene_01.bin" />

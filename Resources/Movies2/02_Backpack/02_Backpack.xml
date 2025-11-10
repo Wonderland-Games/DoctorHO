@@ -5,24 +5,13 @@
 	</Resource>
 	<Resource Name="Movie2_02_Backpack" Type="ResourceMovie2">
 		<File Path="Movies2/02_Backpack/02_Backpack.aez" />
-		<Composition Name="ChapterSlots_Ancient" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
-			<Layer Index="0" Name="FinalStage" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1367.875;1368.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="1" Name="QuestItem_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1048.0;1568.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="2" Name="QuestItem_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1048.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="3" Name="QuestItem_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1688.0;1568.0;0.0;1.0" TrackMatte="0" />
-		</Composition>
-		<Composition Name="ChapterSlots_SolarSystem" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+		<Composition Name="ChapterSlots" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="FinalStage" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.25;1368.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="1" Name="QuestItem_1" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1180.0;1724.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="2" Name="QuestItem_2" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1018.0;1225.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="3" Name="QuestItem_3" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1008.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="4" Name="QuestItem_4" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1735.0;1210.0;0.0;1.0" TrackMatte="0" />
 			<Layer Index="5" Name="QuestItem_5" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1544.0;1722.0;0.0;1.0" TrackMatte="0" />
-		</Composition>
-		<Composition Name="Content" Duration="10.0" FrameDuration="0.0333333350718021392822265625" Master="1">
-			<Layer Index="0" Name="FinalStage" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="1" Name="Lobby" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
-			<Layer Index="2" Name="ChapterQuestItems" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.0;1368.0;0.0;1.0" TrackMatte="0" />
 		</Composition>
 		<Composition Name="FinalStageAnimation" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
 			<Layer Index="0" Name="Click" Type="Movie2Slot" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;1368.25;1368.0;0.0;1.0" TrackMatte="0" />

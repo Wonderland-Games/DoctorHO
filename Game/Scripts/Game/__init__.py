@@ -1,6 +1,4 @@
 def onInitialize():
-    from Foundation.DefaultManager import DefaultManager
-
     from Foundation.Notificator import Notificator
     identities = [
         "onInternetConnectionLost",
@@ -72,7 +70,7 @@ def onInitialize():
         "Cutscene",
         {"name": "Header", "override": True},
         "GameHeader",
-        "Backpack",
+        "QuestBackpack",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:

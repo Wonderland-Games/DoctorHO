@@ -1,6 +1,6 @@
 from Foundation.Initializer import Initializer
 from Game.Managers.GameManager import GameManager
-from Game.Entities.Backpack.QuestItem import QuestItem
+from Game.Entities.QuestBackpack.QuestItem import QuestItem
 
 
 CHAPTER_SLOTS = "QuestItem_{}"
@@ -19,6 +19,7 @@ class ChapterQuestItems(Initializer):
 
     def _onInitialize(self, parent_entity, chapter_id):
         super(ChapterQuestItems, self)._onInitialize()
+        print "CHAPTER QUEST ITEMS INIT"
         self.parent_entity = parent_entity
         self.chapter_id = chapter_id
 
@@ -64,7 +65,7 @@ class ChapterQuestItems(Initializer):
         chapter_params = GameManager.getChapterParams(self.chapter_id)
         chapter_quest_items_slots = chapter_params.Slots
 
-        self.items_slots_movie = self.parent_entity.object.generateObjectUnique(chapter_quest_items_slots, chapter_quest_items_slots)
+        self.items_slots_movie = self.parent_entity.backpack_group.generateObjectUnique(chapter_quest_items_slots, chapter_quest_items_slots)
         self.items_slots_movie.setEnable(True)
         items_slots_movie_node = self.items_slots_movie.getEntityNode()
         self.root.addChild(items_slots_movie_node)

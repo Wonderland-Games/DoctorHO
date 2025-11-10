@@ -4,8 +4,8 @@ class DatabaseSceneSlots_Backpack(Database):
     def __init__(self):
         super(DatabaseSceneSlots_Backpack, self).__init__()
         self.addRecord(Name="Background", Type="Layer2D", Width=2736, Height=1536, Main=0)
+        self.addRecord(Name="QuestBackpack", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Backpack", Type="Layer2D", Width=2736, Height=1536, Main=1)
-        self.addRecord(Name="QuestItemStore", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="Header", Type="Layer2D", Width=2736, Height=1536, Main=0)
         self.addRecord(Name="DummyBanner", Type="Layer2D", Width=2736, Height=1536, Main=0, Platform="PC")
         self.addRecord(Name="FadeUI", Type="Layer2D", Width=2736, Height=1536, Main=0)
