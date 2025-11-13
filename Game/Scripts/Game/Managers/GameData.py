@@ -21,8 +21,6 @@ class GameDataCompressor(object):
         save_data = Mengine.compressBase64("lz4", save_data)
         return save_data
 
-    def getLevelDataSize(self):
-        return len(self.levels_data)
 
 class PlayerGameData(object):
     game_name = None
@@ -122,6 +120,9 @@ class StoryPlayerGameData(PlayerGameData):
                     levels_data[level_id] = level_data
 
             return levels_data
+
+        def getLevelDataSize(self):
+            return len(self.levels_data)
 
     def __init__(self):
         super(StoryPlayerGameData, self).__init__()

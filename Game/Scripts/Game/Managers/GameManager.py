@@ -145,13 +145,13 @@ class GameManager(Manager):
         quest_params_len = len(quest_params_list)
         quest_index = randomizer.getRandom(quest_params_len)
 
-        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(quest_index, random_chapter_id)
-        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+        player_data = GameManager.getPlayerDataByQuestIndex(quest_index, random_chapter_id)
+        GameManager.loadCustomPlayerData(player_data)
 
         Trace.msg_dev("[GameManager] set dummy player data" + "\n" +
-                      " ChapterId: {}".format(active_chapter_id) + "\n" +
-                      " QuestIndex: {}".format(quest_index) + "\n" +
-                      " LevelsData: {}".format(levels_data))
+                      " ChapterId: {}".format(player_data["active_chapter_id"]) + "\n" +
+                      " QuestIndex: {}".format(player_data["active_quest_index"]) + "\n" +
+                      " LevelsData: {}".format(player_data["levels_data"]))
 
         GameManager.initRandomizer()  # reset randomizer
 
@@ -163,8 +163,8 @@ class GameManager(Manager):
         quest_params_list = GameManager.getQuestParamsByChapter(chapter_id)
         quest_params_len = len(quest_params_list)
 
-        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(quest_params_len, chapter_id)
-        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+        player_data = GameManager.getPlayerDataByQuestIndex(quest_params_len, chapter_id)
+        GameManager.loadCustomPlayerData(player_data)
 
         Notification.notify(Notificator.onChangeScene, "Lobby")
 
@@ -173,8 +173,8 @@ class GameManager(Manager):
     def resetPlayerProgress():
         chapter_id = GameManager.getCurrentChapterId()
 
-        active_chapter_id, quest_index, levels_data = GameManager.getPlayerDataByQuestIndex(0, chapter_id)
-        GameManager.loadCustomPlayerData(active_chapter_id, quest_index, levels_data)
+        player_data = GameManager.getPlayerDataByQuestIndex(0, chapter_id)
+        GameManager.loadCustomPlayerData(player_data)
         GameManager.initRandomizer()  # reset randomizer
         Notification.notify(Notificator.onChangeScene, "Lobby")
 
@@ -388,14 +388,21 @@ class GameManager(Manager):
                     "QuestPoints": random_qp,
                 }
 
-        return chapter_id, quest_index, levels_data
+        player_data = {
+            "Data": {
+                "active_chapter_id": chapter_id,
+                "active_quest_index": quest_index,
+                "levels_data": levels_data,
+            },
+        }
+
+        return player_data
 
     @staticmethod
-    def loadCustomPlayerData(chapter_id, quest_index, levels_data):
+    def loadCustomPlayerData(player_data):
         player_game_data = GameManager.getPlayerGameData()
-        player_game_data.loadData(chapter_id, quest_index, levels_data)
+        player_game_data.loadData(player_data)
         GameManager.setLoadDataCache("PlayerData", player_game_data)
-        #GameManager.clearLoadDataCache()
 
     @staticmethod
     def getCurrentChapterId():
