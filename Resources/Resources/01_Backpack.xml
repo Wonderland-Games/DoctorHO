@@ -1,0 +1,3 @@
+<DataBlock Name = "01_Backpack">
+    <Include Path = "Movies2/01_Backpack/01_Backpack.bin"/>
+</DataBlock>

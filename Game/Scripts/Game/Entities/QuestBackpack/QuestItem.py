@@ -56,7 +56,7 @@ class QuestItem(Initializer):
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
-        self.root.setName(self.__class__.__name__ + "_" + self.item_name)
+        self.root.setName(self.__class__.__name__ + "_" + str(self.item_name))
 
     def attachTo(self, node):
         self.root.removeFromParent()

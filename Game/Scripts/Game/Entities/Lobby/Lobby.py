@@ -125,7 +125,9 @@ class Lobby(BaseEntity):
 
         with self._createTaskChain(SLOT_QUEST_BACKPACK) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
-            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
+
+            backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
+            tc.addNotify(Notificator.onChangeScene, backpack_scene_name)
 
     def _scopePlay(self, source, level_id):
         # player_data = GameManager.getPlayerGameData()
