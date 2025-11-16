@@ -169,8 +169,7 @@ class Lobby(BaseEntity):
             return 50
 
         if quest_index is not None:
-            source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE,
-                             ChapterId=chapter_id, ItemName=quest_item_name)
+            source.addNotify(Notificator.onPopUpShow, "QuestItemReceived", popup.BUTTONS_STATE_DISABLE, ChapterId=chapter_id, ItemName=quest_item_name)
 
             source.addListener(Notificator.onPopUpQuestItemReceived)
             with source.addParallelTask(2) as (item, popup):
