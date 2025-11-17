@@ -15,8 +15,8 @@ TEXT_ITEM_DESCRIPTION_FULL_ANNEX = "DescriptionFull"
 TEXT_ITEM_NAME = "ID_QuestItem_{}".format(TEXT_ITEM_NAME_ANNEX)
 TEXT_ITEM_DESCRIPTION_FULL = "ID_QuestItem_{}".format(TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
 
-TEXT_ITEM_NAME_TEMPLATE = "ID_QuestItem_{}_{}"
-TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE = "ID_QuestItem_{}_{}"
+TEXT_ITEM_NAME_TEMPLATE = "ID_QuestItem_{}_{}_{}"
+TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE = "ID_QuestItem_{}_{}_{}"
 
 ITEM_BOX_SIZE = 500.0
 TEXT_ITEM_DESCRIPTION_LENGTH_PERCENT = 0.9
@@ -66,15 +66,9 @@ class QuestItemDescription(PopUpContent):
 
     def _setupItemSprite(self):
         # Temporary generating object
-        item_object = GameManager.generateQuestItem(self.item_name)
-
-        # Generating sprite pure from object
-        item_entity = item_object.getEntity()
-        self.item_sprite = item_entity.generatePure()
+        item_sprite_object = GameManager.generateQuestItem(self.item_name)
+        self.item_sprite = item_sprite_object.entity.getSprite()
         self.item_sprite.enable()
-
-        # Destroying used object
-        item_object.onDestroy()
 
         sprite_scale = self._getSpriteScale()
         self.item_sprite.setScale(sprite_scale)
@@ -112,7 +106,8 @@ class QuestItemDescription(PopUpContent):
         self.text_name.setHorizontalCenterAlign()
 
         self.text_name.setTextId(TEXT_ITEM_NAME)
-        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_name, TEXT_ITEM_NAME_ANNEX)
+        chapter_id = GameManager.getCurrentChapterId()
+        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(chapter_id, self.item_name, TEXT_ITEM_NAME_ANNEX)
         item_name_text = Mengine.getTextFromId(item_name_text_id)
         self.text_name.setTextFormatArgs(item_name_text)
 
@@ -126,7 +121,8 @@ class QuestItemDescription(PopUpContent):
         self.text_name.enable()
 
     def _setupPopUpTitle(self):
-        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(self.item_name, TEXT_ITEM_NAME_ANNEX)
+        chapter_id = GameManager.getCurrentChapterId()
+        item_name_text_id = TEXT_ITEM_NAME_TEMPLATE.format(chapter_id, self.item_name, TEXT_ITEM_NAME_ANNEX)
         self.title_text_id = item_name_text_id
 
     def _setupItemDescriptionFull(self):
@@ -139,7 +135,9 @@ class QuestItemDescription(PopUpContent):
         self.text_description_full.setJustify(True)
 
         self.text_description_full.setTextId(TEXT_ITEM_DESCRIPTION_FULL)
-        item_description_full_text_id = TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE.format(self.item_name, TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
+
+        chapter_id = GameManager.getCurrentChapterId()
+        item_description_full_text_id = TEXT_ITEM_DESCRIPTION_FULL_TEMPLATE.format(chapter_id, self.item_name, TEXT_ITEM_DESCRIPTION_FULL_ANNEX)
         item_description_full_text = Mengine.getTextFromId(item_description_full_text_id)
         self.text_description_full.setTextFormatArgs(item_description_full_text)
 

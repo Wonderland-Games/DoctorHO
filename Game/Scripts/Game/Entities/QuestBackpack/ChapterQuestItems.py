@@ -78,24 +78,15 @@ class ChapterQuestItems(Initializer):
 
         chapter_quests_params = GameManager.getQuestParamsByChapter(self.chapter_id)
         for i, quest_param in enumerate(chapter_quests_params):
-            # Temporary generating object
-            quest_item_object = GameManager.generateQuestItem(quest_param.QuestItem)
-
-            # Initializing QuestItem class
-            quest_item_entity = quest_item_object.getEntity()
-
             quest_item = QuestItem()
             if i < quest_index:
                 quest_item_state = quest_item.STATE_ACTIVE
             else:
                 break
 
-            quest_item.onInitialize(quest_item_entity, quest_item_state)
+            quest_item.onInitialize(quest_param.QuestItem, quest_item_state)
 
             quest_item_slot = self.items_slots_movie.getMovieSlot(CHAPTER_SLOTS.format(i + 1))
             quest_item.attachTo(quest_item_slot)
 
             self.quest_items[quest_param.QuestItem] = quest_item
-
-            # Destroying used object
-            quest_item_object.onDestroy()

@@ -417,8 +417,12 @@ class GameManager(Manager):
         player_game_data = GameManager.getPlayerGameData()
         chapter_data = player_game_data.getCurrentChapterData()
         current_index = chapter_data.getCurrentQuestIndex()
-        max_index = chapter_data.getLevelDataSize()
-        return current_index == max_index
+        chapter_id = chapter_data.getChapterId()
+
+        quest_params = GameManager.getQuestParamsByChapter(chapter_id) or []
+        quests_count = len(quest_params)
+
+        return current_index >= quests_count
 
     # - Game -----------------------------------------------------------------------------------------------------------
 

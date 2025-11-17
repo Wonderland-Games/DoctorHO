@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Game.Managers.GameManager import GameManager
 
 
 ITEM_SCALE_MODIFIER = 0.75
@@ -10,7 +11,6 @@ class QuestItem(Initializer):
 
     def __init__(self):
         super(QuestItem, self).__init__()
-        self.ref_item_entity = None
         self.item_name = None
         self.item_sprite = None
         self.hotspot = None
@@ -19,10 +19,9 @@ class QuestItem(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, ref_item_entity, state=STATE_BLOCKED):
+    def _onInitialize(self, quest_item_name, state=STATE_BLOCKED):
         super(QuestItem, self)._onInitialize()
-        self.ref_item_entity = ref_item_entity      # not available after initialization
-        self.item_name = ref_item_entity.getName()
+        self.item_name = quest_item_name
 
         self.state = state
         if self.state is self.STATE_BLOCKED:
@@ -48,7 +47,6 @@ class QuestItem(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-        self.ref_item_entity = None
         self.item_name = None
         self.state = None
 
@@ -71,11 +69,12 @@ class QuestItem(Initializer):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupItemSprite(self):
-        self.item_sprite = self.ref_item_entity.generatePure()
+        item_sprite_object = GameManager.generateQuestItem(self.item_name)
+        self.item_sprite = item_sprite_object.entity.getSprite()
         self.item_sprite.enable()
         self.root.addChild(self.item_sprite)
 
-        item_sprite_center = self.ref_item_entity.getSpriteCenter()
+        item_sprite_center = self.item_sprite.getLocalImageCenter()
         self.item_sprite.setScale((ITEM_SCALE_MODIFIER, ITEM_SCALE_MODIFIER, 1.0))
         self.item_sprite.setLocalPosition(Mengine.vec2f(-item_sprite_center[0] * ITEM_SCALE_MODIFIER,
                                                         -item_sprite_center[1] * ITEM_SCALE_MODIFIER))
@@ -85,7 +84,7 @@ class QuestItem(Initializer):
         self.hotspot = Utils.createBBSpriteHotspot(hotspot_name, self.item_sprite)
         self.root.addChild(self.hotspot)
 
-        item_sprite_center = self.ref_item_entity.getSpriteCenter()
+        item_sprite_center = self.item_sprite.getLocalImageCenter()
         self.hotspot.setScale((ITEM_SCALE_MODIFIER, ITEM_SCALE_MODIFIER, 1.0))
         self.hotspot.setLocalPosition(Mengine.vec2f(-item_sprite_center[0] * ITEM_SCALE_MODIFIER,
                                                     -item_sprite_center[1] * ITEM_SCALE_MODIFIER))
