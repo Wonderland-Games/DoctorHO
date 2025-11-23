@@ -22,7 +22,6 @@ LOBBY_SPACE_PERCENT = 0.3
 class QuestBackpack(BaseEntity):
     def __init__(self):
         super(QuestBackpack, self).__init__()
-        print "BACKPACK INIT !!!!!!!!!!!!!!!!!!!"
         self.content = None
         self.tcs = []
         self.chapter_quest_items = None
@@ -33,7 +32,6 @@ class QuestBackpack(BaseEntity):
     # - BaseEntity -----------------------------------------------------------------------------------------------------
 
     def _onPreparation(self):
-        print "BACKPACK PREPARATION !!!!!!!!!!!!!!!!!!!!!!!!!"
         self.content = self.object.getObject(MOVIE_CONTENT)
         if self.content is None:
             return
@@ -41,11 +39,9 @@ class QuestBackpack(BaseEntity):
         backpack_group_name = GameManager.getCurrentQuestBackpackGroupName()
         self.backpack_group = GroupManager.getGroup(backpack_group_name)
 
-        #self.content.setActive(True)
         self._setupChapterQuestItems()
         self._setupLobby()
         self._setupFinalStage()
-        print("_onPreparation")
         self._setupSlotsPositions()
 
     def _onActivate(self):
@@ -87,7 +83,6 @@ class QuestBackpack(BaseEntity):
 
         chapter_quest_items_node = self.chapter_quest_items.getRoot()
         chapter_quest_items_slot = self.content.getMovieSlot(SLOT_CHAPTER_QUEST_ITEMS)
-        print("ChapterQuestItemsSlot")
         print(chapter_quest_items_slot)
         chapter_quest_items_slot.addChild(chapter_quest_items_node)
 
@@ -100,13 +95,11 @@ class QuestBackpack(BaseEntity):
         lobby_slot.addChild(lobby_node)
 
     def _setupFinalStage(self):
-        print("_setupFinalStage")
-        #chapter_finished = GameManager.isChapterCompleted()
-        #if chapter_finished is False:
-        #    return
+        chapter_finished = GameManager.isChapterCompleted()
 
         self.final_stage = self.backpack_group.generateObjectUnique(PROTOTYPE_FINAL_STAGE, PROTOTYPE_FINAL_STAGE)
         self.final_stage.setEnable(True)
+        self.final_stage.setBlock(not chapter_finished)
 
         final_stage_node = self.final_stage.getEntityNode()
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
@@ -134,8 +127,6 @@ class QuestBackpack(BaseEntity):
         #if chapter_finished is True:
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
         final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
-        print("lobby y:{}".format(chapter_quest_items_pos_y))
-        print("final stage y:{}".format(lobby_pos_y))
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -148,19 +139,20 @@ class QuestBackpack(BaseEntity):
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_LOBBY) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
-            tc.addNotify(Notificator.onChangeScene, "Lobby")
+            #tc.addNotify(Notificator.onChangeScene, "Lobby")
+            tc.addScope(self._setFinalStageScene)
 
-        chapter_finished = GameManager.isChapterCompleted()
-        if chapter_finished is True:
-            with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
-                tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage)
-                tc.addScope(self._setFinalStageScene)
+        with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
+            tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage)
+            tc.addScope(self._setFinalStageScene)
 
         if len(self.chapter_quest_items.quest_items.items()) > 0:
             self._runChapterQuestItemsTaskChains()
 
     def _setFinalStageScene(self, source):
+        print("_setFinalStageScene")
         final_stage_scene_name = GameManager.getCurrentFinalStageSceneName()
+        print("Scene name : {}".format(final_stage_scene_name))
         source.addNotify(Notificator.onChangeScene, final_stage_scene_name)
 
     def _runChapterQuestItemsTaskChains(self):
@@ -170,6 +162,7 @@ class QuestBackpack(BaseEntity):
         current_chapter_data = player_game_data.getCurrentChapterData()
         chapter_id = current_chapter_data.getChapterId()
         chapter_finished = GameManager.isChapterCompleted()
+        print("Chapter finished - {}".format(chapter_finished))
 
         with self._createTaskChain(SLOT_CHAPTER_QUEST_ITEMS, Repeat=True) as tc:
             #tc.addFunction(self.final_stage.setBlock, not chapter_finished)
