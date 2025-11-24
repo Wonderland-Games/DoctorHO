@@ -5,7 +5,8 @@ from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
-from Game.Entities.GameArea.SearchPanel.Item import Item
+#from Game.Entities.GameArea.SearchPanel.Item import Item
+from Game.Entities.FinalStage.FinalStageDropItem.FinalStageDropItem import FinalStageDropItem
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
@@ -259,7 +260,8 @@ class FinalStage(BaseScopeEntity):
                 "name":param.MovieName
             }
 
-            item = Item()
+            #TODO chnage GameArea/SearchPanel/Items
+            item = FinalStageDropItem()
             item.onInitialize(self, item_object, movie_info)
             self.items.append(item)
 
