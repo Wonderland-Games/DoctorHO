@@ -139,8 +139,7 @@ class QuestBackpack(BaseEntity):
     def _runTaskChains(self):
         with self._createTaskChain(SLOT_LOBBY) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.lobby.movie)
-            #tc.addNotify(Notificator.onChangeScene, "Lobby")
-            tc.addScope(self._setFinalStageScene)
+            tc.addNotify(Notificator.onChangeScene, "Lobby")
 
         with self._createTaskChain(SLOT_FINAL_STAGE) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.final_stage)

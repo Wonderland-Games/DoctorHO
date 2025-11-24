@@ -18,8 +18,7 @@ MOVIE_PANEL = "Movie2_DropPanel"
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
 
-QUEST_ITEM_STORE_GROUP = "QuestItemStore"
-QUEST_ITEM_NAME = "Item_{}_{}"
+QUEST_ITEM_NAME = "Item_{}"
 
 SCENE_ANIMATION_TIME = 1000.0
 SCENE_MOVE_EASING = "easyCubicIn"
@@ -38,7 +37,7 @@ class FinalStage(BaseScopeEntity):
         self.attached_items = []
         self.movie_items = []
 
-    # - ScopeBaseEntity -----------------------------------------------------------------------------------------------------
+    # - ScopeBaseEntity ------------------------------------------------------------------------------------------------
 
     def _onScopeActivate(self, source):
         super(FinalStage, self)._onScopeActivate(source)
@@ -199,8 +198,8 @@ class FinalStage(BaseScopeEntity):
 
         # BANNER
         def _getBannerSize():
-            banner_width = AdjustableScreenUtils.getActualBannerWidth()
-            banner_height = AdjustableScreenUtils.getActualBannerHeight()
+            banner_width = AdjustableScreenUtils.getBannerWidth()
+            banner_height = AdjustableScreenUtils.getBannerHeight()
             return (banner_width, banner_height)
 
         # LAYOUT BOX
@@ -265,12 +264,9 @@ class FinalStage(BaseScopeEntity):
             self.items.append(item)
 
     def _getItemObject(self, param):
-        chapter_id = self._getCurrentChapterId()
         param_item_name = param.ItemName.replace("Item_", "")
-        item_name = QUEST_ITEM_NAME.format(chapter_id, param_item_name)
-
-        quest_item_store_group = GroupManager.getGroup(QUEST_ITEM_STORE_GROUP)
-        return quest_item_store_group.getObject(item_name)
+        item_name = QUEST_ITEM_NAME.format(param_item_name)
+        return GameManager.generateQuestItem(item_name)
 
     def _getFinalStageMappingParams(self, stage_name):
         s_db_module = "Database"
