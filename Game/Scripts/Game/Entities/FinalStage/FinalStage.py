@@ -57,7 +57,7 @@ class FinalStage(BaseScopeEntity):
             def makeClickAction(this_item, event_finish):
                 def __clickAction(source):
                     source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
-                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.sprite.getName()))
+                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.sprite_object.getName()))
 
                     item_index = self._findItem(this_item)
                     if item_index is None:
@@ -68,7 +68,7 @@ class FinalStage(BaseScopeEntity):
                     source.addEnable(MovieItem)
 
                     attach_item = FinalStageAttachItem()
-                    attach_item.onInitialize(this_item.sprite)
+                    attach_item.onInitialize(this_item.sprite_object)
                     self.attached_items.append(attach_item)
 
                     source.addFunction(self._attachToCursor, attach_item)
@@ -82,7 +82,7 @@ class FinalStage(BaseScopeEntity):
                                       To=(1.0, 1.0, 1.0),
                                       Time=SCENE_ANIMATION_TIME)
 
-                        point = self._getNodeCenter(attach_item.sprite)
+                        point = attach_item.getNodeCenter()
                         center.addTask("TaskNodeOriginTo", Node=attach_item.sprite, Time=SCENE_ANIMATION_TIME, To=point)
 
                         def __clickRace(click_socket, mouse_up):
@@ -348,11 +348,3 @@ class FinalStage(BaseScopeEntity):
         if item in self.attached_items:
             self.attached_items.remove(item)
         item.onFinalize()
-
-    def _getNodeCenter(self, node):
-        point = node.getLocalPosition()
-        size = node.getSurfaceSize()
-        point.x += size.x / 2
-        point.y += size.y / 2
-
-        return point

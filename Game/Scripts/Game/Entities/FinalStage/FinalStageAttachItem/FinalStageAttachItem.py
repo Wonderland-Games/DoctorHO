@@ -1,26 +1,28 @@
 from Foundation.Initializer import Initializer
 
+
 class FinalStageAttachItem(Initializer):
     SCALE = 0.312500071526
+
     def __init__(self):
         super(FinalStageAttachItem, self).__init__()
-        self.item_obj = None
         self.root = None
+        self.sprite_object = None
         self.sprite = None
 
-    def _onInitialize(self, item_obj):
-        self.item_obj = item_obj
+    def _onInitialize(self, sprite_object):
+        self.sprite_object = sprite_object
+        self.sprite = self.sprite_object.entity.getSprite()
+
         self._createSpriteNode()
-        self._createSprite()
+        self._setupSprite()
         self._scaleSprite()
         self._positionSprite()
 
     def _onFinalize(self):
-        self.item_obj = None
-
-        if self.sprite is not None:
-            self.sprite.removeFromParent()
-            Mengine.destroyNode(self.sprite)
+        if self.sprite is not None and self.sprite_object.isDestroy() is False:
+            self.sprite_object.onDestroy()
+            self.sprite_object = None
             self.sprite = None
 
         if self.root is not None:
@@ -28,8 +30,6 @@ class FinalStageAttachItem(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
-    def getObj(self):
-        return self.item_obj
     def getRoot(self):
         return self.root
 
@@ -41,12 +41,12 @@ class FinalStageAttachItem(Initializer):
 
     def _createSpriteNode(self):
         self.root = Mengine.createNode("Interender")
-        sprite_name = self.item_obj.getName()
+        sprite_name = self.sprite_object.getName()
         self.root.setName(sprite_name)
 
-    def _createSprite(self):
-        self.sprite = self.item_obj.getEntity().generatePure()
+    def _setupSprite(self):
         self.root.addChild(self.sprite)
+        self.sprite.enable()
 
     def _scaleSprite(self):
         self.sprite.setScale((self.SCALE, self.SCALE))
@@ -62,3 +62,10 @@ class FinalStageAttachItem(Initializer):
             source.addFunction(self.sprite.enable)
         else:
             source.addFunction(self.sprite.disable)
+
+    def getNodeCenter(self):
+        point = self.sprite.getLocalPosition()
+        size = self.sprite.getSurfaceSize()
+        point.x += size.x / 2
+        point.y += size.y / 2
+        return point
