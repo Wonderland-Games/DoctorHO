@@ -5,7 +5,6 @@ from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
-#from Game.Entities.GameArea.SearchPanel.Item import Item
 from Game.Entities.FinalStage.FinalStageDropItem.FinalStageDropItem import FinalStageDropItem
 from Game.Managers.GameManager import GameManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
@@ -58,7 +57,7 @@ class FinalStage(BaseScopeEntity):
             def makeClickAction(this_item, event_finish):
                 def __clickAction(source):
                     source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
-                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.getObj().getName()))
+                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.sprite.getName()))
 
                     item_index = self._findItem(this_item)
                     if item_index is None:
@@ -69,7 +68,7 @@ class FinalStage(BaseScopeEntity):
                     source.addEnable(MovieItem)
 
                     attach_item = FinalStageAttachItem()
-                    attach_item.onInitialize(this_item.getObj())
+                    attach_item.onInitialize(this_item.sprite)
                     self.attached_items.append(attach_item)
 
                     source.addFunction(self._attachToCursor, attach_item)
@@ -257,18 +256,16 @@ class FinalStage(BaseScopeEntity):
 
             movie_info = {
                 "group": param.GroupName,
-                "name":param.MovieName
+                "name": param.MovieName
             }
 
-            #TODO chnage GameArea/SearchPanel/Items
             item = FinalStageDropItem()
             item.onInitialize(self, item_object, movie_info)
             self.items.append(item)
 
     def _getItemObject(self, param):
-        param_item_name = param.ItemName.replace("Item_", "")
-        item_name = QUEST_ITEM_NAME.format(param_item_name)
-        return GameManager.generateQuestItem(item_name)
+        item_object = GameManager.generateQuestItem(param.ItemName)
+        return item_object
 
     def _getFinalStageMappingParams(self, stage_name):
         s_db_module = "Database"

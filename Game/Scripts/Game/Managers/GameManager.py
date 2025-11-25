@@ -936,8 +936,7 @@ class GameManager(Manager):
 
     @staticmethod
     def generateQuestItem(item_name):
-        store_item_name = item_name if item_name.startswith("Sprite_") else "Sprite_" + item_name
-        #store_item_name = "Sprite_{}".format(item_name)
+        store_item_name = "Sprite_{}".format(item_name)
         quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
         quest_item = quest_item_store_group.generateObjectUnique(store_item_name, store_item_name)
         return quest_item

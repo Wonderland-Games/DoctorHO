@@ -1,6 +1,5 @@
 from Foundation.Initializer import Initializer
 from UIKit.Managers.PrototypeManager import PrototypeManager
-from Game.Managers.GameManager import GameManager
 
 
 PROTOTYPE_BOX = "ItemBox"
@@ -28,9 +27,8 @@ class FinalStageDropItem(Initializer):
         super(FinalStageDropItem, self).__init__()
         self._root = None
         self.panel = None
-        self.item_obj = None
-        self.sprite_node = None
         self.sprite = None
+        self.sprite_node = None
         self.box = None
         self.socket_node = None
         self.default_scale = None
@@ -38,30 +36,24 @@ class FinalStageDropItem(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, panel, item_obj, movie_info=None):
+    def _onInitialize(self, panel, sprite, movie_info=None):
         self.panel = panel
-        self.item_obj = item_obj
+        self.sprite = sprite
+        self.sprite_node = sprite.getEntityNode()
         self.movie_info = movie_info
 
         self._createRoot()
         self._createBox()
-
-        self._createSpriteNode()
-        self._createSprite()
+        self._setupSprite()
         self._createHotSpotPolygon()
         self._scaleSprite()
         self._positionSprite()
 
     def _onFinalize(self):
         if self.sprite is not None:
-            self.sprite.removeFromParent()
-            Mengine.destroyNode(self.sprite)
+            self.sprite.onDestroy()
             self.sprite = None
-
-        if self.sprite_node is not None:
-            self.sprite_node.removeFromParent()
-            Mengine.destroyNode(self.sprite_node)
-            self.sprite_node = None
+        self.sprite_node = None
 
         if self.box is not None:
             self.box.getEntityNode().removeFromParent()
@@ -78,7 +70,6 @@ class FinalStageDropItem(Initializer):
             Mengine.destroyNode(self.socket_node)
             self.socket_node = None
 
-        self.item_obj = None
         self.panel = None
         self.default_scale = None
         self.movie_info = None
@@ -87,7 +78,7 @@ class FinalStageDropItem(Initializer):
 
     def _createRoot(self):
         self._root = Mengine.createNode("Interender")
-        root_name = self.item_obj.getName()
+        root_name = self.sprite.getName()
         self._root.setName(root_name)
 
     def attachTo(self, node):
@@ -99,9 +90,6 @@ class FinalStageDropItem(Initializer):
 
     def getSocket(self):
         return self.socket_node
-
-    def getObj(self):
-        return self.item_obj
 
     def getMovieInfo(self):
         return self.movie_info
@@ -139,21 +127,13 @@ class FinalStageDropItem(Initializer):
 
     # - Sprite ---------------------------------------------------------------------------------------------------------
 
-    def _createSpriteNode(self):
-        self.sprite_node = Mengine.createNode("Interender")
-        self.sprite_node.setName("SpriteNode")
+    def _setupSprite(self):
         self._root.addChild(self.sprite_node)
-
-    def _createSprite(self):
-        item_name = self.item_obj.getName()
-        item_sprite_object = GameManager.generateQuestItem(item_name)
-        self.item_sprite = item_sprite_object.entity.getSprite()
-        self.item_sprite.enable()
-        self.sprite_node.addChild(self.item_sprite)
+        self.sprite.setEnable(True)
 
     def _createHotSpotPolygon(self):
         self.socket_node = Mengine.createNode("HotSpotPolygon")
-        self.socket_node.setName("Socket_{}".format(self.item_obj.getName()))
+        self.socket_node.setName("Socket_{}".format(self.sprite.getName()))
 
         width, height = self.getSize()[0], self.getSize()[1]
         hw, hh = width / 2, height / 2
@@ -176,23 +156,16 @@ class FinalStageDropItem(Initializer):
         #self.item_sprite.setScale(sprite_scale)
         #sprite_size = self._getSpriteSize()
 
-        print("sprite:", self.sprite)
-        print("type:", type(self.sprite))
-
-        for attr in dir(self.sprite):
-            if callable(getattr(self.sprite, attr)):
-                print(attr)
-
-        sprite_size = self.sprite.getSurfaceSize()
+        sprite_size = self.sprite.entity.getSize()
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
         scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
         self.default_scale = scale_perc
-        self.sprite.setScale((scale_perc, scale_perc))
+        self.sprite_node.setScale((scale_perc, scale_perc))
         #self.socket_node.setScale((scale_perc, scale_perc))
 
     def getSpriteScale(self):
-        return self.sprite.getWorldScale()
+        return self.sprite_node.getWorldScale()
 
     def getDefaultSpriteScale(self):
         return self.default_scale
@@ -201,11 +174,11 @@ class FinalStageDropItem(Initializer):
         return self.sprite
 
     def _positionSprite(self):
-        sprite_scale = self.sprite.getScale()
-        sprite_size_base = self.sprite.getSurfaceSize()
+        sprite_scale = self.sprite_node.getScale()
+        sprite_size_base = self.sprite.entity.getSize()
         sprite_size_scaled = Mengine.vec2f(sprite_size_base.x * sprite_scale.x, sprite_size_base.y * sprite_scale.y)
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
-        self.sprite.setLocalPosition(sprite_position)
+        self.sprite_node.setLocalPosition(sprite_position)
 
     # - TaskChain ------------------------------------------------------------------------------------------------------
 
@@ -231,6 +204,6 @@ class FinalStageDropItem(Initializer):
 
     def setSpriteEnable(self, source, value):
         if value is True:
-            source.addFunction(self.sprite.enable)
+            source.addFunction(self.sprite_node.enable)
         else:
-            source.addFunction(self.sprite.disable)
+            source.addFunction(self.sprite_node.disable)
