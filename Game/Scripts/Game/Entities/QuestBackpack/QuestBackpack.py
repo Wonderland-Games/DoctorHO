@@ -2,6 +2,7 @@ from Foundation.Entity.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.DemonManager import DemonManager
 from Foundation.GroupManager import GroupManager
+from Foundation.SceneManager import SceneManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from Game.Managers.GameManager import GameManager
@@ -188,8 +189,7 @@ class QuestBackpack(BaseEntity):
         with self._createTaskChain("CheatForFinalStage") as tc:
             with tc.addRaceTask(2) as (clear, get):
                 clear.addTask("TaskKeyPress", Keys=[Mengine.KC_C])
-                clear.addPrint("Clear items")
                 clear.addFunction(GameManager.resetPlayerProgress)
                 get.addTask("TaskKeyPress", Keys=[Mengine.KC_G])
-                get.addPrint("Get all items")
                 get.addFunction(GameManager.setMaxPlayerProgress)
+            tc.addFunction(SceneManager.restartScene, None)

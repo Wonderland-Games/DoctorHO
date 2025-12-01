@@ -129,7 +129,6 @@ class GameManager(Manager):
         GameManager._player_data = new_player_data
         GameManager.clearLoadDataCache()
 
-
     @staticmethod
     def setDummyPlayerData():
         randomizer = GameManager.getRandomizer()
@@ -155,7 +154,6 @@ class GameManager(Manager):
 
         GameManager.initRandomizer()  # reset randomizer
 
-
     @staticmethod
     def setMaxPlayerProgress():
         chapter_id = GameManager.getCurrentChapterId()
@@ -166,9 +164,6 @@ class GameManager(Manager):
         player_data = GameManager.getPlayerDataByQuestIndex(quest_params_len, chapter_id)
         GameManager.loadCustomPlayerData(player_data)
 
-        Notification.notify(Notificator.onChangeScene, "Lobby")
-
-
     @staticmethod
     def resetPlayerProgress():
         chapter_id = GameManager.getCurrentChapterId()
@@ -176,7 +171,6 @@ class GameManager(Manager):
         player_data = GameManager.getPlayerDataByQuestIndex(0, chapter_id)
         GameManager.loadCustomPlayerData(player_data)
         GameManager.initRandomizer()  # reset randomizer
-        Notification.notify(Notificator.onChangeScene, "Lobby")
 
     @staticmethod
     def getPlayerRevision():

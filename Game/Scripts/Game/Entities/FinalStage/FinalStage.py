@@ -3,13 +3,13 @@ from Foundation.DatabaseManager import DatabaseManager
 from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
 from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
+from Game.Managers.GameManager import GameManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
 from Game.Entities.FinalStage.FinalStageDropItem.FinalStageDropItem import FinalStageDropItem
-from Game.Managers.GameManager import GameManager
+from Game.Entities.FinalStage.FinalStageAttachItem.FinalStageAttachItem import FinalStageAttachItem
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
-from Game.Entities.FinalStage.FinalStageAttachItem.FinalStageAttachItem import FinalStageAttachItem
 
 
 MOVIE_CONTENT = "Movie2_Content"
@@ -39,86 +39,19 @@ class FinalStage(BaseScopeEntity):
 
     # - ScopeBaseEntity ------------------------------------------------------------------------------------------------
 
-    def _onScopeActivate(self, source):
-        super(FinalStage, self)._onScopeActivate(source)
-
+    def _onPreparation(self):
         self.content = self.object.getObject(MOVIE_CONTENT)
 
-        self._setupChapterQuestItems()
+        self._fillQuestItems()
 
         self._initDropPanel()
         self._initDropLevel()
 
         self._setupLayoutBox()
 
-        items_to_click = self.items
-        for item, parallel in source.addParallelTaskList(items_to_click):
-            event_run = Event(item)
-            def makeClickAction(this_item, event_finish):
-                def __clickAction(source):
-                    source.addTask("TaskNodeSocketClick", Socket=this_item.getSocket(), isDown=True)
-                    source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(this_item.sprite_object.getName()))
-
-                    item_index = self._findItem(this_item)
-                    if item_index is None:
-                        return
-
-                    movie_info = this_item.getMovieInfo()
-                    MovieItem = GroupManager.getObject(movie_info["group"], movie_info["name"])
-                    source.addEnable(MovieItem)
-
-                    attach_item = FinalStageAttachItem()
-                    attach_item.onInitialize(this_item.sprite_object)
-                    self.attached_items.append(attach_item)
-
-                    source.addFunction(self._attachToCursor, attach_item)
-
-                    with source.addParallelTask(3) as (scale, click, center):
-                        scale.addScope(self.drop_panel.playRemovePanelItemAnim, this_item, item_index)
-                        scale.addTask("TaskNodeScaleTo",
-                                      Node=attach_item.sprite,
-                                      Easing=SCENE_SCALE_EASING,
-                                      From=attach_item.getSpriteScale(),
-                                      To=(1.0, 1.0, 1.0),
-                                      Time=SCENE_ANIMATION_TIME)
-
-                        point = attach_item.getNodeCenter()
-                        center.addTask("TaskNodeOriginTo", Node=attach_item.sprite, Time=SCENE_ANIMATION_TIME, To=point)
-
-                        def __clickRace(click_socket, mouse_up):
-                            click_socket.addTask(
-                                "TaskMovie2SocketClick",
-                                SocketName="click",
-                                Movie2=MovieItem,
-                                isDown=False,
-                                isPressed=False,
-                                UseArrowFilter=False
-                            )
-                            mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
-
-                        with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
-                            mouse_up.addPrint("mouse_up")
-                            mouse_up.addScope(self._playReturnItemToPanelAnimation,
-                                              this_item,
-                                              item_index,
-                                              attach_item)
-
-                            click_socket.addScope(self._playCorrectDrop, MovieItem, attach_item)
-                            click_socket.addFunction(event_finish)
-
-                    source.addFunction(self._finalizeAttachedItem, attach_item)
-
-                return __clickAction
-
-            with parallel.addRepeatTask() as (source_repeat, source_until):
-                event_finish = Event(item)
-                source_repeat.addScope(makeClickAction(item, event_finish))
-                source_until.addEvent(event_finish)
-
-        source.addScope(self._playFinalAnimation)
-
-        backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
-        source.addNotify(Notificator.onChangeScene, backpack_scene_name)
+    def _onScopeActivate(self, source):
+        super(FinalStage, self)._onScopeActivate(source)
+        self._runTaskChains(source)
 
     def _onDeactivate(self):
         super(FinalStage, self)._onDeactivate()
@@ -217,10 +150,90 @@ class FinalStage(BaseScopeEntity):
             vertical.addPadding(1)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
 
-    def _findItem(self, remove_item):
+    def _runTaskChains(self, source):
+        for item, parallel in source.addParallelTaskList(self.items):
+            event_run = Event(item)
+
+            with parallel.addRepeatTask() as (source_repeat, source_until):
+                event_finish = Event(item)
+                source_repeat.addScope(self._makeClickAction(item, event_finish))
+                source_until.addEvent(event_finish)
+
+        source.addScope(self._playFinalAnimation)
+
+        backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
+        source.addNotify(Notificator.onChangeScene, backpack_scene_name)
+
+    def _makeClickAction(self, drop_item, event_finish):
+        def __clickAction(source):
+            # click on DropItem socket
+            source.addTask("TaskNodeSocketClick", Socket=drop_item.getSocket(), isDown=True)
+            source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(drop_item.sprite_object.getName()))
+
+            # USELESS?
+            item_index = self._findItem(drop_item)
+            print "item_index", item_index
+            if item_index is None:
+                return
+
+            # get item movie from final stage group
+            movie_info = drop_item.getMovieInfo()
+            group_item_movie = GroupManager.getObject(movie_info["group"], movie_info["name"])
+
+            # generate ObjectSprite from clicked DropItem
+            item_object_name = drop_item.getQuestItemName()
+            item_object = GameManager.generateQuestItem(item_object_name)
+
+            # init AttachItem with generated ObjectSprite
+            attach_item = FinalStageAttachItem()
+            attach_item.onInitialize(item_object)
+            self.attached_items.append(attach_item)
+
+            # attach AttachItem to cursor
+            source.addFunction(self._attachToCursor, attach_item)
+
+            with source.addParallelTask(3) as (scale, click, center):
+                scale.addScope(self.drop_panel.playRemovePanelItemAnim, drop_item, item_index)
+                scale.addTask("TaskNodeScaleTo",
+                              Node=attach_item.sprite,
+                              Easing=SCENE_SCALE_EASING,
+                              From=attach_item.getSpriteScale(),
+                              To=(1.0, 1.0, 1.0),
+                              Time=SCENE_ANIMATION_TIME)
+
+                # ERROR
+                point = attach_item.getNodeCenter()
+                center.addTask("TaskNodeOriginTo", Node=attach_item.sprite, Time=SCENE_ANIMATION_TIME, To=point)
+
+                def __clickRace(click_socket, mouse_up):
+                    click_socket.addTask(
+                        "TaskMovie2SocketClick",
+                        SocketName="click",
+                        Movie2=group_item_movie,
+                        isDown=False,
+                        isPressed=False,
+                        UseArrowFilter=False
+                    )
+                    mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
+
+                with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
+                    mouse_up.addPrint("mouse_up")
+                    mouse_up.addScope(self._playReturnItemToPanelAnimation,
+                                      drop_item,
+                                      item_index,
+                                      attach_item)
+
+                    click_socket.addScope(self._playCorrectDrop, group_item_movie, attach_item)
+                    click_socket.addFunction(event_finish)
+
+            source.addFunction(self._finalizeAttachedItem, attach_item)
+
+        return __clickAction
+
+    def _findItem(self, drop_item):
         index = None
         for i, item in enumerate(self.items):
-            if item is remove_item:
+            if item is drop_item:
                 index = i
                 break
 
@@ -238,7 +251,7 @@ class FinalStage(BaseScopeEntity):
 
             remove.addScope(attach_item.setSpriteEnable, False)
 
-    def _setupChapterQuestItems(self):
+    def _fillQuestItems(self):
         # get current chapter data
         chapter_id = self._getCurrentChapterId()
         self.scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
@@ -288,6 +301,7 @@ class FinalStage(BaseScopeEntity):
         arrow_node.addChildFront(attach_item_root)
 
     def _moveLevelItemToPanelItem(self, source, drop_item, attach_item):
+        # ERROR
         # generate level item pure sprite
         item_entity = attach_item.getObj().getEntity()
         item_pure = item_entity.generatePure()
@@ -335,14 +349,14 @@ class FinalStage(BaseScopeEntity):
         source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
         source.addTask("TaskNodeDestroy", Node=item_moving_node)
 
-    def _playReturnItemToPanelAnimation(self, source, item, item_index, attach_item):
-        source.addFunction(self.drop_panel.returnDropItem, item, item_index)
+    def _playReturnItemToPanelAnimation(self, source, drop_item, item_index, attach_item):
+        source.addFunction(self.drop_panel.returnDropItem, drop_item, item_index)
 
         with source.addParallelTask(2) as (moving_item, add_item):
-            moving_item.addScope(self._moveLevelItemToPanelItem, item, attach_item)
-            add_item.addScope(self.drop_panel.playAddPanelItemAnim, item)
+            moving_item.addScope(self._moveLevelItemToPanelItem, drop_item, attach_item)
+            add_item.addScope(self.drop_panel.playAddPanelItemAnim, drop_item)
 
-        source.addScope(item.setSpriteEnable, True)
+        source.addScope(drop_item.setSpriteEnable, True)
 
     def _finalizeAttachedItem(self, item):
         if item in self.attached_items:
