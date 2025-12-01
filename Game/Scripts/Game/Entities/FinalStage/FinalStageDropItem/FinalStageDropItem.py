@@ -95,7 +95,9 @@ class FinalStageDropItem(Initializer):
         return self.movie_info
 
     def getQuestItemName(self):
-        return self.sprite_object.getName().replace("Sprite_", "")
+        sprite_object_name_raw = self.sprite_object.getName()
+        sprite_object_name = sprite_object_name_raw.replace("Sprite_", "")
+        return sprite_object_name
 
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
