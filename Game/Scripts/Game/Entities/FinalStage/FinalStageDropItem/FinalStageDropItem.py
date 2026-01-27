@@ -148,7 +148,9 @@ class FinalStageDropItem(Initializer):
             (hw, hh), (-hw, hh),
         ])
 
-        self.sprite.addChild(self.socket_node)
+        # Attach socket to root node (same parent as sprite and box) so that
+        # its size matches the box and is not additionally affected by sprite scaling.
+        self._root.addChild(self.socket_node)
 
     def _scaleSprite(self):
         if self.box is None:
