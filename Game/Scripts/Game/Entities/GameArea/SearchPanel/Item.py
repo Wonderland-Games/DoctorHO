@@ -11,28 +11,43 @@ ITEM_REMOVE_SCALE_DOWN_TO = Mengine.vec3f(0.0, 0.0, 0.0)
 ITEM_REMOVE_SCALE_DOWN_TIME = 200.0
 ITEM_REMOVE_ALPHA_TO = 0.0
 ITEM_REMOVE_ALPHA_TIME = 150.0
+ITEM_ADD_ALPHA_TO = 1.0
+
+ITEM_CREATE_SCALE_FROM = Mengine.vec3f(0.0, 0.0, 0.0)
+ITEM_CREATE_SCALE_TO = Mengine.vec3f(1.0, 1.0, 1.0)
+ITEM_CREATE_SCALE_TIME = 200.0
+
+ITEM_CREATE_ALPHA_FROM = 0.0
+ITEM_CREATE_ALPHA_TO = 1.0
+ITEM_CREATE_ALPHA_TIME = 150.0
 
 
 class Item(Initializer):
     def __init__(self):
         super(Item, self).__init__()
         self._root = None
-        self.game = None
+        self.panel = None
         self.item_obj = None
         self.sprite_node = None
         self.sprite = None
         self.box = None
+        self.socket_node = None
+        self.default_scale = None
+        self.movie_info = None
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, game, item_obj):
-        self.game = game
+    def _onInitialize(self, panel, item_obj, movie_info=None):
+        self.panel = panel
         self.item_obj = item_obj
+        self.movie_info = movie_info
 
         self._createRoot()
         self._createBox()
+
         self._createSpriteNode()
         self._createSprite()
+        self._createHotSpotPolygon()
         self._scaleSprite()
         self._positionSprite()
 
@@ -57,8 +72,15 @@ class Item(Initializer):
             Mengine.destroyNode(self._root)
             self._root = None
 
+        if self.socket_node is not None:
+            self.socket_node.removeFromParent()
+            Mengine.destroyNode(self.socket_node)
+            self.socket_node = None
+
         self.item_obj = None
-        self.game = None
+        self.panel = None
+        self.default_scale = None
+        self.movie_info = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -74,11 +96,20 @@ class Item(Initializer):
     def getRoot(self):
         return self._root
 
+    def getSocket(self):
+        return self.socket_node
+
+    def getObj(self):
+        return self.item_obj
+
+    def getMovieInfo(self):
+        return self.movie_info
+
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
-        panel_pos = self.game.search_panel.getRoot().getWorldPosition()
-        panel_size = self.game.search_panel.getSize()
+        panel_pos = self.panel.getRoot().getWorldPosition()
+        panel_size = self.panel.getSize()
 
         world_position_x = (panel_pos.x - panel_size.x/2) + panel_size.x * node_screen_position.x
         world_position_y = (panel_pos.y - panel_size.y/2) + panel_size.y * node_screen_position.y
@@ -89,6 +120,9 @@ class Item(Initializer):
     def setLocalPositionX(self, position):
         curr_position = self._root.getLocalPosition()
         self._root.setLocalPosition(Mengine.vec2f(position, curr_position.y))
+
+    def getLocalPosition(self):
+        return self._root.getLocalPosition()
 
     # - Box ------------------------------------------------------------------------------------------------------------
 
@@ -113,6 +147,20 @@ class Item(Initializer):
         self.sprite = self.item_obj.getEntity().generatePure()
         self.sprite_node.addChild(self.sprite)
 
+    def _createHotSpotPolygon(self):
+        self.socket_node = Mengine.createNode("HotSpotPolygon")
+        self.socket_node.setName("Socket_{}".format(self.item_obj.getName()))
+
+        width, height = self.getSize()[0], self.getSize()[1]
+        hw, hh = width / 2, height / 2
+
+        self.socket_node.setPolygon([
+            (-hw, -hh), (hw, -hh),
+            (hw, hh), (-hw, hh),
+        ])
+
+        self.sprite_node.addChild(self.socket_node)
+
     def _scaleSprite(self):
         if self.box is None:
             return
@@ -123,11 +171,16 @@ class Item(Initializer):
         sprite_size = self.sprite.getSurfaceSize()
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
-        scale_perc = (box_size_max/sprite_size_max) * ITEM_SCALE_MULTIPLIER
-        self.sprite.setScale(Mengine.vec2f(scale_perc, scale_perc))
+        scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
+        self.default_scale = scale_perc
+        self.sprite.setScale((scale_perc, scale_perc))
+        #self.socket_node.setScale((scale_perc, scale_perc))
 
     def getSpriteScale(self):
         return self.sprite.getWorldScale()
+
+    def getDefaultSpriteScale(self):
+        return self.default_scale
 
     def getSprite(self):
         return self.sprite
@@ -151,3 +204,18 @@ class Item(Initializer):
             alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
 
         source.addPrint(" * END REMOVE ITEM ANIM")
+
+    def playItemCreateAnim(self, source):
+        source.addPrint(" * START CREATE ITEM ANIM")
+
+        with source.addParallelTask(2) as (scale, alpha):
+            scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_CREATE_SCALE_TO, Time=ITEM_CREATE_SCALE_TIME)
+            alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_CREATE_ALPHA_TO, Time=ITEM_CREATE_ALPHA_TIME)
+
+        source.addPrint(" * END CREATE ITEM ANIM")
+
+    def setSpriteEnable(self, source, value):
+        if value is True:
+            source.addFunction(self.sprite.enable)
+        else:
+            source.addFunction(self.sprite.disable)

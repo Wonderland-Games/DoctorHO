@@ -283,7 +283,7 @@ class SearchPanel(Initializer):
         # init items
         for i, item_obj in enumerate(self.game.search_level.items):
             item = Item()
-            item.onInitialize(self.game, item_obj)
+            item.onInitialize(self, item_obj)
             item.attachTo(self.items_node)
             self.items.append(item)
 

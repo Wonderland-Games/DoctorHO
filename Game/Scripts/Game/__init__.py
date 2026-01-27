@@ -1,6 +1,4 @@
 def onInitialize():
-    from Foundation.DefaultManager import DefaultManager
-
     from Foundation.Notificator import Notificator
     identities = [
         "onInternetConnectionLost",
@@ -32,6 +30,8 @@ def onInitialize():
 
         "onLevelStart",
         "onLevelEnd",
+        "onDropFail",
+        "onDropSuccess",
         "onLevelMissClicked",
         "onLevelHintClicked",
         "onMissClickEffect",
@@ -64,12 +64,13 @@ def onInitialize():
         "Loading",
         "Lobby",
         "GameArea",
+        "FinalStage",
         "MissClick",
         {"name": "AdvertisingScene", "override": True},
-        "QuestBackpack",
         "Cutscene",
         {"name": "Header", "override": True},
         "GameHeader",
+        "QuestBackpack",
     ]
 
     if EntityManager.importEntities("Game.Entities", types) is False:

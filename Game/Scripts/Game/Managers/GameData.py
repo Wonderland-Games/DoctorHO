@@ -121,6 +121,9 @@ class StoryPlayerGameData(PlayerGameData):
 
             return levels_data
 
+        def getLevelDataSize(self):
+            return len(self.levels_data)
+
     def __init__(self):
         super(StoryPlayerGameData, self).__init__()
         self.active_chapter_id = 1  # first chapter
