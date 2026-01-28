@@ -168,8 +168,7 @@
     "DevModules-PC": {
         "Name": [
             "NodeDebuggerModule",
-            "CameraDebugGizmoModule",
-            "LayoutEditorModule"
+            "CameraDebugGizmoModule"
         ]
     },
     

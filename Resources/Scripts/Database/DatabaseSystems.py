@@ -7,7 +7,7 @@ class DatabaseSystems(Database):
         self.addRecord(Module="Foundation.Systems", Name="SystemDebugNotifications", Global=1, Development=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemGoogleServices", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemAppleServices", Global=1)
-        self.addRecord(Module="Foundation.Systems", Name="SystemApplovin", Global=1)
+        self.addRecord(Module="Foundation.Systems", Name="SystemAppLovin", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemFacebook", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemRemoteConfig", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemMonetization", Global=1, Platform="MOBILE", Priority=1)
