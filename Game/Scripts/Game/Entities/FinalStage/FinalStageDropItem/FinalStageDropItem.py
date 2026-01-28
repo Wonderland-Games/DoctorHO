@@ -102,8 +102,10 @@ class FinalStageDropItem(Initializer):
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
-        panel_pos = self.panel.getRoot().getWorldPosition()
-        panel_size = self.panel.getSize()
+        # panel here is FinalStage; use its DropPanel for size/position
+        panel_root = self.panel.drop_panel.getRoot()
+        panel_size = self.panel.drop_panel.getSize()
+        panel_pos = panel_root.getWorldPosition()
 
         world_position_x = (panel_pos.x - panel_size.x/2) + panel_size.x * node_screen_position.x
         world_position_y = (panel_pos.y - panel_size.y/2) + panel_size.y * node_screen_position.y
@@ -192,7 +194,15 @@ class FinalStageDropItem(Initializer):
     def playItemDestroyAnim(self, source):
         source.addPrint(" * START REMOVE ITEM ANIM")
 
-        source.addTask("TaskNodeScaleTo", Node=self.sprite, To=ITEM_REMOVE_SCALE_UP_TO, Time=ITEM_REMOVE_SCALE_UP_TIME)
+        # scale up sprite slightly relative to its current local scale (works even if parent scale changes)
+        current_scale = self.sprite.getScale()
+        up_scale = Mengine.vec3f(
+            current_scale.x * ITEM_REMOVE_SCALE_UP_TO.x,
+            current_scale.y * ITEM_REMOVE_SCALE_UP_TO.y,
+            current_scale.z * ITEM_REMOVE_SCALE_UP_TO.z,
+        )
+
+        source.addTask("TaskNodeScaleTo", Node=self.sprite, To=up_scale, Time=ITEM_REMOVE_SCALE_UP_TIME)
 
         with source.addParallelTask(2) as (scale, alpha):
             scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
@@ -211,6 +221,12 @@ class FinalStageDropItem(Initializer):
 
     def setSpriteEnable(self, source, value):
         if value is True:
-            source.addFunction(self.sprite.enable)
+            def _enable():
+                # always restore sprite scale to default when we re-enable it
+                if self.default_scale is not None:
+                    self.sprite.setScale((self.default_scale, self.default_scale))
+                self.sprite.enable()
+
+            source.addFunction(_enable)
         else:
             source.addFunction(self.sprite.disable)

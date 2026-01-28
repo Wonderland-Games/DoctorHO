@@ -192,18 +192,10 @@ class FinalStage(BaseScopeEntity):
             # attach AttachItem to cursor
             source.addFunction(self._attachToCursor, attach_item)
 
-            with source.addParallelTask(3) as (scale, click, center):
-                scale.addScope(self.drop_panel.playRemovePanelItemAnim, drop_item, item_index)
-                scale.addTask("TaskNodeScaleTo",
-                              Node=attach_item.sprite,
-                              Easing=SCENE_SCALE_EASING,
-                              From=attach_item.getSpriteScale(),
-                              To=(1.0, 1.0, 1.0),
-                              Time=SCENE_ANIMATION_TIME)
-
-                # ERROR
-                point = attach_item.getNodeCenter()
-                center.addTask("TaskNodeOriginTo", Node=attach_item.sprite, Time=SCENE_ANIMATION_TIME, To=point)
+            # remove item from panel and start click / drop logic
+            with source.addParallelTask(2) as (panel_anim, click):
+                # remove item from panel and play panel rearrange animation
+                panel_anim.addScope(self.drop_panel.playRemovePanelItemAnim, drop_item, item_index)
 
                 def __clickRace(click_socket, mouse_up):
                     click_socket.addTask(
@@ -301,53 +293,49 @@ class FinalStage(BaseScopeEntity):
         arrow_node.addChildFront(attach_item_root)
 
     def _moveLevelItemToPanelItem(self, source, drop_item, attach_item):
-        # ERROR
-        # generate level item pure sprite
-        item_entity = attach_item.getObj().getEntity()
-        item_pure = item_entity.generatePure()
-        item_pure.enable()
+        # move attached item from cursor back to panel item using temporary moving node
+        attach_root = attach_item.getRoot()
 
-        # create moving node
-        item_moving_node = Mengine.createNode("Interender")
-        item_moving_node.setName("BezierFollow")
-        attach_item_position = attach_item.getRoot().getWorldPosition()
-        item_moving_node.setWorldPosition(attach_item_position)
-
-        item_moving_node.addChild(item_pure)
-        self.addChild(item_moving_node)
-
-        drop_item_scale = drop_item.getDefaultSpriteScale()
-
-        scale_from = attach_item.getSpriteScale()
-        scale_to = (drop_item_scale, drop_item_scale, 1.0)
-
-        panel_item_sprite = drop_item.getSprite()
-
+        # detach from arrow, but keep item visible while it flies back
         source.addTask("TaskRemoveArrowAttach")
-        source.addScope(attach_item.setSpriteEnable, False)
+        source.addScope(attach_item.setSpriteEnable, True)
+
+        # create moving node that will carry attached item back to its (moving) panel item
+        def _setup_moving_node():
+            moving_node = Mengine.createNode("Interender")
+            moving_node.setName("BezierFollow")
+
+            attach_pos = attach_root.getWorldPosition()
+            moving_node.setWorldPosition(attach_pos)
+
+            # attach current attach_root under moving node
+            moving_node.addChild(attach_root)
+            self.addChild(moving_node)
+
+            return moving_node
+
+        moving_node = _setup_moving_node()
 
         source.addPrint(" * START BEZIER ITEM ANIM")
 
-        with source.addParallelTask(2) as (scale, move):
-            scale.addTask("TaskNodeScaleTo",
-                          Node=item_moving_node,
-                          Easing=SCENE_SCALE_EASING,
-                          From=scale_from,
-                          To=scale_to,
-                          Time=SCENE_ANIMATION_TIME)
-
-            move.addTask("TaskNodeBezier2ScreenFollow",
-                           Node=item_moving_node,
-                           Easing=SCENE_MOVE_EASING,
-                           Follow=panel_item_sprite,
-                           Time=SCENE_ANIMATION_TIME)
+        # follow actual panel item root; if panel reflows items during animation,
+        # the moving item will chase its new cell position. No extra scaling here –
+        # panel sprite scale is handled independently when it is re-enabled.
+        panel_item_root = drop_item.getRoot()
+        source.addTask("TaskNodeBezier2ScreenFollow",
+                       Node=moving_node,
+                       Easing=SCENE_MOVE_EASING,
+                       Follow=panel_item_root,
+                       Time=SCENE_ANIMATION_TIME)
 
         source.addPrint(" * END BEZIER ITEM ANIM")
 
-        source.addTask("TaskNodeRemoveFromParent", Node=item_pure)
-        source.addTask("TaskNodeDestroy", Node=item_pure)
-        source.addTask("TaskNodeRemoveFromParent", Node=item_moving_node)
-        source.addTask("TaskNodeDestroy", Node=item_moving_node)
+        # destroy only temporary helper node, attach_item will be finalized separately
+        source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
+        source.addTask("TaskNodeDestroy", Node=moving_node)
+
+        # hide attached item sprite so only panel item is visible
+        source.addScope(attach_item.setSpriteEnable, False)
 
     def _playReturnItemToPanelAnimation(self, source, drop_item, item_index, attach_item):
         source.addFunction(self.drop_panel.returnDropItem, drop_item, item_index)
