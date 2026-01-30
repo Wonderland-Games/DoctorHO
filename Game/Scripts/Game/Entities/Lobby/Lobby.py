@@ -197,7 +197,7 @@ class Lobby(BaseEntity):
         level_card_node = level_card.getRoot()
         level_card_wp = level_card_node.getWorldPosition()
 
-        source.addScope(self._moveItemToWP, level_card_wp)
+        # source.addScope(self._moveItemToWP, level_card_wp)    # disabled cuz bad logic error
         source.addScope(level_card.scopeChangeLevelState, level_card.STATE_UNLOCKING)
 
     def _moveItemToQuestBackpack(self, source):
@@ -205,7 +205,7 @@ class Lobby(BaseEntity):
         quest_backpack_node = self.quest_backpack.getEntityNode()
         quest_backpack_wp = quest_backpack_node.getWorldPosition()
 
-        source.addScope(self._moveItemToWP, quest_backpack_wp)
+        # source.addScope(self._moveItemToWP, quest_backpack_wp)    # disabled cuz bad logic error
 
     def _moveItemToWP(self, source, destination_wp):
         # get current popup content (QuestItemReceived)

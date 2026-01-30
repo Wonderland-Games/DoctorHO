@@ -288,8 +288,7 @@ class FinalStage(BaseScopeEntity):
     def _attachToCursor(self, attach_item):
         attach_item_root = attach_item.getRoot()
         ArrowManager.attachArrow(attach_item_root)
-        arrow = Mengine.getArrow()
-        arrow_node = arrow.getNode()
+        arrow_node = Mengine.getArrowNode()
         arrow_node.addChildFront(attach_item_root)
 
     def _moveLevelItemToPanelItem(self, source, drop_item, attach_item):
