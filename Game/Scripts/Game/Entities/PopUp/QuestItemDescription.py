@@ -66,9 +66,7 @@ class QuestItemDescription(PopUpContent):
 
     def _setupItemSprite(self):
         # Temporary generating object
-        item_sprite_object = GameManager.generateQuestItem(self.item_name)
-        self.item_sprite = item_sprite_object.entity.getSprite()
-        self.item_sprite.enable()
+        self.item_sprite = GameManager.generateQuestItemNode(self.item_name)
 
         sprite_scale = self._getSpriteScale()
         self.item_sprite.setScale(sprite_scale)

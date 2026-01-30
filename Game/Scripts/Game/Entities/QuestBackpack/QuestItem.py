@@ -1,9 +1,7 @@
 from Foundation.Initializer import Initializer
 from Game.Managers.GameManager import GameManager
 
-
 ITEM_SCALE_MODIFIER = 0.75
-
 
 class QuestItem(Initializer):
     STATE_BLOCKED = 0
@@ -69,9 +67,7 @@ class QuestItem(Initializer):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupItemSprite(self):
-        item_sprite_object = GameManager.generateQuestItem(self.item_name)
-        self.item_sprite = item_sprite_object.entity.getSprite()
-        self.item_sprite.enable()
+        self.item_sprite = GameManager.generateQuestItemNode(self.item_name)
         self.root.addChild(self.item_sprite)
 
         item_sprite_center = self.item_sprite.getLocalImageCenter()

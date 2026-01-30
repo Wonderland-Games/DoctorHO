@@ -932,8 +932,15 @@ class GameManager(Manager):
     def generateQuestItem(item_name):
         store_item_name = "Sprite_{}".format(item_name)
         quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
-        quest_item = quest_item_store_group.generateObjectUnique(store_item_name, store_item_name)
-        return quest_item
+        quest_item_object = quest_item_store_group.generateObjectUnique(store_item_name, store_item_name)
+        return quest_item_object
+
+    @staticmethod
+    def generateQuestItemNode(item_name):
+        store_item_name = "Sprite_{}".format(item_name)
+        quest_item_store_group = GameManager.getCurrentQuestItemStoreGroup()
+        quest_item_node = quest_item_store_group.generateNodeUnique(store_item_name)
+        return quest_item_node
 
     # - Randomizer -----------------------------------------------------------------------------------------------------
 
