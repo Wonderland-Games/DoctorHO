@@ -73,7 +73,7 @@ class FinalStage(BaseScopeEntity):
         self.items = []
 
         for item in self.attached_items:
-            self._finalizeAttachedItem(item)
+            item.onFinalize()
         self.attached_items = []
 
         for item in self.movie_items:
@@ -340,5 +340,5 @@ class FinalStage(BaseScopeEntity):
 
     def _finalizeAttachedItem(self, item):
         if item in self.attached_items:
+            item.onFinalize()
             self.attached_items.remove(item)
-        item.onFinalize()
