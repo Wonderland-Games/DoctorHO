@@ -168,7 +168,7 @@ class FinalStage(BaseScopeEntity):
         def __clickAction(source):
             # click on DropItem socket
             source.addTask("TaskNodeSocketClick", Socket=drop_item.getSocket(), isDown=True)
-            source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(drop_item.sprite_object.getName()))
+            source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(drop_item.getItemName()))
 
             # USELESS?
             item_index = self._findItem(drop_item)
@@ -180,13 +180,12 @@ class FinalStage(BaseScopeEntity):
             movie_info = drop_item.getMovieInfo()
             group_item_movie = GroupManager.getObject(movie_info["group"], movie_info["name"])
 
-            # generate ObjectSprite from clicked DropItem
+            # get item name from clicked DropItem
             item_object_name = drop_item.getQuestItemName()
-            item_object = GameManager.generateQuestItem(item_object_name)
 
-            # init AttachItem with generated ObjectSprite
+            # init AttachItem with item name from DropItem
             attach_item = FinalStageAttachItem()
-            attach_item.onInitialize(item_object)
+            attach_item.onInitialize(item_object_name)
             self.attached_items.append(attach_item)
 
             # attach AttachItem to cursor
@@ -257,20 +256,14 @@ class FinalStage(BaseScopeEntity):
             if i >= current_quest_index:
                 break
 
-            item_object = self._getItemObject(param)
-
             movie_info = {
                 "group": param.GroupName,
                 "name": param.MovieName
             }
 
             item = FinalStageDropItem()
-            item.onInitialize(self, item_object, movie_info)
+            item.onInitialize(self, param.ItemName, movie_info)
             self.items.append(item)
-
-    def _getItemObject(self, param):
-        item_object = GameManager.generateQuestItem(param.ItemName)
-        return item_object
 
     def _getFinalStageMappingParams(self, stage_name):
         s_db_module = "Database"

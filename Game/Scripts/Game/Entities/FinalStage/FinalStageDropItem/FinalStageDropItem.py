@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Game.Managers.GameManager import GameManager
 from UIKit.Managers.PrototypeManager import PrototypeManager
 
 
@@ -27,7 +28,7 @@ class FinalStageDropItem(Initializer):
         super(FinalStageDropItem, self).__init__()
         self._root = None
         self.panel = None
-        self.sprite_object = None
+        self.item_name = None
         self.sprite = None
         self.box = None
         self.socket_node = None
@@ -36,10 +37,9 @@ class FinalStageDropItem(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, panel, sprite_object, movie_info=None):
+    def _onInitialize(self, panel, item_name, movie_info=None):
         self.panel = panel
-        self.sprite_object = sprite_object
-        self.sprite = self.sprite_object.entity.getSprite()
+        self.item_name = item_name
         self.movie_info = movie_info
 
         self._createRoot()
@@ -50,13 +50,12 @@ class FinalStageDropItem(Initializer):
         self._positionSprite()
 
     def _onFinalize(self):
-        if self.sprite is not None and self.sprite_object.isDestroy() is False:
-            self.sprite_object.onDestroy()
-            self.sprite_object = None
+        if self.sprite is not None:
+            Mengine.destroyNode(self.sprite)
             self.sprite = None
 
         if self.box is not None:
-            self.box.getEntityNode().removeFromParent()
+            # self.box.getEntityNode().removeFromParent()
             self.box.onDestroy()
             self.box = None
 
@@ -73,12 +72,13 @@ class FinalStageDropItem(Initializer):
         self.panel = None
         self.default_scale = None
         self.movie_info = None
+        self.item_name = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
         self._root = Mengine.createNode("Interender")
-        root_name = self.sprite.getName()
+        root_name = self.getItemName()
         self._root.setName(root_name)
 
     def attachTo(self, node):
@@ -88,6 +88,9 @@ class FinalStageDropItem(Initializer):
     def getRoot(self):
         return self._root
 
+    def getItemName(self):
+        return self.item_name
+
     def getSocket(self):
         return self.socket_node
 
@@ -95,9 +98,9 @@ class FinalStageDropItem(Initializer):
         return self.movie_info
 
     def getQuestItemName(self):
-        sprite_object_name_raw = self.sprite_object.getName()
-        sprite_object_name = sprite_object_name_raw.replace("Sprite_", "")
-        return sprite_object_name
+        sprite_name_raw = self.getItemName()
+        sprite_name = sprite_name_raw.replace("Sprite_", "")
+        return sprite_name
 
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
@@ -135,12 +138,13 @@ class FinalStageDropItem(Initializer):
     # - Sprite ---------------------------------------------------------------------------------------------------------
 
     def _setupSprite(self):
+        self.sprite = GameManager.generateQuestItemNode(self.item_name)
         self._root.addChild(self.sprite)
         self.sprite.enable()
 
     def _createHotSpotPolygon(self):
         self.socket_node = Mengine.createNode("HotSpotPolygon")
-        self.socket_node.setName("Socket_{}".format(self.sprite_object.getName()))
+        self.socket_node.setName("Socket_{}".format(self.getItemName()))
 
         width, height = self.getSize()[0], self.getSize()[1]
         hw, hh = width / 2, height / 2

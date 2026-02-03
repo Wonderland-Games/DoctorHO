@@ -1,4 +1,5 @@
 from Foundation.Initializer import Initializer
+from Game.Managers.GameManager import GameManager
 
 
 class FinalStageAttachItem(Initializer):
@@ -7,12 +8,10 @@ class FinalStageAttachItem(Initializer):
     def __init__(self):
         super(FinalStageAttachItem, self).__init__()
         self.root = None
-        self.sprite_object = None
         self.sprite = None
 
-    def _onInitialize(self, sprite_object):
-        self.sprite_object = sprite_object
-        self.sprite = self.sprite_object.entity.getSprite()
+    def _onInitialize(self, item_name):
+        self.item_name = item_name
 
         self._createSpriteNode()
         self._setupSprite()
@@ -20,9 +19,8 @@ class FinalStageAttachItem(Initializer):
         self._positionSprite()
 
     def _onFinalize(self):
-        if self.sprite is not None and self.sprite_object.isDestroy() is False:
-            self.sprite_object.onDestroy()
-            self.sprite_object = None
+        if self.sprite is not None:
+            Mengine.destroyNode(self.sprite)
             self.sprite = None
 
         if self.root is not None:
@@ -30,8 +28,13 @@ class FinalStageAttachItem(Initializer):
             Mengine.destroyNode(self.root)
             self.root = None
 
+        self.item_name = None
+
     def getRoot(self):
         return self.root
+
+    def getItemName(self):
+        return self.item_name
 
     def getSpriteScale(self):
         return self.sprite.getWorldScale()
@@ -41,10 +44,11 @@ class FinalStageAttachItem(Initializer):
 
     def _createSpriteNode(self):
         self.root = Mengine.createNode("Interender")
-        sprite_name = self.sprite_object.getName()
-        self.root.setName(sprite_name)
+        item_name = self.getItemName()
+        self.root.setName(item_name)
 
     def _setupSprite(self):
+        self.sprite = GameManager.generateQuestItemNode(self.getItemName())
         self.root.addChild(self.sprite)
         self.sprite.enable()
 
