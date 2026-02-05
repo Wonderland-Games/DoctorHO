@@ -160,9 +160,8 @@ class FinalStage(BaseScopeEntity):
                 source_until.addEvent(event_finish)
 
         source.addScope(self._playFinalAnimation)
-
-        backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
-        source.addNotify(Notificator.onChangeScene, backpack_scene_name)
+        source.addFunction(GameManager.loadNextChapter)
+        source.addNotify(Notificator.onChangeScene, "Lobby")
 
     def _makeClickAction(self, drop_item, event_finish):
         def __clickAction(source):

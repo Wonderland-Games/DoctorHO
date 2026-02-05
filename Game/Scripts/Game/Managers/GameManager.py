@@ -418,6 +418,38 @@ class GameManager(Manager):
 
         return current_index >= quests_count
 
+    @staticmethod
+    def loadNextChapter():
+        print "GameManager.loadNextChapter"
+        next_chapter_id = GameManager.getCurrentChapterId() + 1
+        GameManager.loadChapterById(next_chapter_id)
+
+    @staticmethod
+    def loadPreviousChapter():
+        print "GameManager.loadPreviousChapter"
+        prev_chapter_id = GameManager.getCurrentChapterId() - 1
+        GameManager.loadChapterById(prev_chapter_id)
+
+    @staticmethod
+    def loadChapterById(chapter_id):
+        if chapter_id < 1:
+            return
+
+        player_game_data = GameManager.getPlayerGameData()
+        chapter_data = player_game_data.ChapterData(chapter_id)
+        chapter_levels_params = GameManager.getLevelParamsByChapter(chapter_id)
+        if len(chapter_levels_params) == 0:
+            return
+
+        for level in chapter_levels_params:
+            chapter_data.levels_data[level.LevelId] = player_game_data.ChapterData.LevelData(level.LevelId)
+            if level.LevelId == chapter_levels_params[0].LevelId:
+                chapter_data.levels_data[level.LevelId].setActive(True)
+
+        player_game_data.active_chapter_id = chapter_id
+        player_game_data.current_chapter = chapter_data
+        player_game_data._last_level_data = {}
+
     # - Game -----------------------------------------------------------------------------------------------------------
 
     @staticmethod

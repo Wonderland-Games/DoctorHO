@@ -51,6 +51,7 @@ class Lobby(BaseEntity):
 
     def _onActivate(self):
         self._runTaskChains()
+        self._handleCheats()
 
     def _onDeactivate(self):
         self.content = None
@@ -128,6 +129,24 @@ class Lobby(BaseEntity):
 
             backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
             tc.addNotify(Notificator.onChangeScene, backpack_scene_name)
+
+    def _handleCheats(self):
+        if Mengine.hasOption("cheats") is False:
+            return
+
+        Trace.msg(" DEV CHEATS ".center(50, "-"))
+        Trace.msg(" UP - next chapter")
+        Trace.msg(" DOWN - previous chapter")
+        Trace.msg("".center(50, "-"))
+
+        with self._createTaskChain("CheatChangeChapter") as tc:
+            with tc.addRaceTask(2) as (next_chapter, prev_chapter):
+                next_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_UP])
+                next_chapter.addFunction(GameManager.loadNextChapter)
+
+                prev_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_DOWN])
+                prev_chapter.addFunction(GameManager.loadPreviousChapter)
+            tc.addFunction(SceneManager.restartScene, None)
 
     def _scopePlay(self, source, level_id):
         # player_data = GameManager.getPlayerGameData()
