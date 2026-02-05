@@ -299,11 +299,7 @@ class SearchPanel(Initializer):
         corner_types = ["Left", "Right"]
 
         for corner_type in corner_types:
-            corner = PrototypeManager.generateObjectUnique(PROTOTYPE_ITEMS_CORNER, PROTOTYPE_ITEMS_CORNER, Size=corner_type)
-            corner.setEnable(True)
-
-            corner_node = corner.getEntityNode()
-            self.root.addChild(corner_node)
+            corner = PrototypeManager.generateObjectUniqueOnNode(self.root, PROTOTYPE_ITEMS_CORNER, PROTOTYPE_ITEMS_CORNER, Size=corner_type)
 
             va_hotspot_pos = self.va_hotspot.getLocalPosition()
             corner_bb = corner.getCompositionBounds()
@@ -319,7 +315,7 @@ class SearchPanel(Initializer):
                     -va_hotspot_pos.x - corner_size.x / 2,
                     va_hotspot_pos.y + corner_size.y / 2
                 )
-            corner_node.setLocalPosition(corner_pos)
+            corner.setPosition(corner_pos)
 
             self.movie_items_corners[corner_type] = corner
 

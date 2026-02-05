@@ -88,12 +88,9 @@ class QuestBackpack(BaseEntity):
         chapter_quest_items_slot.addChild(chapter_quest_items_node)
 
     def _setupLobby(self):
-        self.lobby = PrototypeManager.generateObjectContainer(PROTOTYPE_LOBBY, PROTOTYPE_LOBBY)
-        self.lobby.setEnable(True)
-
-        lobby_node = self.lobby.getEntityNode()
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
-        lobby_slot.addChild(lobby_node)
+
+        self.lobby = PrototypeManager.generateObjectContainerOnNode(lobby_slot, PROTOTYPE_LOBBY, PROTOTYPE_LOBBY)
 
     def _setupFinalStage(self):
         chapter_finished = GameManager.isChapterCompleted()

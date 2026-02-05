@@ -126,9 +126,11 @@ class FinalStageDropItem(Initializer):
     # - Box ------------------------------------------------------------------------------------------------------------
 
     def _createBox(self):
-        self.box = PrototypeManager.generateObjectUnique(PROTOTYPE_BOX)
-        self.box.setEnable(True)
-        self._root.addChild(self.box.getEntityNode())
+        if self.box is not None:
+            Trace.log("Entity", 0, "FinalStageDropItem: Box already exists for item '{}', skipping box creation".format(self.getItemName()))
+            return
+
+        self.box = PrototypeManager.generateObjectUniqueOnNode(self._root, PROTOTYPE_BOX)
 
     def getSize(self):
         box_bounds = self.box.getCompositionBounds()

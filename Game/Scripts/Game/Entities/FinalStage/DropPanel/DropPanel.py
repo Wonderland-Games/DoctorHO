@@ -251,8 +251,7 @@ class DropPanel(Initializer):
         self.virtual_area.update_target()
 
     def playRemovePanelItemAnim(self, source, item, item_index):
-        #del self.items[item_index]
-        self.items.remove(item)
+        #self.items.remove(item)
 
         source.addScope(item.playItemDestroyAnim)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)

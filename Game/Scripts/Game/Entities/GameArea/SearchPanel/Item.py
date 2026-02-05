@@ -127,9 +127,7 @@ class Item(Initializer):
     # - Box ------------------------------------------------------------------------------------------------------------
 
     def _createBox(self):
-        self.box = PrototypeManager.generateObjectUnique(PROTOTYPE_BOX)
-        self.box.setEnable(True)
-        self._root.addChild(self.box.getEntityNode())
+        self.box = PrototypeManager.generateObjectUniqueOnNode(self._root, PROTOTYPE_BOX)
 
     def getSize(self):
         box_bounds = self.box.getCompositionBounds()
