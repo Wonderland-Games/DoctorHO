@@ -131,13 +131,15 @@ class Lobby(BaseEntity):
         if Mengine.hasOption("cheats") is False:
             return
 
-        Trace.msg(" DEV CHEATS ".center(50, "-"))
+        Trace.msg("")
+        Trace.msg(" CHEATS ".center(50, "-"))
         Trace.msg(" NUMPAD0 - unlock all inactive levels in chapter")
         Trace.msg(" RIGHT - next quest")
         Trace.msg(" LEFT - previous quest")
         Trace.msg(" UP - next chapter")
         Trace.msg(" DOWN - previous chapter")
         Trace.msg("".center(50, "-"))
+        Trace.msg("")
 
         with self._createTaskChain("CheatChangeChapter") as tc:
             with tc.addRaceTask(5) as (unlock_levels, next_quest, prev_quest, next_chapter, prev_chapter):

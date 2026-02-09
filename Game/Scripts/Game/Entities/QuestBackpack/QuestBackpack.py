@@ -178,10 +178,12 @@ class QuestBackpack(BaseEntity):
         if Mengine.hasOption("cheats") is False:
             return
 
-        Trace.msg(" Game cheats ".center(50, "-"))
+        Trace.msg("")
+        Trace.msg(" CHEATS ".center(50, "-"))
         Trace.msg(" C - clear items")
         Trace.msg(" G - get all items")
         Trace.msg("".center(50, "-"))
+        Trace.msg("")
 
         with self._createTaskChain("CheatForFinalStage") as tc:
             with tc.addRaceTask(2) as (clear, get):

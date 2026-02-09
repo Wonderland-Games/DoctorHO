@@ -449,13 +449,11 @@ class GameManager(Manager):
 
     @staticmethod
     def loadNextChapter():
-        print "GameManager.loadNextChapter"
         next_chapter_id = GameManager.getCurrentChapterId() + 1
         GameManager.loadChapterById(next_chapter_id)
 
     @staticmethod
     def loadPreviousChapter():
-        print "GameManager.loadPreviousChapter"
         prev_chapter_id = GameManager.getCurrentChapterId() - 1
         GameManager.loadChapterById(prev_chapter_id)
 
@@ -518,8 +516,7 @@ class GameManager(Manager):
         })
 
         if is_win is True and quest_index is not None:
-            current_chapter_data = player_data.getCurrentChapterData()
-            current_chapter_data.setCurrentQuestIndex(quest_index + 1)
+            GameManager.loadNextQuest()
 
         GameManager.__apiEndGame(game_name, chapter_id, level_id, quest_index)
 

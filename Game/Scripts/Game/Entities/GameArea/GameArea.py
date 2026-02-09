@@ -198,10 +198,12 @@ class GameArea(BaseEntity):
         if Mengine.hasOption("cheats") is False:
             return
 
-        Trace.msg(" Game cheats ".center(50, "-"))
+        Trace.msg("")
+        Trace.msg(" CHEATS ".center(50, "-"))
         Trace.msg(" W - win game")
         Trace.msg(" Q - lose game")
         Trace.msg("".center(50, "-"))
+        Trace.msg("")
 
         with self._createTaskChain("CheatLevelEnd") as tc:
             with tc.addRaceTask(2) as (win, lose):
