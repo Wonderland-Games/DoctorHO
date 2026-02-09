@@ -132,17 +132,30 @@ class Lobby(BaseEntity):
             return
 
         Trace.msg(" DEV CHEATS ".center(50, "-"))
+        Trace.msg(" NUMPAD0 - unlock all inactive levels in chapter")
+        Trace.msg(" RIGHT - next quest")
+        Trace.msg(" LEFT - previous quest")
         Trace.msg(" UP - next chapter")
         Trace.msg(" DOWN - previous chapter")
         Trace.msg("".center(50, "-"))
 
         with self._createTaskChain("CheatChangeChapter") as tc:
-            with tc.addRaceTask(2) as (next_chapter, prev_chapter):
+            with tc.addRaceTask(5) as (unlock_levels, next_quest, prev_quest, next_chapter, prev_chapter):
+                unlock_levels.addTask("TaskKeyPress", Keys=[Mengine.KC_NUMPAD0])
+                unlock_levels.addFunction(GameManager.unlockChapterLevels)
+
+                next_quest.addTask("TaskKeyPress", Keys=[Mengine.KC_RIGHT])
+                next_quest.addFunction(GameManager.loadNextQuest)
+
+                prev_quest.addTask("TaskKeyPress", Keys=[Mengine.KC_LEFT])
+                prev_quest.addFunction(GameManager.loadPreviousQuest)
+
                 next_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_UP])
                 next_chapter.addFunction(GameManager.loadNextChapter)
 
                 prev_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_DOWN])
                 prev_chapter.addFunction(GameManager.loadPreviousChapter)
+
             tc.addFunction(SceneManager.restartScene, None)
 
     def _scopePlay(self, source, level_id):
