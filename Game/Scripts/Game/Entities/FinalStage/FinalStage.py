@@ -3,6 +3,7 @@ from Foundation.DatabaseManager import DatabaseManager
 from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
 from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
+from Foundation.SystemManager import SystemManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
@@ -131,9 +132,12 @@ class FinalStage(BaseScopeEntity):
 
         # BANNER
         def _getBannerSize():
-            banner_width = AdjustableScreenUtils.getBannerWidth()
-            banner_height = AdjustableScreenUtils.getBannerHeight()
-            return (banner_width, banner_height)
+            banner_size = AdjustableScreenUtils.getBannerSize()
+            return (banner_size.x, banner_size.y)
+
+        def _setBannerPos(layout_box, layout_offset, layout_size):
+            system_ui = SystemManager.getSystem("SystemUI")
+            system_ui.updateDevBannerPosition()
 
         # LAYOUT BOX
         def _getLayoutBoxSize():
@@ -145,10 +149,10 @@ class FinalStage(BaseScopeEntity):
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getHeaderSize, None))
             vertical.addPadding(1)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getDropLevelSize, _setDropLevelPos))
-            vertical.addPadding(1)
+            vertical.addPadding(2)
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getDropPanelSize, _setDropPanelPos))
-            vertical.addPadding(1)
-            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, None))
+            vertical.addPadding(3)
+            vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, _setBannerPos))
 
     def _runTaskChains(self, source):
         for item, parallel in source.addParallelTaskList(self.items):

@@ -1,6 +1,5 @@
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
 MOVIE_PANEL = "Movie2_DropPanel"
@@ -12,6 +11,8 @@ ITEMS_MOVE_EASING = "easyCubicInOut"
 
 SCENE_ANIMATION_TIME = 1000.0
 SCENE_SCALE_EASING = "easyBackOut"
+
+HARDCODED_PANEL_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
 
 
 class DropPanel(Initializer):
@@ -30,7 +31,6 @@ class DropPanel(Initializer):
 
     def _onInitialize(self, movie_panel, items):
         super(DropPanel, self)._onInitialize()
-        print("DropPanel._onInitialize")
 
         self.movie_panel = movie_panel
         self.items = items
@@ -43,7 +43,6 @@ class DropPanel(Initializer):
         self._initItems()
 
         self._setupVirtualArea()
-        self._calcVirtualAreaContentSize()
 
         self.virtual_area.set_percentage(0.5, 0.0)  # on start always set VA to the middle of content
         self.semaphore_allow_panel_items_move = Semaphore(True, "AllowPanelItemsMove")
@@ -107,8 +106,8 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        item_size = Mengine.vec2f(200.0, 200.0)
-
+        item = self.items[0]
+        item_size = item.getSize()
         panel_size = self.getSize()
 
         va_begin_x = 0
@@ -122,7 +121,7 @@ class DropPanel(Initializer):
             (va_end_x, va_end_y),
             (va_begin_x, va_end_y)
         ]
-        hotspot_polygon_center = Mengine.vec2f(
+        hotspot_polygon_center = (
             panel_size.x / -2,
             panel_size.y / 2 - item_size.y
         )
@@ -136,6 +135,7 @@ class DropPanel(Initializer):
 
         self.virtual_area.setup_viewport(va_begin_x, va_begin_y, va_end_x, va_end_y)
         self.virtual_area.init_handlers(self.va_hotspot)
+        self._calcVirtualAreaContentSize()
 
         # attach VA to root
         virtual_area_node = self.virtual_area.get_node()
@@ -165,20 +165,14 @@ class DropPanel(Initializer):
         movie_panel_node = self.movie_panel.getEntityNode()
         self.root.addChild(movie_panel_node)
 
-
     def getBounds(self):
         panel_bounds = self.movie_panel.getCompositionBounds()
         return panel_bounds
 
     def getSize(self):
-        game_width, _, _, _ = AdjustableScreenUtils.getMainSizes()
         panel_bounds = self.getBounds()
-        panel_size = Utils.getBoundingBoxSize(panel_bounds)
-
-        # panel_width = game_width
-        panel_width = panel_size.x
-
-        return Mengine.vec2f(panel_width, panel_size.y)
+        panel_bounds_size = Utils.getBoundingBoxSize(panel_bounds)
+        return Mengine.vec2f(HARDCODED_PANEL_WIDTH, panel_bounds_size.y)
 
     # - Items ----------------------------------------------------------------------------------------------------------
 

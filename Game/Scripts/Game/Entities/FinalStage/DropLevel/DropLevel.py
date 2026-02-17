@@ -3,10 +3,10 @@ from Foundation.GroupManager import GroupManager
 from Foundation.SceneManager import SceneManager
 from Foundation.DefaultManager import DefaultManager
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
-from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 
 
-HARDCODED_LEVEL_HEIGHT = 1536.0
+HARDCODED_LEVEL_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
+HARDCODED_LEVEL_HEIGHT = 1750.0  # 9:16 aspect ratio free space (game height - header - search panel - banner - 34.5)
 
 
 class DropLevel(Initializer):
@@ -22,15 +22,13 @@ class DropLevel(Initializer):
     # - Initializer ----------------------------------------------------------------------------------------------------
 
     def _onInitialize(self, scene_name):
-        level_group_name = SceneManager.getSceneMainGroupName(scene_name)
-        self.level_group = GroupManager.getGroup(level_group_name)
+        self._createRoot()
 
+        self._defineLevelGroup(scene_name)
         self._calculateSize()
         self._defineBoxPoints()
 
         self._initVirtualArea()
-
-        self._createRoot()
         self._setupVirtualArea()
         self._attachScene()
 
@@ -56,7 +54,7 @@ class DropLevel(Initializer):
         self.level_group = None
         self.level_size = None
 
-     # - Root -----------------------------------------------------------------------------------------------------------
+    # - Root -----------------------------------------------------------------------------------------------------------
 
     def _createRoot(self):
         self.root = Mengine.createNode("Interender")
@@ -88,6 +86,8 @@ class DropLevel(Initializer):
             allow_out_of_bounds=False,
             camera_name="DropLevelVirtualCamera",
             viewport_name="DropLevelViewport",
+            content_size=(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w),
+            viewport=(self.box_points.x, self.box_points.y, self.box_points.z, self.box_points.w),
         )
 
     def _setupVirtualArea(self):
@@ -125,6 +125,10 @@ class DropLevel(Initializer):
 
     # - Scene ----------------------------------------------------------------------------------------------------------
 
+    def _defineLevelGroup(self, scene_name):
+        level_group_name = SceneManager.getSceneMainGroupName(scene_name)
+        self.level_group = GroupManager.getGroup(level_group_name)
+
     def _attachScene(self):
         scene = self.level_group.getScene()
         scene_node = scene.getParent()
@@ -146,13 +150,14 @@ class DropLevel(Initializer):
         return self.level_size
 
     def _calculateSize(self):
-        level_group_main_layer = self.level_group.getMainLayer()
-        level_group_main_layer_size = level_group_main_layer.getSize()
+        # level_group_main_layer = self.level_group.getMainLayer()
+        # level_group_main_layer_size = level_group_main_layer.getSize()
 
-        game_width = AdjustableScreenUtils.getGameWidth()
+        # game_width = AdjustableScreenUtils.getGameWidth()
 
         self.level_size = Mengine.vec2f(
-            min(game_width, level_group_main_layer_size.x),
+            # min(game_width, level_group_main_layer_size.x),
+            HARDCODED_LEVEL_WIDTH,
             HARDCODED_LEVEL_HEIGHT
         )
 
