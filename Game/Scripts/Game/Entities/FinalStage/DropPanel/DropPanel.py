@@ -1,5 +1,7 @@
 from Foundation.Initializer import Initializer
 from Foundation.Entities.MovieVirtualArea.VirtualArea import VirtualArea
+from Game.Managers.GameManager import GameManager
+from Game.Entities.FinalStage.FinalStageDropItem.FinalStageDropItem import FinalStageDropItem
 
 
 MOVIE_PANEL = "Movie2_DropPanel"
@@ -18,6 +20,7 @@ HARDCODED_PANEL_WIDTH = 1170.0  # 9:19.5 aspect ratio game width
 class DropPanel(Initializer):
     def __init__(self):
         super(DropPanel, self).__init__()
+        self.game = None
         self.virtual_area = None
         self.va_hotspot = None
         self.root = None
@@ -29,11 +32,13 @@ class DropPanel(Initializer):
 
     # - Initializer ----------------------------------------------------------------------------------------------------
 
-    def _onInitialize(self, movie_panel, items):
+    def _onInitialize(self, game):
         super(DropPanel, self)._onInitialize()
 
-        self.movie_panel = movie_panel
-        self.items = items
+        self.game = game
+        self.movie_panel = self.game.object.getObject(MOVIE_PANEL)
+
+        self._fillQuestItems()
 
         self._initVirtualArea()
 
@@ -52,7 +57,8 @@ class DropPanel(Initializer):
     def _onFinalize(self):
         super(DropPanel, self)._onFinalize()
 
-        # Items destroy in FinalStage
+        for item in self.items:
+            item.onFinalize()
         self.items = []
 
         if self.items_node is not None:
@@ -75,6 +81,7 @@ class DropPanel(Initializer):
         self.movie_panel = None
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
+        self.game = None
 
     # - Root -----------------------------------------------------------------------------------------------------------
 
@@ -176,6 +183,23 @@ class DropPanel(Initializer):
 
     # - Items ----------------------------------------------------------------------------------------------------------
 
+    def _fillQuestItems(self):
+        current_quest_index = GameManager.getCurrentQuestIndex()
+        final_stage_params = GameManager.getCurrentFinalStageMappingParams()
+
+        for i, param in enumerate(final_stage_params):
+            if i >= current_quest_index:
+                break
+
+            movie_info = {
+                "group": param.GroupName,
+                "name": param.MovieName
+            }
+
+            item = FinalStageDropItem()
+            item.onInitialize(self, param.ItemName, movie_info)
+            self.items.append(item)
+
     def _initItems(self):
         # create items node
         self.items_node = Mengine.createNode("Interender")
@@ -193,13 +217,21 @@ class DropPanel(Initializer):
             item_pos = self._calcItemLocalPosition(i)
             item.setLocalPositionX(item_pos.x)
 
+    def findItemIndex(self, drop_item):
+        index = None
+        for i, item in enumerate(self.items):
+            if item is drop_item:
+                index = i
+                break
+
+        return index
+
     def _calcItemsNodeLocalPosition(self):
         content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
 
         content_height = 200
 
         return Mengine.vec2f(content_width / 2, content_height / 2)
-
 
     def _calcItemLocalPosition(self, i):
         items_node_pos = self._calcItemsNodeLocalPosition()

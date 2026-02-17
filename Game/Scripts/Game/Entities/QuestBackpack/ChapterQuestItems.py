@@ -70,9 +70,7 @@ class ChapterQuestItems(Initializer):
         items_slots_movie_node = self.items_slots_movie.getEntityNode()
         self.root.addChild(items_slots_movie_node)
 
-        player_data = GameManager.getPlayerGameData()
-        chapter_data = player_data.getCurrentChapterData()
-        quest_index = chapter_data.getCurrentQuestIndex()
+        quest_index = GameManager.getCurrentQuestIndex()
         if quest_index == 0:
             return
 

@@ -297,10 +297,8 @@ class GameManager(Manager):
 
     @staticmethod
     def getCurrentQuestParams():
-        player_data = GameManager.getPlayerGameData()
-        chapter_data = player_data.getCurrentChapterData()
-        chapter_id = chapter_data.getChapterId()
-        current_quest_index = chapter_data.getCurrentQuestIndex()
+        chapter_id = GameManager.getCurrentChapterId()
+        current_quest_index = GameManager.getCurrentQuestIndex()
         quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, current_quest_index)
         return quest_params
 
@@ -407,11 +405,17 @@ class GameManager(Manager):
         return chapter_id
 
     @staticmethod
-    def isChapterCompleted():
+    def getCurrentQuestIndex():
         player_game_data = GameManager.getPlayerGameData()
         chapter_data = player_game_data.getCurrentChapterData()
-        current_index = chapter_data.getCurrentQuestIndex()
-        chapter_id = chapter_data.getChapterId()
+        quest_index = chapter_data.getCurrentQuestIndex()
+
+        return quest_index
+
+    @staticmethod
+    def isChapterCompleted():
+        current_index = GameManager.getCurrentQuestIndex()
+        chapter_id = GameManager.getCurrentChapterId()
 
         quest_params = GameManager.getQuestParamsByChapter(chapter_id) or []
         quests_count = len(quest_params)
@@ -481,11 +485,8 @@ class GameManager(Manager):
 
     @staticmethod
     def prepareGame(level_id):
-        player_data = GameManager.getPlayerGameData()
-        chapter_data = player_data.getCurrentChapterData()
-        chapter_id = chapter_data.getChapterId()
-        # level_id = chapter_data.getCurrentLevelsId()
-        quest_index = chapter_data.getCurrentQuestIndex()
+        chapter_id = GameManager.getCurrentChapterId()
+        quest_index = GameManager.getCurrentQuestIndex()
 
         quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, quest_index)
 
@@ -1034,6 +1035,13 @@ class GameManager(Manager):
         chapter_id = GameManager.getCurrentChapterId()
         final_stage_scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
         return final_stage_scene_name
+
+    @staticmethod
+    def getCurrentFinalStageMappingParams():
+        final_stage_scene_name = GameManager.getCurrentFinalStageSceneName()
+        params = DatabaseManager.filterDatabaseORM("Database", "FinalStageMapping",
+                                                   filter=lambda param: param.StageName == final_stage_scene_name)
+        return params
 
     @staticmethod
     def getBackpackDataByChapter(chapter_id):

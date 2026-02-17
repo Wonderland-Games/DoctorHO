@@ -7,19 +7,14 @@ from Foundation.SystemManager import SystemManager
 from Game.Managers.GameManager import GameManager
 from Game.Entities.FinalStage.DropLevel.DropLevel import DropLevel
 from Game.Entities.FinalStage.DropPanel.DropPanel import DropPanel
-from Game.Entities.FinalStage.FinalStageDropItem.FinalStageDropItem import FinalStageDropItem
 from Game.Entities.FinalStage.FinalStageAttachItem.FinalStageAttachItem import FinalStageAttachItem
 from UIKit.AdjustableScreenUtils import AdjustableScreenUtils
 from UIKit.LayoutWrapper.LayoutBoxElementFuncWrapper import LayoutBoxElementFuncWrapper
 
 
 MOVIE_CONTENT = "Movie2_Content"
-MOVIE_PANEL = "Movie2_DropPanel"
-
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
-
-QUEST_ITEM_NAME = "Item_{}"
 
 SCENE_ANIMATION_TIME = 1000.0
 SCENE_MOVE_EASING = "easyCubicIn"
@@ -32,7 +27,6 @@ class FinalStage(BaseScopeEntity):
         self.content = None
         self.drop_level = None
         self.drop_panel = None
-        self.items = []
         self.scene_name = None
         self.layout_box = None
         self.attached_items = []
@@ -42,8 +36,8 @@ class FinalStage(BaseScopeEntity):
 
     def _onPreparation(self):
         self.content = self.object.getObject(MOVIE_CONTENT)
-
-        self._fillQuestItems()
+        chapter_id = self._getCurrentChapterId()
+        self.scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
 
         self._initDropPanel()
         self._initDropLevel()
@@ -54,7 +48,7 @@ class FinalStage(BaseScopeEntity):
         super(FinalStage, self)._onScopeActivate(source)
         self._runTaskChains(source)
 
-    def _onDeactivate(self):
+    def _onScopeDeactivate(self):
         super(FinalStage, self)._onDeactivate()
 
         if self.layout_box:
@@ -68,10 +62,6 @@ class FinalStage(BaseScopeEntity):
         if self.drop_level:
             self.drop_level.onFinalize()
             self.drop_level = None
-
-        for item in self.items:
-            item.onFinalize()
-        self.items = []
 
         for item in self.attached_items:
             item.onFinalize()
@@ -96,8 +86,7 @@ class FinalStage(BaseScopeEntity):
 
     def _initDropPanel(self):
         self.drop_panel = DropPanel()
-        movie_panel = self.object.getObject(MOVIE_PANEL)
-        self.drop_panel.onInitialize(movie_panel, self.items)
+        self.drop_panel.onInitialize(self)
 
         drop_panel_slot = self.content.getMovieSlot(SLOT_DROP_PANEL)
         self.drop_panel.attachTo(drop_panel_slot)
@@ -155,7 +144,7 @@ class FinalStage(BaseScopeEntity):
             vertical.addFixedObject(LayoutBoxElementFuncWrapper(_getBannerSize, _setBannerPos))
 
     def _runTaskChains(self, source):
-        for item, parallel in source.addParallelTaskList(self.items):
+        for item, parallel in source.addParallelTaskList(self.drop_panel.items):
             event_run = Event(item)
 
             with parallel.addRepeatTask() as (source_repeat, source_until):
@@ -174,7 +163,7 @@ class FinalStage(BaseScopeEntity):
             source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(drop_item.getItemName()))
 
             # USELESS?
-            item_index = self._findItem(drop_item)
+            item_index = self.drop_panel.findItemIndex(drop_item)
             print "item_index", item_index
             if item_index is None:
                 return
@@ -224,15 +213,6 @@ class FinalStage(BaseScopeEntity):
 
         return __clickAction
 
-    def _findItem(self, drop_item):
-        index = None
-        for i, item in enumerate(self.items):
-            if item is drop_item:
-                index = i
-                break
-
-        return index
-
     def _playFinalAnimation(self, source):
         MovieItem = GroupManager.getObject(self.scene_name, "Movie2_Final")
         source.addEnable(MovieItem)
@@ -244,37 +224,6 @@ class FinalStage(BaseScopeEntity):
             play.addTask("TaskRemoveArrowAttach")
 
             remove.addScope(attach_item.setSpriteEnable, False)
-
-    def _fillQuestItems(self):
-        # get current chapter data
-        chapter_id = self._getCurrentChapterId()
-        self.scene_name = GameManager.getFinalStageSceneByChapter(chapter_id)
-
-        player_data = GameManager.getPlayerGameData()
-        chapter_data = player_data.getCurrentChapterData()
-        current_quest_index = chapter_data.getCurrentQuestIndex()
-
-        final_stage_params = self._getFinalStageMappingParams(self.scene_name)
-        for i, param in enumerate(final_stage_params):
-            if i >= current_quest_index:
-                break
-
-            movie_info = {
-                "group": param.GroupName,
-                "name": param.MovieName
-            }
-
-            item = FinalStageDropItem()
-            item.onInitialize(self, param.ItemName, movie_info)
-            self.items.append(item)
-
-    def _getFinalStageMappingParams(self, stage_name):
-        s_db_module = "Database"
-        s_db_name_final_stage_mapping = "FinalStageMapping"
-        params = DatabaseManager.filterDatabaseORM(s_db_module,
-                                                   s_db_name_final_stage_mapping,
-                                                   filter=lambda param: param.StageName == stage_name)
-        return params
 
     def _getCurrentChapterId(self):
         player_game_data = GameManager.getPlayerGameData()
