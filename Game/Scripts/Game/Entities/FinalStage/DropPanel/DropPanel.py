@@ -241,6 +241,9 @@ class DropPanel(Initializer):
         return item_pos
 
     def returnDropItem(self, item, item_index):
+        if item in self.items:
+            return
+
         if self.items:
             self.items.insert(item_index, item)
         else:
@@ -248,6 +251,7 @@ class DropPanel(Initializer):
 
         item.attachTo(self.items_node)
 
+    # TEMPORARY DISABLED CUZ WORKING WRONG
     def _moveItemsToTargetPositions(self, source):
         # Animation of moving all items to target positions
         for (i, item), parallel in source.addParallelTaskList(enumerate(self.items)):
@@ -260,6 +264,7 @@ class DropPanel(Initializer):
                              Easing=ITEMS_MOVE_EASING,
                              To=item_pos)
 
+    # TEMPORARY DISABLED CUZ WORKING WRONG
     def _moveItemsNode(self, source):
         # If items_node needs to be moved, we do it
         items_node_pos = self._calcItemsNodeLocalPosition()
@@ -283,8 +288,8 @@ class DropPanel(Initializer):
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
-        source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._moveItemsNode)
+        # source.addScope(self._moveItemsToTargetPositions)
+        # source.addScope(self._moveItemsNode)
 
         source.addFunction(self._updateVirtualArea)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
@@ -296,8 +301,8 @@ class DropPanel(Initializer):
 
         source.addScope(item.setSpriteEnable, False)
 
-        source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._moveItemsNode)
+        # source.addScope(self._moveItemsToTargetPositions)
+        # source.addScope(self._moveItemsNode)
 
         source.addScope(item.playItemCreateAnim)
         source.addFunction(self._updateVirtualArea)
