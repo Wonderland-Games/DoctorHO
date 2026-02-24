@@ -147,9 +147,7 @@ class QuestBackpack(BaseEntity):
             self._runChapterQuestItemsTaskChains()
 
     def _setFinalStageScene(self, source):
-        print("_setFinalStageScene")
         final_stage_scene_name = GameManager.getCurrentFinalStageSceneName()
-        print("Scene name : {}".format(final_stage_scene_name))
         source.addNotify(Notificator.onChangeScene, final_stage_scene_name)
 
     def _runChapterQuestItemsTaskChains(self):

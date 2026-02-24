@@ -1021,14 +1021,14 @@ class GameManager(Manager):
 
     @staticmethod
     def isSceneFinalStage(scene_name):
-        param = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
+        params = DatabaseManager.findDatabaseORM(GameManager.s_db_module,
                                                  GameManager.s_db_name_final_stage_levels,
-                                                 SceneName = scene_name)
+                                                 SceneName=scene_name)
 
-        if param is None:
+        if params is None:
             return False
-        else:
-            return True
+
+        return True
 
     @staticmethod
     def getCurrentFinalStageSceneName():
