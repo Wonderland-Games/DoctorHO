@@ -48,8 +48,8 @@ class FinalStage(BaseScopeEntity):
         super(FinalStage, self)._onScopeActivate(source)
         self._runTaskChains(source)
 
-    def _onScopeDeactivate(self):
-        super(FinalStage, self)._onScopeDeactivate()
+    def _onDeactivate(self):
+        super(FinalStage, self)._onDeactivate()
 
         if self.layout_box:
             self.layout_box.finalize()
