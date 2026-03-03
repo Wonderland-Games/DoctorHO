@@ -191,7 +191,7 @@ class FinalStage(BaseScopeEntity):
                 def __clickRace(click_socket, mouse_up):
                     click_socket.addTask(
                         "TaskMovie2SocketClick",
-                        SocketName="click",
+                        SocketName="socket",
                         Movie2=group_item_movie,
                         isDown=False,
                         isPressed=False,
