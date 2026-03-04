@@ -6,10 +6,8 @@ from UIKit.Managers.PrototypeManager import PrototypeManager
 PROTOTYPE_BOX = "ItemBox"
 ITEM_SCALE_MULTIPLIER = 0.95
 
-ITEM_REMOVE_SCALE_UP_TO = Mengine.vec3f(1.15, 1.15, 1.15)
-ITEM_REMOVE_SCALE_UP_TIME = 100.0
-ITEM_REMOVE_SCALE_DOWN_TO = Mengine.vec3f(0.0, 0.0, 0.0)
-ITEM_REMOVE_SCALE_DOWN_TIME = 200.0
+ITEM_REMOVE_SCALE_TO = Mengine.vec3f(0.0, 0.0, 0.0)
+ITEM_REMOVE_SCALE_TIME = 200.0
 ITEM_REMOVE_ALPHA_TO = 0.0
 ITEM_REMOVE_ALPHA_TIME = 150.0
 ITEM_ADD_ALPHA_TO = 1.0
@@ -200,18 +198,8 @@ class FinalStageDropItem(Initializer):
     def playItemDestroyAnim(self, source):
         source.addPrint(" * START REMOVE ITEM ANIM")
 
-        # scale up sprite slightly relative to its current local scale (works even if parent scale changes)
-        current_scale = self.sprite.getScale()
-        up_scale = Mengine.vec3f(
-            current_scale.x * ITEM_REMOVE_SCALE_UP_TO.x,
-            current_scale.y * ITEM_REMOVE_SCALE_UP_TO.y,
-            current_scale.z * ITEM_REMOVE_SCALE_UP_TO.z,
-        )
-
-        source.addTask("TaskNodeScaleTo", Node=self.sprite, To=up_scale, Time=ITEM_REMOVE_SCALE_UP_TIME)
-
         with source.addParallelTask(2) as (scale, alpha):
-            scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_REMOVE_SCALE_DOWN_TO, Time=ITEM_REMOVE_SCALE_DOWN_TIME)
+            scale.addTask("TaskNodeScaleTo", Node=self._root, To=ITEM_REMOVE_SCALE_TO, Time=ITEM_REMOVE_SCALE_TIME)
             alpha.addTask("TaskNodeAlphaTo", Node=self._root, To=ITEM_REMOVE_ALPHA_TO, Time=ITEM_REMOVE_ALPHA_TIME)
 
         source.addPrint(" * END REMOVE ITEM ANIM")

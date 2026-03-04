@@ -284,7 +284,9 @@ class DropPanel(Initializer):
     def playRemovePanelItemAnim(self, source, item, item_index):
         #self.items.remove(item)
 
+        source.addScope(item.setSpriteEnable, False)
         source.addScope(item.playItemDestroyAnim)
+        
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
