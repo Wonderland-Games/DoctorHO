@@ -16,9 +16,9 @@ MOVIE_CONTENT = "Movie2_Content"
 SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
 
-SCENE_ANIMATION_TIME = 1000.0
 SCENE_MOVE_EASING = "easyCubicIn"
 SCENE_SCALE_EASING = "easyBackOut"
+ITEM_RETURN_SPEED = 0.75 * 0.001  # speed fix
 
 
 class FinalStage(BaseScopeEntity):
@@ -270,7 +270,7 @@ class FinalStage(BaseScopeEntity):
                        Node=moving_node,
                        Easing=SCENE_MOVE_EASING,
                        Follow=panel_item_root,
-                       Time=SCENE_ANIMATION_TIME)
+                       Speed=ITEM_RETURN_SPEED)
 
         source.addPrint(" * END BEZIER ITEM ANIM")
 
