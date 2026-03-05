@@ -1,6 +1,6 @@
 from Foundation.ArrowManager import ArrowManager
 from Foundation.DatabaseManager import DatabaseManager
-from Foundation.Entity.BaseScopeEntity import BaseScopeEntity
+from Foundation.BaseScopeEntity import BaseScopeEntity
 from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
 from Foundation.SystemManager import SystemManager

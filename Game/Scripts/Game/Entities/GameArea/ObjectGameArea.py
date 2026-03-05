@@ -1,8 +1,6 @@
-from Foundation.Object.DemonObject import DemonObject
-
+from Foundation.DemonObject import DemonObject
 
 class ObjectGameArea(DemonObject):
-
     @staticmethod
     def declareORM(Type):
         DemonObject.declareORM(Type)

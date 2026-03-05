@@ -8,7 +8,6 @@ class DatabaseSystems(Database):
         self.addRecord(Module="Foundation.Systems", Name="SystemGoogleServices", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemAppleServices", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemAppLovin", Global=1)
-        self.addRecord(Module="Foundation.Systems", Name="SystemFacebook", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemRemoteConfig", Global=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemMonetization", Global=1, Platform="MOBILE", Priority=1)
         self.addRecord(Module="Foundation.Systems", Name="SystemAdvertising", Global=1)
@@ -18,5 +17,7 @@ class DatabaseSystems(Database):
         self.addRecord(Module="Game.Systems", Name="SystemUI", Global=1)
         self.addRecord(Module="Game.Systems", Name="SystemGlobal", Global=1, Priority=1)
         self.addRecord(Module="Game.Systems", Name="SystemGame", Global=1)
+        self.addRecord(Module="Foundation.Systems", Name="SystemAppleFacebook", Global=1, Platform="IOS")
+        self.addRecord(Module="Foundation.Systems", Name="SystemAndroidFacebook", Global=1, Platform="ANDROID")
         pass
     pass
