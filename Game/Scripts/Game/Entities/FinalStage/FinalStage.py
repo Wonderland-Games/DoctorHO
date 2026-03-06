@@ -172,12 +172,13 @@ class FinalStage(BaseScopeEntity):
             movie_info = drop_item.getMovieInfo()
             group_item_movie = GroupManager.getObject(movie_info["group"], movie_info["name"])
 
-            # get item name from clicked DropItem
+            # get item name, scale from clicked DropItem
             item_object_name = drop_item.getQuestItemName()
+            item_scale = drop_item.getSpriteScale()
 
             # init AttachItem with item name from DropItem
             attach_item = FinalStageAttachItem()
-            attach_item.onInitialize(item_object_name)
+            attach_item.onInitialize(item_object_name, item_scale)
             self.attached_items.append(attach_item)
 
             # attach AttachItem to cursor
