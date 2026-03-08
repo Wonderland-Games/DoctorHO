@@ -3,15 +3,14 @@ from Game.Managers.GameManager import GameManager
 
 
 class FinalStageAttachItem(Initializer):
-    SCALE = 0.312500071526
-
     def __init__(self):
         super(FinalStageAttachItem, self).__init__()
         self.root = None
         self.sprite = None
 
-    def _onInitialize(self, item_name):
+    def _onInitialize(self, item_name, item_scale):
         self.item_name = item_name
+        self.item_scale = item_scale
 
         self._createSpriteNode()
         self._setupSprite()
@@ -53,11 +52,11 @@ class FinalStageAttachItem(Initializer):
         self.sprite.enable()
 
     def _scaleSprite(self):
-        self.sprite.setScale((self.SCALE, self.SCALE))
+        self.sprite.setScale(self.item_scale)
 
     def _positionSprite(self):
         sprite_size_base = self.sprite.getSurfaceSize()
-        sprite_size_scaled = Mengine.vec2f(sprite_size_base.x * self.SCALE, sprite_size_base.y * self.SCALE)
+        sprite_size_scaled = Mengine.vec2f(sprite_size_base.x * self.item_scale.x, sprite_size_base.y * self.item_scale.y)
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
         self.sprite.setLocalPosition(sprite_position)
 

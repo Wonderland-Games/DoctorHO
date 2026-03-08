@@ -26,6 +26,7 @@ class DropPanel(Initializer):
         self.root = None
         self.movie_panel = None
         self.items = []
+        self.removed_items = []
         self.items_node = None
         self.va_range_points = None
         self.semaphore_allow_panel_items_move = None
@@ -60,6 +61,10 @@ class DropPanel(Initializer):
         for item in self.items:
             item.onFinalize()
         self.items = []
+
+        for item in self.removed_items:
+            item.onFinalize()
+        self.removed_items = []
 
         if self.items_node is not None:
             Mengine.destroyNode(self.items_node)
@@ -227,18 +232,43 @@ class DropPanel(Initializer):
         return index
 
     def _calcItemsNodeLocalPosition(self):
+        if not self.items:
+            return Mengine.vec2f(0.0, 0.0)
+
         content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
 
-        content_height = 200
+        content_height = self.items[0].getSize().y
 
-        return Mengine.vec2f(content_width / 2, content_height / 2)
+        return Mengine.vec2f(content_width / 2.0, content_height / 2.0)
 
     def _calcItemLocalPosition(self, i):
-        items_node_pos = self._calcItemsNodeLocalPosition()
-        item_size = Mengine.vec2f(200.0, 200.0)
+        """
+        Рахує локальну позицію айтема в межах items_node так, щоб:
+        - увесь ряд був центрований відносно items_node (x = 0),
+        - між айтемами зберігалася відстань ITEMS_OFFSET_BETWEEN,
+        - враховувались реальні розміри айтемів.
+        """
 
-        item_pos = Mengine.vec2f(-items_node_pos.x + item_size.x / 2 + ITEMS_OFFSET_BETWEEN * i + item_size.x * i, 0)
-        return item_pos
+        if not self.items:
+            return Mengine.vec2f(0.0, 0.0)
+
+        items_node_pos = self._calcItemsNodeLocalPosition()
+
+        # ліва межа контенту в локальних координатах items_node
+        left_x = -items_node_pos.x
+        current_x = left_x
+
+        for index, item in enumerate(self.items):
+            item_width = item.getSize().x
+            item_center_x = current_x + item_width / 2.0
+
+            if index == i:
+                return Mengine.vec2f(item_center_x, 0.0)
+
+            current_x += item_width + ITEMS_OFFSET_BETWEEN
+
+        # fallback (не має траплятися, але щоб не падати)
+        return Mengine.vec2f(0.0, 0.0)
 
     def returnDropItem(self, item, item_index):
         if item in self.items:
@@ -248,50 +278,75 @@ class DropPanel(Initializer):
             self.items.insert(item_index, item)
         else:
             self.items.append(item)
+        self.removeRemovedItems(item)
 
         item.attachTo(self.items_node)
 
-    # TEMPORARY DISABLED CUZ WORKING WRONG
+    def appendRemovedItems(self, item):
+        if item not in self.removed_items:
+            self.removed_items.append(item)
+
+    def removeRemovedItems(self, item):
+        if item in self.removed_items:
+            self.removed_items.remove(item)
+
     def _moveItemsToTargetPositions(self, source):
-        # Animation of moving all items to target positions
+        """
+        Анімація зміщення всіх айтемів у нові цільові позиції.
+        Порядок та кількість айтемів береться з self.items.
+        У результаті весь ряд центрований у межах панелі,
+        а відстань між айтемами зберігається.
+        """
+
+        if not self.items:
+            return
+
         for (i, item), parallel in source.addParallelTaskList(enumerate(self.items)):
             item_node = item.getRoot()
-            item_pos = self._calcItemLocalPosition(i)
+            target_local_pos = self._calcItemLocalPosition(i)
 
-            parallel.addTask("TaskNodeMoveTo",
-                             Node=item_node,
-                             Time=ITEMS_MOVE_TIME,
-                             Easing=ITEMS_MOVE_EASING,
-                             To=item_pos)
+            # зберігаємо поточний Y, рухаємо лише по X
+            current_pos = item_node.getLocalPosition()
+            target_pos = Mengine.vec2f(target_local_pos.x, current_pos.y)
 
-    # TEMPORARY DISABLED CUZ WORKING WRONG
+            parallel.addTask("TaskNodeMoveTo", Node=item_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=target_pos)
+
     def _moveItemsNode(self, source):
-        # If items_node needs to be moved, we do it
-        items_node_pos = self._calcItemsNodeLocalPosition()
-        va_content_width = self.virtual_area.get_content_size()[3]
+        """
+        Центрує вузол items_node відносно панелі (по X) плавною анімацією.
+        Це доповнює зміщення окремих айтемів і гарантує,
+        що весь ряд залишиться по центру панелі.
+        """
 
-        if items_node_pos.x >= va_content_width:
-            source.addTask("TaskNodeMoveTo",
-                           Node=self.items_node,
-                           Time=ITEMS_MOVE_TIME,
-                           Easing=ITEMS_MOVE_EASING,
-                           To=items_node_pos)
+        if self.items_node is None or not self.items:
+            return
+
+        panel_size = self.getSize()
+        item_height = self.items[0].getSize().y
+
+        target_pos = Mengine.vec2f(panel_size.x / 2.0, item_height / 2.0)
+        current_pos = self.items_node.getLocalPosition()
+
+        if current_pos == target_pos:
+            return
+
+        source.addTask("TaskNodeMoveTo", Node=self.items_node, Time=ITEMS_MOVE_TIME, Easing=ITEMS_MOVE_EASING, To=target_pos)
 
     def _updateVirtualArea(self):
         self._calcVirtualAreaContentSize()
         self.virtual_area.update_target()
 
     def playRemovePanelItemAnim(self, source, item, item_index):
-        #self.items.remove(item)
-
         source.addScope(item.setSpriteEnable, False)
         source.addScope(item.playItemDestroyAnim)
+        source.addFunction(self.items.remove, item)
+        source.addFunction(self.appendRemovedItems, item)
         
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
-        # source.addScope(self._moveItemsToTargetPositions)
-        # source.addScope(self._moveItemsNode)
+        source.addScope(self._moveItemsToTargetPositions)
+        source.addScope(self._moveItemsNode)
 
         source.addFunction(self._updateVirtualArea)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
@@ -303,8 +358,8 @@ class DropPanel(Initializer):
 
         source.addScope(item.setSpriteEnable, False)
 
-        # source.addScope(self._moveItemsToTargetPositions)
-        # source.addScope(self._moveItemsNode)
+        source.addScope(self._moveItemsToTargetPositions)
+        source.addScope(self._moveItemsNode)
 
         source.addScope(item.playItemCreateAnim)
         source.addFunction(self._updateVirtualArea)
