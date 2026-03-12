@@ -7,6 +7,8 @@ class FinalStageAttachItem(Initializer):
         super(FinalStageAttachItem, self).__init__()
         self.root = None
         self.sprite = None
+        self.item_name = None
+        self.item_scale = None
 
     def _onInitialize(self, item_name, item_scale):
         self.item_name = item_name
@@ -28,6 +30,7 @@ class FinalStageAttachItem(Initializer):
             self.root = None
 
         self.item_name = None
+        self.item_scale = None
 
     def getRoot(self):
         return self.root
@@ -54,9 +57,12 @@ class FinalStageAttachItem(Initializer):
     def _scaleSprite(self):
         self.sprite.setScale(self.item_scale)
 
-    def _positionSprite(self):
+    def _getScaledSpriteSize(self):
         sprite_size_base = self.sprite.getSurfaceSize()
-        sprite_size_scaled = Mengine.vec2f(sprite_size_base.x * self.item_scale.x, sprite_size_base.y * self.item_scale.y)
+        return Mengine.vec2f(sprite_size_base.x * self.item_scale.x, sprite_size_base.y * self.item_scale.y)
+
+    def _positionSprite(self):
+        sprite_size_scaled = self._getScaledSpriteSize()
         sprite_position = Mengine.vec2f(-(sprite_size_scaled.x * 0.5), -(sprite_size_scaled.y * 0.5))
         self.sprite.setLocalPosition(sprite_position)
 

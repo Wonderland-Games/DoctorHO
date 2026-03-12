@@ -118,8 +118,7 @@ class DropPanel(Initializer):
         self.va_hotspot = Mengine.createNode("HotSpotPolygon")
         self.va_hotspot.setName(self.__class__.__name__ + "_" + "VirtualAreaSocket")
 
-        item = self.items[0]
-        item_size = item.getSize()
+        item_size = self._getItemSize()
         panel_size = self.getSize()
 
         va_begin_x = 0
@@ -169,6 +168,9 @@ class DropPanel(Initializer):
             self.items_node.setLocalPosition(center_panel_pos)
         else:
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
+
+    def _getItemSize(self):
+        return self.items[0].getSize()
 
     # - Panel ----------------------------------------------------------------------------------------------------------
 
@@ -236,17 +238,16 @@ class DropPanel(Initializer):
             return Mengine.vec2f(0.0, 0.0)
 
         content_width = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
+        item_size = self._getItemSize()
 
-        content_height = self.items[0].getSize().y
-
-        return Mengine.vec2f(content_width / 2.0, content_height / 2.0)
+        return Mengine.vec2f(content_width / 2.0, item_size.y / 2.0)
 
     def _calcItemLocalPosition(self, i):
         """
-        Рахує локальну позицію айтема в межах items_node так, щоб:
-        - увесь ряд був центрований відносно items_node (x = 0),
-        - між айтемами зберігалася відстань ITEMS_OFFSET_BETWEEN,
-        - враховувались реальні розміри айтемів.
+        Calculates the local position of an item within items_node so that:
+        - the whole row stays centered relative to items_node (x = 0),
+        - spacing between items is ITEMS_OFFSET_BETWEEN,
+        - actual item sizes are respected.
         """
 
         if not self.items:
@@ -254,7 +255,7 @@ class DropPanel(Initializer):
 
         items_node_pos = self._calcItemsNodeLocalPosition()
 
-        # ліва межа контенту в локальних координатах items_node
+        # left edge of content in local coords of items_node
         left_x = -items_node_pos.x
         current_x = left_x
 
@@ -267,7 +268,7 @@ class DropPanel(Initializer):
 
             current_x += item_width + ITEMS_OFFSET_BETWEEN
 
-        # fallback (не має траплятися, але щоб не падати)
+        # fallback (should not happen, but avoids crashes)
         return Mengine.vec2f(0.0, 0.0)
 
     def returnDropItem(self, item, item_index):
@@ -292,10 +293,8 @@ class DropPanel(Initializer):
 
     def _moveItemsToTargetPositions(self, source):
         """
-        Анімація зміщення всіх айтемів у нові цільові позиції.
-        Порядок та кількість айтемів береться з self.items.
-        У результаті весь ряд центрований у межах панелі,
-        а відстань між айтемами зберігається.
+        Animate all items to their new target positions.
+        Order and item count are taken from self.items.
         """
 
         if not self.items:
@@ -305,7 +304,7 @@ class DropPanel(Initializer):
             item_node = item.getRoot()
             target_local_pos = self._calcItemLocalPosition(i)
 
-            # зберігаємо поточний Y, рухаємо лише по X
+            # keep current Y and move only X
             current_pos = item_node.getLocalPosition()
             target_pos = Mengine.vec2f(target_local_pos.x, current_pos.y)
 
@@ -313,18 +312,16 @@ class DropPanel(Initializer):
 
     def _moveItemsNode(self, source):
         """
-        Центрує вузол items_node відносно панелі (по X) плавною анімацією.
-        Це доповнює зміщення окремих айтемів і гарантує,
-        що весь ряд залишиться по центру панелі.
+        Smoothly re-center items_node relative to the panel (by X).
         """
 
         if self.items_node is None or not self.items:
             return
 
         panel_size = self.getSize()
-        item_height = self.items[0].getSize().y
+        item_size = self._getItemSize()
 
-        target_pos = Mengine.vec2f(panel_size.x / 2.0, item_height / 2.0)
+        target_pos = Mengine.vec2f(panel_size.x / 2.0, item_size.y / 2.0)
         current_pos = self.items_node.getLocalPosition()
 
         if current_pos == target_pos:
@@ -341,7 +338,7 @@ class DropPanel(Initializer):
         source.addScope(item.playItemDestroyAnim)
         source.addFunction(self.items.remove, item)
         source.addFunction(self.appendRemovedItems, item)
-        
+
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 

@@ -1,5 +1,4 @@
-from Foundation.ArrowManager import ArrowManager
-from Foundation.DatabaseManager import DatabaseManager
+﻿from Foundation.ArrowManager import ArrowManager
 from Foundation.BaseScopeEntity import BaseScopeEntity
 from Foundation.GroupManager import GroupManager
 from Foundation.LayoutBox import LayoutBox
@@ -17,7 +16,6 @@ SLOT_DROP_LEVEL = "drop_level"
 SLOT_DROP_PANEL = "drop_panel"
 
 SCENE_MOVE_EASING = "easyCubicIn"
-SCENE_SCALE_EASING = "easyBackOut"
 ITEM_RETURN_SPEED = 0.75 * 0.001  # speed fix
 
 
@@ -145,16 +143,17 @@ class FinalStage(BaseScopeEntity):
 
     def _runTaskChains(self, source):
         for item, parallel in source.addParallelTaskList(self.drop_panel.items):
-            event_run = Event(item)
-
-            with parallel.addRepeatTask() as (source_repeat, source_until):
-                event_finish = Event(item)
-                source_repeat.addScope(self._makeClickAction(item, event_finish))
-                source_until.addEvent(event_finish)
+            self._addItemClickRepeat(item, parallel)
 
         source.addScope(self._playFinalAnimation)
         source.addFunction(GameManager.loadNextChapter)
         source.addNotify(Notificator.onChangeScene, "Lobby")
+
+    def _addItemClickRepeat(self, item, parallel):
+        with parallel.addRepeatTask() as (source_repeat, source_until):
+            event_finish = Event(item)
+            source_repeat.addScope(self._makeClickAction(item, event_finish))
+            source_until.addEvent(event_finish)
 
     def _makeClickAction(self, drop_item, event_finish):
         def __clickAction(source):
@@ -162,15 +161,13 @@ class FinalStage(BaseScopeEntity):
             source.addTask("TaskNodeSocketClick", Socket=drop_item.getSocket(), isDown=True)
             source.addPrint(" * FINAL STAGE CLICK ON '{}'".format(drop_item.getItemName()))
 
-            # USELESS?
             item_index = self.drop_panel.findItemIndex(drop_item)
-            print "item_index", item_index
             if item_index is None:
                 return
 
             # get item movie from final stage group
             movie_info = drop_item.getMovieInfo()
-            group_item_movie = GroupManager.getObject(movie_info["group"], movie_info["name"])
+            item_movie = GroupManager.getObject(movie_info["group"], movie_info["name"])
 
             # get item name, scale from clicked DropItem
             item_object_name = drop_item.getQuestItemName()
@@ -193,7 +190,7 @@ class FinalStage(BaseScopeEntity):
                     click_socket.addTask(
                         "TaskMovie2SocketClick",
                         SocketName="socket",
-                        Movie2=group_item_movie,
+                        Movie2=item_movie,
                         isDown=False,
                         isPressed=False,
                         UseArrowFilter=False
@@ -207,7 +204,7 @@ class FinalStage(BaseScopeEntity):
                                       item_index,
                                       attach_item)
 
-                    click_socket.addScope(self._playCorrectDrop, group_item_movie, attach_item)
+                    click_socket.addScope(self._playCorrectDrop, item_movie, attach_item)
                     click_socket.addFunction(event_finish)
 
             source.addFunction(self._finalizeAttachedItem, attach_item)
@@ -215,13 +212,13 @@ class FinalStage(BaseScopeEntity):
         return __clickAction
 
     def _playFinalAnimation(self, source):
-        MovieItem = GroupManager.getObject(self.scene_name, "Movie2_Final")
-        source.addEnable(MovieItem)
-        source.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
+        final_movie = GroupManager.getObject(self.scene_name, "Movie2_Final")
+        source.addEnable(final_movie)
+        source.addTask("TaskMovie2Play", Movie2=final_movie, Wait=True)
 
-    def _playCorrectDrop(self, source, MovieItem, attach_item):
+    def _playCorrectDrop(self, source, item_movie, attach_item):
         with source.addParallelTask(2) as (play, remove):
-            play.addTask("TaskMovie2Play", Movie2=MovieItem, Wait=True)
+            play.addTask("TaskMovie2Play", Movie2=item_movie, Wait=True)
             play.addTask("TaskRemoveArrowAttach")
 
             remove.addScope(attach_item.setSpriteEnable, False)
@@ -263,8 +260,8 @@ class FinalStage(BaseScopeEntity):
 
         source.addPrint(" * START BEZIER ITEM ANIM")
 
-        # follow actual panel item root; if panel reflows items during animation,
-        # the moving item will chase its new cell position. No extra scaling here –
+        # Follow the actual panel item root; if panel reflows items during animation,
+        # the moving item will chase its new cell position. No extra scaling here;
         # panel sprite scale is handled independently when it is re-enabled.
         panel_item_root = drop_item.getRoot()
         source.addTask("TaskNodeBezier2ScreenFollow",

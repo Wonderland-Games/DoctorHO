@@ -53,7 +53,6 @@ class FinalStageDropItem(Initializer):
             self.sprite = None
 
         if self.box is not None:
-            # self.box.getEntityNode().removeFromParent()
             self.box.onDestroy()
             self.box = None
 
@@ -108,8 +107,8 @@ class FinalStageDropItem(Initializer):
         panel_size = self.panel.drop_panel.getSize()
         panel_pos = panel_root.getWorldPosition()
 
-        world_position_x = (panel_pos.x - panel_size.x/2) + panel_size.x * node_screen_position.x
-        world_position_y = (panel_pos.y - panel_size.y/2) + panel_size.y * node_screen_position.y
+        world_position_x = (panel_pos.x - panel_size.x / 2) + panel_size.x * node_screen_position.x
+        world_position_y = (panel_pos.y - panel_size.y / 2) + panel_size.y * node_screen_position.y
         world_position = Mengine.vec2f(world_position_x, world_position_y)
 
         return world_position
@@ -165,17 +164,12 @@ class FinalStageDropItem(Initializer):
         box_size = self.getSize()
         box_size_max = max(box_size.x, box_size.y)
 
-        #sprite_scale = self._getSpriteScale()
-        #self.item_sprite.setScale(sprite_scale)
-        #sprite_size = self._getSpriteSize()
-
         sprite_size = self.sprite.getSurfaceSize()
         sprite_size_max = max(sprite_size.x, sprite_size.y)
 
         scale_perc = (box_size_max / sprite_size_max) * ITEM_SCALE_MULTIPLIER
         self.default_scale = scale_perc
         self.sprite.setScale((scale_perc, scale_perc))
-        #self.socket_node.setScale((scale_perc, scale_perc))
 
     def getSpriteScale(self):
         return self.sprite.getWorldScale()

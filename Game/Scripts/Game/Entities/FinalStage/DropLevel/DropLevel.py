@@ -150,13 +150,7 @@ class DropLevel(Initializer):
         return self.level_size
 
     def _calculateSize(self):
-        # level_group_main_layer = self.level_group.getMainLayer()
-        # level_group_main_layer_size = level_group_main_layer.getSize()
-
-        # game_width = AdjustableScreenUtils.getGameWidth()
-
         self.level_size = Mengine.vec2f(
-            # min(game_width, level_group_main_layer_size.x),
             HARDCODED_LEVEL_WIDTH,
             HARDCODED_LEVEL_HEIGHT
         )
