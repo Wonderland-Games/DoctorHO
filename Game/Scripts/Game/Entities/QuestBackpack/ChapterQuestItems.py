@@ -19,7 +19,6 @@ class ChapterQuestItems(Initializer):
 
     def _onInitialize(self, parent_entity, chapter_id):
         super(ChapterQuestItems, self)._onInitialize()
-        print "CHAPTER QUEST ITEMS INIT"
         self.parent_entity = parent_entity
         self.chapter_id = chapter_id
 

@@ -84,12 +84,10 @@ class QuestBackpack(BaseEntity):
 
         chapter_quest_items_node = self.chapter_quest_items.getRoot()
         chapter_quest_items_slot = self.content.getMovieSlot(SLOT_CHAPTER_QUEST_ITEMS)
-        print(chapter_quest_items_slot)
         chapter_quest_items_slot.addChild(chapter_quest_items_node)
 
     def _setupLobby(self):
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
-
         self.lobby = PrototypeManager.generateObjectContainerOnNode(lobby_slot, PROTOTYPE_LOBBY, PROTOTYPE_LOBBY)
 
     def _setupFinalStage(self):
@@ -103,9 +101,7 @@ class QuestBackpack(BaseEntity):
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
         final_stage_slot.addChild(final_stage_node)
 
-
     def _setupSlotsPositions(self):
-        print("setupSlotPosition")
         game_width, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
         available_space_y = game_height - banner_height - top_offset
 
@@ -121,8 +117,6 @@ class QuestBackpack(BaseEntity):
         lobby_slot = self.content.getMovieSlot(SLOT_LOBBY)
         lobby_slot.setWorldPosition(Mengine.vec2f(x_center, lobby_pos_y))
 
-        #chapter_finished = GameManager.isChapterCompleted()
-        #if chapter_finished is True:
         final_stage_slot = self.content.getMovieSlot(SLOT_FINAL_STAGE)
         final_stage_slot.setWorldPosition(Mengine.vec2f(x_center, chapter_quest_items_pos_y))
 
@@ -156,12 +150,8 @@ class QuestBackpack(BaseEntity):
         player_game_data = GameManager.getPlayerGameData()
         current_chapter_data = player_game_data.getCurrentChapterData()
         chapter_id = current_chapter_data.getChapterId()
-        chapter_finished = GameManager.isChapterCompleted()
-        print("Chapter finished - {}".format(chapter_finished))
 
         with self._createTaskChain(SLOT_CHAPTER_QUEST_ITEMS, Repeat=True) as tc:
-            #tc.addFunction(self.final_stage.setBlock, not chapter_finished)
-
             for (quest_item_name, quest_item_entity), tc_race in tc.addRaceTaskList(self.chapter_quest_items.quest_items.items()):
                 def _filter(item_name, lookup_item_name=quest_item_name):
                     """ copy-paste logic from Marjorie/GameArea/ImageCell click logic """

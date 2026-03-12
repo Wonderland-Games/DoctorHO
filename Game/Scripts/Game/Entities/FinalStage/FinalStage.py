@@ -198,7 +198,6 @@ class FinalStage(BaseScopeEntity):
                     mouse_up.addTask("TaskMouseButtonClickEnd", isDown=False)
 
                 with click.addRaceScope(2, __clickRace) as (click_socket, mouse_up):
-                    mouse_up.addPrint("mouse_up")
                     mouse_up.addScope(self._playReturnItemToPanelAnimation,
                                       drop_item,
                                       item_index,
