@@ -161,10 +161,6 @@ class Lobby(BaseEntity):
             tc.addFunction(SceneManager.restartScene, None)
 
     def _scopePlay(self, source, level_id):
-        # player_data = GameManager.getPlayerGameData()
-        # current_chapter_data = player_data.getCurrentChapterData()
-        # quest_index = current_chapter_data.getCurrentQuestIndex()
-
         level_params = GameManager.getLevelParams(level_id)
         level_scene_name = level_params.SceneName
 
