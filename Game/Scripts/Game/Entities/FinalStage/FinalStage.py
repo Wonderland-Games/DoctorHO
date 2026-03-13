@@ -218,8 +218,8 @@ class FinalStage(BaseScopeEntity):
     def _playCorrectDrop(self, source, item_movie, attach_item):
         with source.addParallelTask(2) as (play, remove):
             play.addTask("TaskMovie2Play", Movie2=item_movie, Wait=True)
-            play.addTask("TaskRemoveArrowAttach")
 
+            remove.addTask("TaskRemoveArrowAttach")
             remove.addScope(attach_item.setSpriteEnable, False)
 
     def _getCurrentChapterId(self):

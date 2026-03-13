@@ -102,9 +102,9 @@ class FinalStageDropItem(Initializer):
     def getRootWorldPosition(self):
         node_screen_position = Mengine.getNodeScreenAdaptPosition(self._root)
 
-        # panel here is FinalStage; use its DropPanel for size/position
-        panel_root = self.panel.drop_panel.getRoot()
-        panel_size = self.panel.drop_panel.getSize()
+        # panel here is DropPanel for size/position
+        panel_root = self.panel.getRoot()
+        panel_size = self.panel.getSize()
         panel_pos = panel_root.getWorldPosition()
 
         world_position_x = (panel_pos.x - panel_size.x / 2) + panel_size.x * node_screen_position.x

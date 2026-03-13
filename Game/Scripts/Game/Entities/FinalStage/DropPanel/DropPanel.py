@@ -160,7 +160,7 @@ class DropPanel(Initializer):
         content_size_x = sum(item.getSize().x for item in self.items) + (len(self.items) - 1) * ITEMS_OFFSET_BETWEEN
         panel_size = self.getSize()
 
-        item_size = Mengine.vec2f(200.0, 200.0)
+        item_size = self._getItemSize()
         center_panel_pos = Mengine.vec2f(panel_size.x / 2, item_size.y / 2)
 
         if content_size_x <= panel_size.x:
@@ -170,6 +170,8 @@ class DropPanel(Initializer):
             self.virtual_area.set_content_size(0, 0, content_size_x, panel_size.y)
 
     def _getItemSize(self):
+        if len(self.items) == 0:
+            return Mengine.vec2f(0.0, 0.0)
         return self.items[0].getSize()
 
     # - Panel ----------------------------------------------------------------------------------------------------------
@@ -334,16 +336,17 @@ class DropPanel(Initializer):
         self.virtual_area.update_target()
 
     def playRemovePanelItemAnim(self, source, item, item_index):
-        source.addScope(item.setSpriteEnable, False)
-        source.addScope(item.playItemDestroyAnim)
         source.addFunction(self.items.remove, item)
         source.addFunction(self.appendRemovedItems, item)
+        source.addScope(item.setSpriteEnable, False)
+        source.addScope(item.playItemDestroyAnim)
 
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=True, To=False)
         source.addPrint(" * START ITEMS REMOVE ANIM")
 
-        source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._moveItemsNode)
+        with source.addParallelTask(2) as (items_move, node_move):
+            items_move.addScope(self._moveItemsToTargetPositions)
+            node_move.addScope(self._moveItemsNode)
 
         source.addFunction(self._updateVirtualArea)
         source.addSemaphore(self.semaphore_allow_panel_items_move, From=False, To=True)
@@ -355,9 +358,11 @@ class DropPanel(Initializer):
 
         source.addScope(item.setSpriteEnable, False)
 
-        source.addScope(self._moveItemsToTargetPositions)
-        source.addScope(self._moveItemsNode)
+        with source.addParallelTask(2) as (items_move, node_move):
+            items_move.addScope(self._moveItemsToTargetPositions)
+            node_move.addScope(self._moveItemsNode)
 
+        source.addScope(item.setSpriteEnable, True)
         source.addScope(item.playItemCreateAnim)
         source.addFunction(self._updateVirtualArea)
 
