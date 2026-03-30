@@ -158,7 +158,7 @@ class Lobby(BaseEntity):
                 prev_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_DOWN])
                 prev_chapter.addFunction(GameManager.loadPreviousChapter)
 
-            tc.addFunction(SceneManager.restartScene, None)
+            tc.addFunction(SceneManager.restartCurrentScene)
 
     def _scopePlay(self, source, level_id):
         level_params = GameManager.getLevelParams(level_id)
