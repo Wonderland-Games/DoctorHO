@@ -1,5 +1,5 @@
 def onInitialize():
-    from Foundation.DefaultManager import DefaultManager
+    Trace.msg_dev("Game.onInitialize")
 
     from Foundation.Notificator import Notificator
     identities = [
@@ -32,6 +32,8 @@ def onInitialize():
 
         "onLevelStart",
         "onLevelEnd",
+        "onDropFail",
+        "onDropSuccess",
         "onLevelMissClicked",
         "onLevelHintClicked",
         "onMissClickEffect",
@@ -57,24 +59,21 @@ def onInitialize():
 
     TraceManager.addTraces(traces)
 
-    from Foundation.EntityManager import EntityManager
-    from Foundation.ObjectManager import ObjectManager
-
-    types = [
+    EntityTypes = [
         "Loading",
         "Lobby",
         "GameArea",
+        "FinalStage",
         "MissClick",
-        {"name": "AdvertisingScene", "override": True},
-        "QuestBackpack",
+        {"Type": "AdvertisingScene", "Override": True},
         "Cutscene",
-        {"name": "Header", "override": True},
+        {"Type": "Header", "Override": True},
         "GameHeader",
+        "QuestBackpack",
     ]
 
-    if EntityManager.importEntities("Game.Entities", types) is False:
-        return False
-    if ObjectManager.importObjects("Game.Objects", types) is False:
+    from Foundation.Bootstrapper import Bootstrapper
+    if Bootstrapper.loadEntities("Game", EntityTypes) is False:
         return False
 
     from UIKit.Managers.PopUpManager import PopUpManager
@@ -122,8 +121,20 @@ def onInitialize():
     from GameSession import GameSession
 
     SessionManager.setSessionType(GameSession)
+
+    from Foundation.Managers import Managers
+
+    Managers.importManager("Game.Managers", "GameManager")
+    Managers.importManager("Game.Managers", "CutsceneManager")
+
     return True
 
 
 def onFinalize():
+    Trace.msg_dev("Game.onFinalize")
+
+    from Foundation.Managers import Managers
+
+    Managers.removeManager("Game.Managers", "CutsceneManager")
+    Managers.removeManager("Game.Managers", "GameManager")
     pass

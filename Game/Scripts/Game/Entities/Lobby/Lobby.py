@@ -1,4 +1,4 @@
-from Foundation.Entity.BaseEntity import BaseEntity
+from Foundation.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.SystemManager import SystemManager
 from Foundation.DemonManager import DemonManager
@@ -51,6 +51,7 @@ class Lobby(BaseEntity):
 
     def _onActivate(self):
         self._runTaskChains()
+        self._handleCheats()
 
     def _onDeactivate(self):
         self.content = None
@@ -83,12 +84,9 @@ class Lobby(BaseEntity):
         chapter_levels_slot.addChild(chapter_levels_node)
 
     def _setupQuestBackpack(self):
-        self.quest_backpack = PrototypeManager.generateObjectContainer(PROTOTYPE_QUEST_BACKPACK, PROTOTYPE_QUEST_BACKPACK)
-        self.quest_backpack.setEnable(True)
-
-        quest_backpack_node = self.quest_backpack.getEntityNode()
         quest_backpack_slot = self.content.getMovieSlot(SLOT_QUEST_BACKPACK)
-        quest_backpack_slot.addChild(quest_backpack_node)
+
+        self.quest_backpack = PrototypeManager.generateObjectContainerOnNode(quest_backpack_slot, PROTOTYPE_QUEST_BACKPACK, PROTOTYPE_QUEST_BACKPACK)
 
     def _setupSlotsPositions(self):
         _, game_height, top_offset, banner_height, _, x_center, _ = AdjustableScreenUtils.getMainSizesExt()
@@ -125,13 +123,44 @@ class Lobby(BaseEntity):
 
         with self._createTaskChain(SLOT_QUEST_BACKPACK) as tc:
             tc.addTask("TaskMovie2ButtonClick", Movie2Button=self.quest_backpack.movie)
-            tc.addNotify(Notificator.onChangeScene, "QuestBackpack")
+
+            backpack_scene_name = GameManager.getCurrentQuestBackpackSceneName()
+            tc.addNotify(Notificator.onChangeScene, backpack_scene_name)
+
+    def _handleCheats(self):
+        if Mengine.hasOption("cheats") is False:
+            return
+
+        Trace.msg("")
+        Trace.msg(" CHEATS ".center(50, "-"))
+        Trace.msg(" NUMPAD0 - unlock all inactive levels in chapter")
+        Trace.msg(" RIGHT - next quest")
+        Trace.msg(" LEFT - previous quest")
+        Trace.msg(" UP - next chapter")
+        Trace.msg(" DOWN - previous chapter")
+        Trace.msg("".center(50, "-"))
+        Trace.msg("")
+
+        with self._createTaskChain("CheatChangeChapter") as tc:
+            with tc.addRaceTask(5) as (unlock_levels, next_quest, prev_quest, next_chapter, prev_chapter):
+                unlock_levels.addTask("TaskKeyPress", Keys=[Mengine.KC_NUMPAD0])
+                unlock_levels.addFunction(GameManager.unlockChapterLevels)
+
+                next_quest.addTask("TaskKeyPress", Keys=[Mengine.KC_RIGHT])
+                next_quest.addFunction(GameManager.loadNextQuest)
+
+                prev_quest.addTask("TaskKeyPress", Keys=[Mengine.KC_LEFT])
+                prev_quest.addFunction(GameManager.loadPreviousQuest)
+
+                next_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_UP])
+                next_chapter.addFunction(GameManager.loadNextChapter)
+
+                prev_chapter.addTask("TaskKeyPress", Keys=[Mengine.KC_DOWN])
+                prev_chapter.addFunction(GameManager.loadPreviousChapter)
+
+            tc.addFunction(SceneManager.restartCurrentScene)
 
     def _scopePlay(self, source, level_id):
-        # player_data = GameManager.getPlayerGameData()
-        # current_chapter_data = player_data.getCurrentChapterData()
-        # quest_index = current_chapter_data.getCurrentQuestIndex()
-
         level_params = GameManager.getLevelParams(level_id)
         level_scene_name = level_params.SceneName
 
@@ -194,7 +223,7 @@ class Lobby(BaseEntity):
         level_card_node = level_card.getRoot()
         level_card_wp = level_card_node.getWorldPosition()
 
-        source.addScope(self._moveItemToWP, level_card_wp)
+        # source.addScope(self._moveItemToWP, level_card_wp)    # disabled cuz bad logic error
         source.addScope(level_card.scopeChangeLevelState, level_card.STATE_UNLOCKING)
 
     def _moveItemToQuestBackpack(self, source):
@@ -202,7 +231,7 @@ class Lobby(BaseEntity):
         quest_backpack_node = self.quest_backpack.getEntityNode()
         quest_backpack_wp = quest_backpack_node.getWorldPosition()
 
-        source.addScope(self._moveItemToWP, quest_backpack_wp)
+        # source.addScope(self._moveItemToWP, quest_backpack_wp)    # disabled cuz bad logic error
 
     def _moveItemToWP(self, source, destination_wp):
         # get current popup content (QuestItemReceived)
@@ -243,6 +272,6 @@ class Lobby(BaseEntity):
                           Time=POPUP_ITEM_ALPHA_TIME)
 
         source.addTask("TaskNodeRemoveFromParent", Node=item)
-        source.addTask("TaskNodeDestroy", Node=item)
+        source.addFunction(popup_content.item_object.onDestroy)
         source.addTask("TaskNodeRemoveFromParent", Node=moving_node)
         source.addTask("TaskNodeDestroy", Node=moving_node)

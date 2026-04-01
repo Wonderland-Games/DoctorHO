@@ -1,10 +1,11 @@
 from Foundation.Database import Database
 
-class DatabaseDefaultSlots_QuestBackpack(Database):
+class DatabaseDefaultSlots_Questbackpack(Database):
     def __init__(self):
-        super(DatabaseDefaultSlots_QuestBackpack, self).__init__()
+        super(DatabaseDefaultSlots_Questbackpack, self).__init__()
         self.addRecord(Slot="Background", Type="Scene", Group="Background", Enable=1)
-        self.addRecord(Slot="QuestBackpack", Type="Scene", Group="QuestBackpack", Enable=1)
+        self.addRecord(Slot="Questbackpack", Type="Scene", Group="Questbackpack", Enable=1)
+        self.addRecord(Slot="QuestItemStore", Type="Scene", Group="QuestItemStore", Enable=0)
         self.addRecord(Slot="Header", Type="Scene", Group="Header", Enable=1)
         self.addRecord(Slot="DummyBanner", Type="Scene", Group="DummyBanner", Enable=1, Platform="PC")
         self.addRecord(Slot="FadeUI", Type="Scene", Group="FadeUI", Enable=1)

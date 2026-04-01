@@ -34,8 +34,7 @@ class QuestItemReceived(PopUpContent):
         super(QuestItemReceived, self)._onFinalizeContent()
 
         if self.item_sprite is not None:
-            if self.isHoldingItem is True:
-                Mengine.destroyNode(self.item_sprite)
+            Mengine.destroyNode(self.item_sprite)
             self.item_sprite = None
 
         if self.button is not None:
@@ -45,8 +44,7 @@ class QuestItemReceived(PopUpContent):
     # - Setup ----------------------------------------------------------------------------------------------------------
 
     def _setupItem(self, item_name):
-        item_sprite_object = GameManager.generateQuestItem(item_name)
-        self.item_sprite = item_sprite_object.entity.getSprite()
+        self.item_sprite = GameManager.generateQuestItemNode(item_name)
         self.item_sprite.enable()
 
         self.isHoldingItem = True

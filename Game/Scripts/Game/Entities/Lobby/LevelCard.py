@@ -165,8 +165,8 @@ class LevelCard(Initializer):
         if level_data.getActive() is False:
             return
 
-        chapter_id = current_chapter_data.getChapterId()
-        current_quest_index = current_chapter_data.getCurrentQuestIndex()
+        chapter_id = GameManager.getCurrentChapterId()
+        current_quest_index = GameManager.getCurrentQuestIndex()
         quest_params = GameManager.getQuestParamsWithChapterIdAndQuestIndex(chapter_id, current_quest_index)
 
         if quest_params is None:

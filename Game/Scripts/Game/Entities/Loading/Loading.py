@@ -1,4 +1,4 @@
-from Foundation.Entity.BaseEntity import BaseEntity
+from Foundation.BaseEntity import BaseEntity
 from Foundation.TaskManager import TaskManager
 from Foundation.Systems.SystemAnalytics import SystemAnalytics
 from Foundation.Providers.AdvertisementProvider import AdvertisementProvider

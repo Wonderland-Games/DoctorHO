@@ -171,7 +171,7 @@ class SystemGame(System):
 
         if _DEVELOPMENT is True:
             source.addNotify(Notificator.onPopUpShowDebugAd)
-            source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
+            source.addListener(Notificator.onPopUpHideEnd, Filter=lambda content_id: content_id == "DebugAd")
 
         source.addFunction(game.search_panel.hint.incHintCount)
         source.addFunction(game.search_panel.switchHints)
@@ -184,7 +184,7 @@ class SystemGame(System):
                 true.addListener(Notificator.onPopUpHideEnd)
 
             source.addNotify(Notificator.onPopUpShowDebugAd)
-            source.addListener(Notificator.onPopUpHideEnd, lambda content_id: content_id == "DebugAd")
+            source.addListener(Notificator.onPopUpHideEnd, Filter=lambda content_id: content_id == "DebugAd")
 
         source.addNotify(Notificator.onLevelLivesRestore)
 

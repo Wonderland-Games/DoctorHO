@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<DataBlock Name="01_FinalStage">
+	<Resource Name="4a/a7d0c994f9e32159b8750c3287b9de0b3dfbcf.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/4a/a7d0c994f9e32159b8750c3287b9de0b3dfbcf.png" MaxSize="203;243" />
+	</Resource>
+	<Resource Name="04/5886cc1e6f7aa433aea9678c625ec99e79da1f.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/04/5886cc1e6f7aa433aea9678c625ec99e79da1f.png" MaxSize="2048;2048" />
+	</Resource>
+	<Resource Name="1c/e03d3bfcf5d4aba91666757b5edc9904cbb9ce.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/1c/e03d3bfcf5d4aba91666757b5edc9904cbb9ce.png" MaxSize="320;320" Size="118;305" Offset="101;7" />
+	</Resource>
+	<Resource Name="76/403b660adcdf2c8c60089c7558efe46da436ae.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/76/403b660adcdf2c8c60089c7558efe46da436ae.png" MaxSize="750;750" Size="227;745" Offset="263;3" />
+	</Resource>
+	<Resource Name="bc/420a5eeb9df502111abda453bf4145f28f3073.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/bc/420a5eeb9df502111abda453bf4145f28f3073.png" MaxSize="146;216" />
+	</Resource>
+	<Resource Name="1a/d3eee50d54a31fb2c59071879201702c767221.png" Type="ResourceImageDefault" Unique="0">
+		<File Path="Movies2/cache_images/1a/d3eee50d54a31fb2c59071879201702c767221.png" MaxSize="195;249" />
+	</Resource>
+	<Resource Name="Movie2_01_FinalStage" Type="ResourceMovie2">
+		<File Path="Movies2/01_FinalStage/01_FinalStage.aez" />
+		<Composition Name="Armor" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;485.0;1015.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_Armor.png" Type="Image" Matrix="0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.0;0.0;485.0;1015.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="BG" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Sprite_Background.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;-439.0;-149.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="bust_stand.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;565.0;1215.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="2" Name="armour_stand.png" Type="Image" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;110.0;800.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Bust" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;445.0;935.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_Bust.png" Type="Image" Matrix="0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.0;0.0;715.0;1149.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Final" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="Deep Red Solid 1" Type="Solid" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;-439.0;-149.0;0.0;1.0" Color="1.0;1.0;1.0;0.0" TrackMatte="0" />
+		</Composition>
+		<Composition Name="Helmet" Duration="1.0" FrameDuration="0.0333333350718021392822265625" Master="1">
+			<Layer Index="0" Name="socket" Type="HotSpotPolygon" Matrix="1.0;0.0;0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;0.0;205.0;915.0;0.0;1.0" TrackMatte="0" />
+			<Layer Index="1" Name="Item_Helmet.png" Type="Image" Matrix="0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.0;0.0;475.0;805.0;0.0;1.0" TrackMatte="0" />
+		</Composition>
+	</Resource>
+</DataBlock>

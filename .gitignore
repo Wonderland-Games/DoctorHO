@@ -1,7 +1,9 @@
 .idea
+.vscode
 *.hit
 *.bin
 *.aek
 venv
 *auto-save*
 *.log
+*.code-workspace
