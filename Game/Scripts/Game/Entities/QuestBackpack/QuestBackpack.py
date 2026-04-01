@@ -179,4 +179,4 @@ class QuestBackpack(BaseEntity):
                 clear.addFunction(GameManager.resetPlayerProgress)
                 get.addTask("TaskKeyPress", Keys=[Mengine.KC_G])
                 get.addFunction(GameManager.setMaxPlayerProgress)
-            tc.addFunction(SceneManager.restartCurrentScene)
+            tc.addFunction(Mengine.restartCurrentScene, True, None)
