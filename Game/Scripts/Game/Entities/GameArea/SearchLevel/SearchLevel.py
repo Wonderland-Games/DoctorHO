@@ -238,11 +238,11 @@ class SearchLevel(Initializer):
 
         if quest_item_name is not None:
             level_items = [obj for obj in level_group_objects if
-                           obj.getEntityType() == "Item" and
+                           obj.getType() == "ObjectItem" and
                            obj not in self.game.FoundItems]
         else:
             level_items = [obj for obj in level_group_objects if
-                           obj.getEntityType() == "Item" and
+                           obj.getType() == "ObjectItem" and
                            obj not in self.game.FoundItems and
                            "Quest" not in obj.getName()]
 
